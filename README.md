@@ -13,7 +13,7 @@
 </p>
 
 ## 前提概要
-此项目**目前**仅制作了国际服碧蓝档案(港澳台, asia, na, global, kr)的协议层的登录部分。
+此项目**目前**仅制作了国际服碧蓝档案(港澳台, asia, na, global, kr)的协议层的登录部分。剩下的部分 soon™️。
 
 Headless Bluearchive SDK 是 `headless-bluearchive` 的 SDK 包。在**不影响游戏公平性**的前提将 bluearchive 的登录和主网关发包封装成一个 Python 库，供 CLI、API 服务、GUI 或其他自动化程序复用。
 
