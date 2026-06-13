@@ -29,7 +29,7 @@ ROOT = Path(__file__).resolve().parents[1]
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
-from headlessba.utils.proxy import normalize_proxy_url, redact_proxy_url
+from utils.proxy import normalize_proxy_url, redact_proxy_url
 
 DEFAULT_LOG_DIR = ROOT / "analysis_reports" / "nexon_webview_login"
 DEFAULT_UNITY_VERSION = "2021.3.56f2"

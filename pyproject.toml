@@ -3,7 +3,7 @@ requires = ["setuptools>=69", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "headlessBA"
+name = "headless-bluearchive"
 version = "0.1.0"
 description = "Headless Blue Archive automation foundation"
 readme = "README.md"
@@ -23,14 +23,17 @@ android-bridge = ["frida-tools>=13"]
 dev = ["pytest>=8", "ruff>=0.5"]
 
 [project.scripts]
-headlessba = "headlessba.cli:main"
+headless-bluearchive = "cli:main"
+
+[tool.setuptools]
+py-modules = ["api", "cli", "main"]
 
 [tool.setuptools.packages.find]
 where = ["."]
-include = ["headlessba*"]
+include = ["config*", "core*", "database*", "game*", "log*", "modules*", "utils*"]
 
 [tool.setuptools.package-data]
-"headlessba.core" = ["data/*.json"]
+"core" = ["data/*.json"]
 
 [tool.ruff]
 line-length = 120

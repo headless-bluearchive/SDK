@@ -9,10 +9,10 @@ sys.path.insert(0, str(ROOT))
 
 import main as cli_main
 
-from headlessba.core.client import BAReplayClient, build_besthttp_multipart, decode_gateway_response
-from headlessba.modules.auth.flows import IntegratedLoginOptions
-from headlessba.modules.runtime.android_runtime_profile import AndroidRuntimeProfile, select_android_runtime_device_id
-from headlessba.core.crypto import (
+from core.client import BAReplayClient, build_besthttp_multipart, decode_gateway_response
+from modules.auth.flows import IntegratedLoginOptions
+from modules.runtime.android_runtime_profile import AndroidRuntimeProfile, select_android_runtime_device_id
+from core.crypto import (
     ACCOUNT_CHECK_NEXON_RSA_PUBLIC_KEY_PEM,
     account_check_nexon_key_iv_fields,
     aes_cbc_pkcs7_decrypt,
@@ -21,14 +21,14 @@ from headlessba.core.crypto import (
     ungzip_length_prefixed,
     xor_crypt,
 )
-from headlessba.core.packet import build_packet, create_hash, parse_packet
-from headlessba.modules.auth.proof_token import proof_token_hash, proof_token_search_span, solve_proof_token
-from headlessba.core.protocol import type_conversion
-from headlessba.modules.auth.login import LoginReplay
-from headlessba.utils.proxy import normalize_proxy_url, playwright_proxy_options, requests_proxy_map
-from headlessba.modules.runtime.region_config import build_login_url, profile_for
-from headlessba.modules.runtime.runtime_config import discover_connection_info, extract_urls_from_hosts, normalize_service_base
-from headlessba.modules.auth.toysdk_android import (
+from core.packet import build_packet, create_hash, parse_packet
+from modules.auth.proof_token import proof_token_hash, proof_token_search_span, solve_proof_token
+from core.protocol import type_conversion
+from modules.auth.login import LoginReplay
+from utils.proxy import normalize_proxy_url, playwright_proxy_options, requests_proxy_map
+from modules.runtime.region_config import build_login_url, profile_for
+from modules.runtime.runtime_config import discover_connection_info, extract_urls_from_hosts, normalize_service_base
+from modules.auth.toysdk_android import (
     AndroidDeviceProfile,
     AndroidToySdkClient,
     LOGIN_TYPE_NXARENA,
@@ -39,7 +39,7 @@ from headlessba.modules.auth.toysdk_android import (
     toy_decrypt,
     toy_encrypt,
 )
-from headlessba.modules.auth.nexon_login import (
+from modules.auth.nexon_login import (
     NATIVE_LOGIN_SYNC_NO_PART_PROTOCOLS,
     _apply_account_check_state,
     build_account_auth_fields,
@@ -51,8 +51,8 @@ from headlessba.modules.auth.nexon_login import (
     run_native_relay_queue,
     _is_empty_success_response,
 )
-from headlessba.modules.auth.toysdk_models import ToySdkLoginResult
-from headlessba.modules.runtime.runtime_config import RuntimeConnectionInfo
+from modules.auth.toysdk_models import ToySdkLoginResult
+from modules.runtime.runtime_config import RuntimeConnectionInfo
 
 
 def test_protocol_converter_sample():

@@ -12,10 +12,10 @@ ROOT = Path(__file__).resolve().parents[1]
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
-from headlessba.modules.runtime.runtime_profile_generator import (  # noqa: E402
+from modules.runtime.runtime_profile_generator import (  # noqa: E402
     generate_android_runtime_profile,
 )
-from headlessba.modules.runtime.android_mobile_profile import (  # noqa: E402
+from modules.runtime.android_mobile_profile import (  # noqa: E402
     generate_android_mobile_profile,
     save_android_mobile_profile,
 )

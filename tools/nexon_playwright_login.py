@@ -23,7 +23,7 @@ ROOT = Path(__file__).resolve().parents[1]
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
-from headlessba.utils.proxy import normalize_proxy_url, playwright_proxy_options, redact_proxy_url
+from utils.proxy import normalize_proxy_url, playwright_proxy_options, redact_proxy_url
 
 from nexon_webview_login import (
     CallbackServer,

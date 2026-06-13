@@ -1,4 +1,4 @@
-# headlessBA 模块开发规范
+# headless-bluearchive 模块开发规范
 
 ## 分层规则
 

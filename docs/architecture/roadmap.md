@@ -2,7 +2,7 @@
 
 ## 当前阶段
 
-- 完成旧 `ba_replay` 到 `headlessBA` 的模块化迁移。
+- 完成旧 `ba_replay` 到 `headless-bluearchive` 的模块化迁移。
 - 保留 Android/mobile 登录 replay 的可用性。
 - 建立 `core/modules/utils/config/log/database` 基础边界。
 

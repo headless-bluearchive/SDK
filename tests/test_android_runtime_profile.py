@@ -5,18 +5,18 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 
-from headlessba.modules.runtime.android_runtime_profile import (
+from modules.runtime.android_runtime_profile import (
     load_android_runtime_profile,
     read_shared_prefs_xml,
     select_android_runtime_device_id,
 )
-from headlessba.modules.runtime.android_mobile_profile import (
+from modules.runtime.android_mobile_profile import (
     app_version_code_from_client_version,
     load_or_create_android_mobile_profile,
     save_android_mobile_profile,
     with_client_version,
 )
-from headlessba.modules.runtime.runtime_profile_generator import generate_android_runtime_profile
+from modules.runtime.runtime_profile_generator import generate_android_runtime_profile
 
 
 def make_runtime_root(tmp_path: Path) -> Path:
