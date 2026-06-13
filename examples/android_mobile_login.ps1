@@ -1,0 +1,1 @@
+python main.py --mobile-nx-login --nx-id "<email>" --nx-password "<password>" --region tw --turnstile-no-browser --post --timeout 120 --output-dir analysis_reports\nexon_webview_login\android_mobile_nx

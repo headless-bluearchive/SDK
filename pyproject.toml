@@ -1,0 +1,36 @@
+[build-system]
+requires = ["setuptools>=69", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "headlessBA"
+version = "0.1.0"
+description = "Headless Blue Archive automation foundation"
+readme = "README.md"
+requires-python = ">=3.11"
+license = { file = "LICENSE" }
+authors = [{ name = "Gaimoydev" }]
+dependencies = [
+    "requests>=2.32",
+    "cryptography>=42",
+    "pycryptodome>=3.20",
+    "randomandroidphone==0.10",
+]
+
+[project.optional-dependencies]
+browser = ["playwright>=1.51"]
+android-bridge = ["frida-tools>=13"]
+dev = ["pytest>=8", "ruff>=0.5"]
+
+[project.scripts]
+headlessba = "headlessba.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+"headlessba.core" = ["data/*.json"]
+
+[tool.ruff]
+line-length = 120
+target-version = "py311"

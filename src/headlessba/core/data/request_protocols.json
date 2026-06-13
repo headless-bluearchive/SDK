@@ -1,0 +1,4772 @@
+{
+  "AcademyAttendSchedule": {
+    "protocol_name": "Academy_AttendSchedule",
+    "protocol_value": 24001,
+    "request_class": "AcademyAttendScheduleRequest"
+  },
+  "AcademyAttendScheduleRequest": {
+    "protocol_name": "Academy_AttendSchedule",
+    "protocol_value": 24001,
+    "request_class": "AcademyAttendScheduleRequest"
+  },
+  "AcademyGetInfo": {
+    "protocol_name": "Academy_GetInfo",
+    "protocol_value": 24000,
+    "request_class": "AcademyGetInfoRequest"
+  },
+  "AcademyGetInfoRequest": {
+    "protocol_name": "Academy_GetInfo",
+    "protocol_value": 24000,
+    "request_class": "AcademyGetInfoRequest"
+  },
+  "AccountAuth": {
+    "protocol_name": "Account_Auth",
+    "protocol_value": 1002,
+    "request_class": "AccountAuthRequest"
+  },
+  "AccountAuth2": {
+    "protocol_name": "Account_Auth2",
+    "protocol_value": 1012,
+    "request_class": "AccountAuth2Request"
+  },
+  "AccountAuth2Request": {
+    "protocol_name": "Account_Auth2",
+    "protocol_value": 1012,
+    "request_class": "AccountAuth2Request"
+  },
+  "AccountAuthRequest": {
+    "protocol_name": "Account_Auth",
+    "protocol_value": 1002,
+    "request_class": "AccountAuthRequest"
+  },
+  "AccountBirthDay": {
+    "protocol_name": "Account_BirthDay",
+    "protocol_value": 1011,
+    "request_class": "AccountBirthDayRequest"
+  },
+  "AccountBirthDayRequest": {
+    "protocol_name": "Account_BirthDay",
+    "protocol_value": 1011,
+    "request_class": "AccountBirthDayRequest"
+  },
+  "AccountCallName": {
+    "protocol_name": "Account_CallName",
+    "protocol_value": 1010,
+    "request_class": "AccountCallNameRequest"
+  },
+  "AccountCallNameRequest": {
+    "protocol_name": "Account_CallName",
+    "protocol_value": 1010,
+    "request_class": "AccountCallNameRequest"
+  },
+  "AccountCheckNexon": {
+    "protocol_name": "Account_CheckNexon",
+    "protocol_value": 1014,
+    "request_class": "AccountCheckNexonRequest"
+  },
+  "AccountCheckNexonRequest": {
+    "protocol_name": "Account_CheckNexon",
+    "protocol_value": 1014,
+    "request_class": "AccountCheckNexonRequest"
+  },
+  "AccountCheckYostar": {
+    "protocol_name": "Account_CheckYostar",
+    "protocol_value": 1009,
+    "request_class": "AccountCheckYostarRequest"
+  },
+  "AccountCheckYostarRequest": {
+    "protocol_name": "Account_CheckYostar",
+    "protocol_value": 1009,
+    "request_class": "AccountCheckYostarRequest"
+  },
+  "AccountCreate": {
+    "protocol_name": "Account_Create",
+    "protocol_value": 1000,
+    "request_class": "AccountCreateRequest"
+  },
+  "AccountCreateRequest": {
+    "protocol_name": "Account_Create",
+    "protocol_value": 1000,
+    "request_class": "AccountCreateRequest"
+  },
+  "AccountCurrencySync": {
+    "protocol_name": "Account_CurrencySync",
+    "protocol_value": 1003,
+    "request_class": "AccountCurrencySyncRequest"
+  },
+  "AccountCurrencySyncRequest": {
+    "protocol_name": "Account_CurrencySync",
+    "protocol_value": 1003,
+    "request_class": "AccountCurrencySyncRequest"
+  },
+  "AccountDetachNexon": {
+    "protocol_name": "Account_DetachNexon",
+    "protocol_value": 1015,
+    "request_class": "AccountDetachNexonRequest"
+  },
+  "AccountDetachNexonRequest": {
+    "protocol_name": "Account_DetachNexon",
+    "protocol_value": 1015,
+    "request_class": "AccountDetachNexonRequest"
+  },
+  "AccountDismissRepurchasablePopup": {
+    "protocol_name": "Account_DismissRepurchasablePopup",
+    "protocol_value": 1017,
+    "request_class": "AccountDismissRepurchasablePopupRequest"
+  },
+  "AccountDismissRepurchasablePopupRequest": {
+    "protocol_name": "Account_DismissRepurchasablePopup",
+    "protocol_value": 1017,
+    "request_class": "AccountDismissRepurchasablePopupRequest"
+  },
+  "AccountGetTutorial": {
+    "protocol_name": "Account_GetTutorial",
+    "protocol_value": 1005,
+    "request_class": "AccountGetTutorialRequest"
+  },
+  "AccountGetTutorialRequest": {
+    "protocol_name": "Account_GetTutorial",
+    "protocol_value": 1005,
+    "request_class": "AccountGetTutorialRequest"
+  },
+  "AccountInvalidateToken": {
+    "protocol_name": "Account_InvalidateToken",
+    "protocol_value": 1018,
+    "request_class": "AccountInvalidateTokenRequest"
+  },
+  "AccountInvalidateTokenRequest": {
+    "protocol_name": "Account_InvalidateToken",
+    "protocol_value": 1018,
+    "request_class": "AccountInvalidateTokenRequest"
+  },
+  "AccountLinkReward": {
+    "protocol_name": "Account_LinkReward",
+    "protocol_value": 1013,
+    "request_class": "AccountLinkRewardRequest"
+  },
+  "AccountLinkRewardRequest": {
+    "protocol_name": "Account_LinkReward",
+    "protocol_value": 1013,
+    "request_class": "AccountLinkRewardRequest"
+  },
+  "AccountLoginSync": {
+    "protocol_name": "Account_LoginSync",
+    "protocol_value": 1019,
+    "request_class": "AccountLoginSyncRequest"
+  },
+  "AccountLoginSyncRequest": {
+    "protocol_name": "Account_LoginSync",
+    "protocol_value": 1019,
+    "request_class": "AccountLoginSyncRequest"
+  },
+  "AccountNickname": {
+    "protocol_name": "Account_Nickname",
+    "protocol_value": 1001,
+    "request_class": "AccountNicknameRequest"
+  },
+  "AccountNicknameRequest": {
+    "protocol_name": "Account_Nickname",
+    "protocol_value": 1001,
+    "request_class": "AccountNicknameRequest"
+  },
+  "AccountPassCheck": {
+    "protocol_name": "Account_PassCheck",
+    "protocol_value": 1007,
+    "request_class": "AccountPassCheckRequest"
+  },
+  "AccountPassCheckRequest": {
+    "protocol_name": "Account_PassCheck",
+    "protocol_value": 1007,
+    "request_class": "AccountPassCheckRequest"
+  },
+  "AccountReportXignCodeCheater": {
+    "protocol_name": "Account_ReportXignCodeCheater",
+    "protocol_value": 1016,
+    "request_class": "AccountReportXignCodeCheaterRequest"
+  },
+  "AccountReportXignCodeCheaterRequest": {
+    "protocol_name": "Account_ReportXignCodeCheater",
+    "protocol_value": 1016,
+    "request_class": "AccountReportXignCodeCheaterRequest"
+  },
+  "AccountRequestBirthdayMail": {
+    "protocol_name": "Account_RequestBirthdayMail",
+    "protocol_value": 1023,
+    "request_class": "AccountRequestBirthdayMailRequest"
+  },
+  "AccountRequestBirthdayMailRequest": {
+    "protocol_name": "Account_RequestBirthdayMail",
+    "protocol_value": 1023,
+    "request_class": "AccountRequestBirthdayMailRequest"
+  },
+  "AccountReset": {
+    "protocol_name": "Account_Reset",
+    "protocol_value": 1022,
+    "request_class": "AccountResetRequest"
+  },
+  "AccountResetRequest": {
+    "protocol_name": "Account_Reset",
+    "protocol_value": 1022,
+    "request_class": "AccountResetRequest"
+  },
+  "AccountSetAdultCheck": {
+    "protocol_name": "Account_SetCheckAdultAgree",
+    "protocol_value": 1021,
+    "request_class": "AccountSetAdultCheckRequest"
+  },
+  "AccountSetAdultCheckRequest": {
+    "protocol_name": "Account_SetCheckAdultAgree",
+    "protocol_value": 1021,
+    "request_class": "AccountSetAdultCheckRequest"
+  },
+  "AccountSetRepresentCharacterAndComment": {
+    "protocol_name": "Account_SetRepresentCharacterAndComment",
+    "protocol_value": 1004,
+    "request_class": "AccountSetRepresentCharacterAndCommentRequest"
+  },
+  "AccountSetRepresentCharacterAndCommentRequest": {
+    "protocol_name": "Account_SetRepresentCharacterAndComment",
+    "protocol_value": 1004,
+    "request_class": "AccountSetRepresentCharacterAndCommentRequest"
+  },
+  "AccountSetTutorial": {
+    "protocol_name": "Account_SetTutorial",
+    "protocol_value": 1006,
+    "request_class": "AccountSetTutorialRequest"
+  },
+  "AccountSetTutorialRequest": {
+    "protocol_name": "Account_SetTutorial",
+    "protocol_value": 1006,
+    "request_class": "AccountSetTutorialRequest"
+  },
+  "AccountVerifyAdultCheck": {
+    "protocol_name": "Account_VerifyCheckAdultAgree",
+    "protocol_value": 1020,
+    "request_class": "AccountVerifyAdultCheckRequest"
+  },
+  "AccountVerifyAdultCheckRequest": {
+    "protocol_name": "Account_VerifyCheckAdultAgree",
+    "protocol_value": 1020,
+    "request_class": "AccountVerifyAdultCheckRequest"
+  },
+  "ArenaBattleResult": {
+    "protocol_name": "Arena_BattleResult",
+    "protocol_value": 22007,
+    "request_class": "ArenaBattleResultRequest"
+  },
+  "ArenaBattleResultRequest": {
+    "protocol_name": "Arena_BattleResult",
+    "protocol_value": 22007,
+    "request_class": "ArenaBattleResultRequest"
+  },
+  "ArenaCheckSeasonCloseReward": {
+    "protocol_name": "Arena_CheckSeasonCloseReward",
+    "protocol_value": 22015,
+    "request_class": "ArenaCheckSeasonCloseRewardRequest"
+  },
+  "ArenaCheckSeasonCloseRewardRequest": {
+    "protocol_name": "Arena_CheckSeasonCloseReward",
+    "protocol_value": 22015,
+    "request_class": "ArenaCheckSeasonCloseRewardRequest"
+  },
+  "ArenaCumulativeTimeReward": {
+    "protocol_name": "Arena_CumulativeTimeReward",
+    "protocol_value": 22008,
+    "request_class": "ArenaCumulativeTimeRewardRequest"
+  },
+  "ArenaCumulativeTimeRewardRequest": {
+    "protocol_name": "Arena_CumulativeTimeReward",
+    "protocol_value": 22008,
+    "request_class": "ArenaCumulativeTimeRewardRequest"
+  },
+  "ArenaDailyReward": {
+    "protocol_name": "Arena_DailyReward",
+    "protocol_value": 22009,
+    "request_class": "ArenaDailyRewardRequest"
+  },
+  "ArenaDailyRewardRequest": {
+    "protocol_name": "Arena_DailyReward",
+    "protocol_value": 22009,
+    "request_class": "ArenaDailyRewardRequest"
+  },
+  "ArenaEnterBattle": {
+    "protocol_name": "Arena_EnterBattle",
+    "protocol_value": 22004,
+    "request_class": "ArenaEnterBattleRequest"
+  },
+  "ArenaEnterBattlePart1": {
+    "protocol_name": "Arena_EnterBattlePart1",
+    "protocol_value": 22005,
+    "request_class": "ArenaEnterBattlePart1Request"
+  },
+  "ArenaEnterBattlePart1Request": {
+    "protocol_name": "Arena_EnterBattlePart1",
+    "protocol_value": 22005,
+    "request_class": "ArenaEnterBattlePart1Request"
+  },
+  "ArenaEnterBattlePart2": {
+    "protocol_name": "Arena_EnterBattlePart2",
+    "protocol_value": 22006,
+    "request_class": "ArenaEnterBattlePart2Request"
+  },
+  "ArenaEnterBattlePart2Request": {
+    "protocol_name": "Arena_EnterBattlePart2",
+    "protocol_value": 22006,
+    "request_class": "ArenaEnterBattlePart2Request"
+  },
+  "ArenaEnterBattleRequest": {
+    "protocol_name": "Arena_EnterBattle",
+    "protocol_value": 22004,
+    "request_class": "ArenaEnterBattleRequest"
+  },
+  "ArenaEnterLobby": {
+    "protocol_name": "Arena_EnterLobby",
+    "protocol_value": 22000,
+    "request_class": "ArenaEnterLobbyRequest"
+  },
+  "ArenaEnterLobbyRequest": {
+    "protocol_name": "Arena_EnterLobby",
+    "protocol_value": 22000,
+    "request_class": "ArenaEnterLobbyRequest"
+  },
+  "ArenaHistory": {
+    "protocol_name": "Arena_History",
+    "protocol_value": 22011,
+    "request_class": "ArenaHistoryRequest"
+  },
+  "ArenaHistoryRequest": {
+    "protocol_name": "Arena_History",
+    "protocol_value": 22011,
+    "request_class": "ArenaHistoryRequest"
+  },
+  "ArenaLogin": {
+    "protocol_name": "Arena_Login",
+    "protocol_value": 22001,
+    "request_class": "ArenaLoginRequest"
+  },
+  "ArenaLoginRequest": {
+    "protocol_name": "Arena_Login",
+    "protocol_value": 22001,
+    "request_class": "ArenaLoginRequest"
+  },
+  "ArenaOpponentList": {
+    "protocol_name": "Arena_OpponentList",
+    "protocol_value": 22003,
+    "request_class": "ArenaOpponentListRequest"
+  },
+  "ArenaOpponentListRequest": {
+    "protocol_name": "Arena_OpponentList",
+    "protocol_value": 22003,
+    "request_class": "ArenaOpponentListRequest"
+  },
+  "ArenaRankList": {
+    "protocol_name": "Arena_RankList",
+    "protocol_value": 22010,
+    "request_class": "ArenaRankListRequest"
+  },
+  "ArenaRankListRequest": {
+    "protocol_name": "Arena_RankList",
+    "protocol_value": 22010,
+    "request_class": "ArenaRankListRequest"
+  },
+  "ArenaSettingAnonymous": {
+    "protocol_name": "Arena_SettingAnonymous",
+    "protocol_value": 22017,
+    "request_class": "ArenaSettingAnonymousRequest"
+  },
+  "ArenaSettingAnonymousRequest": {
+    "protocol_name": "Arena_SettingAnonymous",
+    "protocol_value": 22017,
+    "request_class": "ArenaSettingAnonymousRequest"
+  },
+  "ArenaSettingChange": {
+    "protocol_name": "Arena_SettingChange",
+    "protocol_value": 22002,
+    "request_class": "ArenaSettingChangeRequest"
+  },
+  "ArenaSettingChangeRequest": {
+    "protocol_name": "Arena_SettingChange",
+    "protocol_value": 22002,
+    "request_class": "ArenaSettingChangeRequest"
+  },
+  "ArenaSyncEchelonSettingTime": {
+    "protocol_name": "Arena_SyncEchelonSettingTime",
+    "protocol_value": 22016,
+    "request_class": "ArenaSyncEchelonSettingTimeRequest"
+  },
+  "ArenaSyncEchelonSettingTimeRequest": {
+    "protocol_name": "Arena_SyncEchelonSettingTime",
+    "protocol_value": 22016,
+    "request_class": "ArenaSyncEchelonSettingTimeRequest"
+  },
+  "AttachmentEmblemAcquire": {
+    "protocol_name": "Attachment_EmblemAcquire",
+    "protocol_value": 46002,
+    "request_class": "AttachmentEmblemAcquireRequest"
+  },
+  "AttachmentEmblemAcquireRequest": {
+    "protocol_name": "Attachment_EmblemAcquire",
+    "protocol_value": 46002,
+    "request_class": "AttachmentEmblemAcquireRequest"
+  },
+  "AttachmentEmblemAttach": {
+    "protocol_name": "Attachment_EmblemAttach",
+    "protocol_value": 46003,
+    "request_class": "AttachmentEmblemAttachRequest"
+  },
+  "AttachmentEmblemAttachRequest": {
+    "protocol_name": "Attachment_EmblemAttach",
+    "protocol_value": 46003,
+    "request_class": "AttachmentEmblemAttachRequest"
+  },
+  "AttachmentEmblemList": {
+    "protocol_name": "Attachment_EmblemList",
+    "protocol_value": 46001,
+    "request_class": "AttachmentEmblemListRequest"
+  },
+  "AttachmentEmblemListRequest": {
+    "protocol_name": "Attachment_EmblemList",
+    "protocol_value": 46001,
+    "request_class": "AttachmentEmblemListRequest"
+  },
+  "AttachmentGet": {
+    "protocol_name": "Attachment_Get",
+    "protocol_value": 46000,
+    "request_class": "AttachmentGetRequest"
+  },
+  "AttachmentGetRequest": {
+    "protocol_name": "Attachment_Get",
+    "protocol_value": 46000,
+    "request_class": "AttachmentGetRequest"
+  },
+  "AttendanceReward": {
+    "protocol_name": "Attendance_Reward",
+    "protocol_value": 9002,
+    "request_class": "AttendanceRewardRequest"
+  },
+  "AttendanceRewardRequest": {
+    "protocol_name": "Attendance_Reward",
+    "protocol_value": 9002,
+    "request_class": "AttendanceRewardRequest"
+  },
+  "AuditGachaStatistics": {
+    "protocol_name": "Audit_GachaStatistics",
+    "protocol_value": 5,
+    "request_class": "AuditGachaStatisticsRequest"
+  },
+  "AuditGachaStatisticsRequest": {
+    "protocol_name": "Audit_GachaStatistics",
+    "protocol_value": 5,
+    "request_class": "AuditGachaStatisticsRequest"
+  },
+  "BattlePassBuyLevel": {
+    "protocol_name": "BattlePass_BuyLevel",
+    "protocol_value": 51001,
+    "request_class": "BattlePassBuyLevelRequest"
+  },
+  "BattlePassBuyLevelRequest": {
+    "protocol_name": "BattlePass_BuyLevel",
+    "protocol_value": 51001,
+    "request_class": "BattlePassBuyLevelRequest"
+  },
+  "BattlePassCheck": {
+    "protocol_name": "BattlePass_Check",
+    "protocol_value": 51006,
+    "request_class": "BattlePassCheckRequest"
+  },
+  "BattlePassCheckRequest": {
+    "protocol_name": "BattlePass_Check",
+    "protocol_value": 51006,
+    "request_class": "BattlePassCheckRequest"
+  },
+  "BattlePassGetInfo": {
+    "protocol_name": "BattlePass_GetInfo",
+    "protocol_value": 51000,
+    "request_class": "BattlePassGetInfoRequest"
+  },
+  "BattlePassGetInfoRequest": {
+    "protocol_name": "BattlePass_GetInfo",
+    "protocol_value": 51000,
+    "request_class": "BattlePassGetInfoRequest"
+  },
+  "BattlePassMissionList": {
+    "protocol_name": "BattlePass_MissionList",
+    "protocol_value": 51003,
+    "request_class": "BattlePassMissionListRequest"
+  },
+  "BattlePassMissionListRequest": {
+    "protocol_name": "BattlePass_MissionList",
+    "protocol_value": 51003,
+    "request_class": "BattlePassMissionListRequest"
+  },
+  "BattlePassMissionMultipleReward": {
+    "protocol_name": "BattlePass_MissionMultipleReward",
+    "protocol_value": 51005,
+    "request_class": "BattlePassMissionMultipleRewardRequest"
+  },
+  "BattlePassMissionMultipleRewardRequest": {
+    "protocol_name": "BattlePass_MissionMultipleReward",
+    "protocol_value": 51005,
+    "request_class": "BattlePassMissionMultipleRewardRequest"
+  },
+  "BattlePassMissionSingleReward": {
+    "protocol_name": "BattlePass_MissionSingleReward",
+    "protocol_value": 51004,
+    "request_class": "BattlePassMissionSingleRewardRequest"
+  },
+  "BattlePassMissionSingleRewardRequest": {
+    "protocol_name": "BattlePass_MissionSingleReward",
+    "protocol_value": 51004,
+    "request_class": "BattlePassMissionSingleRewardRequest"
+  },
+  "BattlePassReceiveReward": {
+    "protocol_name": "BattlePass_ReceiveReward",
+    "protocol_value": 51002,
+    "request_class": "BattlePassReceiveRewardRequest"
+  },
+  "BattlePassReceiveRewardRequest": {
+    "protocol_name": "BattlePass_ReceiveReward",
+    "protocol_value": 51002,
+    "request_class": "BattlePassReceiveRewardRequest"
+  },
+  "BillingCheckConditionCashGoods": {
+    "protocol_name": "Billing_CheckConditionCashShopGoods",
+    "protocol_value": 29004,
+    "request_class": "BillingCheckConditionCashGoodsRequest"
+  },
+  "BillingCheckConditionCashGoodsRequest": {
+    "protocol_name": "Billing_CheckConditionCashShopGoods",
+    "protocol_value": 29004,
+    "request_class": "BillingCheckConditionCashGoodsRequest"
+  },
+  "BillingPurchaseCashShopVerifyByNexon": {
+    "protocol_name": "Billing_PurchaseCashShopVerifyByNexon",
+    "protocol_value": 29003,
+    "request_class": "BillingPurchaseCashShopVerifyByNexonRequest"
+  },
+  "BillingPurchaseCashShopVerifyByNexonRequest": {
+    "protocol_name": "Billing_PurchaseCashShopVerifyByNexon",
+    "protocol_value": 29003,
+    "request_class": "BillingPurchaseCashShopVerifyByNexonRequest"
+  },
+  "BillingPurchaseFreeProduct": {
+    "protocol_name": "Billing_PurchaseFreeProduct",
+    "protocol_value": 29008,
+    "request_class": "BillingPurchaseFreeProductRequest"
+  },
+  "BillingPurchaseFreeProductRequest": {
+    "protocol_name": "Billing_PurchaseFreeProduct",
+    "protocol_value": 29008,
+    "request_class": "BillingPurchaseFreeProductRequest"
+  },
+  "BillingPurchaseListByNexon": {
+    "protocol_name": "Billing_PurchaseListByNexon",
+    "protocol_value": 29005,
+    "request_class": "BillingPurchaseListByNexonRequest"
+  },
+  "BillingPurchaseListByNexonRequest": {
+    "protocol_name": "Billing_PurchaseListByNexon",
+    "protocol_value": 29005,
+    "request_class": "BillingPurchaseListByNexonRequest"
+  },
+  "BillingPurchaseListByYostar": {
+    "protocol_name": "Billing_PurchaseListByYostar",
+    "protocol_value": 29002,
+    "request_class": "BillingPurchaseListByYostarRequest"
+  },
+  "BillingPurchaseListByYostarRequest": {
+    "protocol_name": "Billing_PurchaseListByYostar",
+    "protocol_value": 29002,
+    "request_class": "BillingPurchaseListByYostarRequest"
+  },
+  "BillingTransactionEndByYostar": {
+    "protocol_name": "Billing_TransactionEndByYostar",
+    "protocol_value": 29001,
+    "request_class": "BillingTransactionEndByYostarRequest"
+  },
+  "BillingTransactionEndByYostarRequest": {
+    "protocol_name": "Billing_TransactionEndByYostar",
+    "protocol_value": 29001,
+    "request_class": "BillingTransactionEndByYostarRequest"
+  },
+  "BillingTransactionStartByYostar": {
+    "protocol_name": "Billing_TransactionStartByYostar",
+    "protocol_value": 29000,
+    "request_class": "BillingTransactionStartByYostarRequest"
+  },
+  "BillingTransactionStartByYostarRequest": {
+    "protocol_name": "Billing_TransactionStartByYostar",
+    "protocol_value": 29000,
+    "request_class": "BillingTransactionStartByYostarRequest"
+  },
+  "CafeAck": {
+    "protocol_name": "Cafe_Ack",
+    "protocol_value": 20001,
+    "request_class": "CafeAckRequest"
+  },
+  "CafeAckRequest": {
+    "protocol_name": "Cafe_Ack",
+    "protocol_value": 20001,
+    "request_class": "CafeAckRequest"
+  },
+  "CafeApplyPreset": {
+    "protocol_name": "Cafe_ApplyPreset",
+    "protocol_value": 20011,
+    "request_class": "CafeApplyPresetRequest"
+  },
+  "CafeApplyPresetRequest": {
+    "protocol_name": "Cafe_ApplyPreset",
+    "protocol_value": 20011,
+    "request_class": "CafeApplyPresetRequest"
+  },
+  "CafeApplyTemplate": {
+    "protocol_name": "Cafe_ApplyTemplate",
+    "protocol_value": 20017,
+    "request_class": "CafeApplyTemplateRequest"
+  },
+  "CafeApplyTemplateRequest": {
+    "protocol_name": "Cafe_ApplyTemplate",
+    "protocol_value": 20017,
+    "request_class": "CafeApplyTemplateRequest"
+  },
+  "CafeClearPreset": {
+    "protocol_name": "Cafe_ClearPreset",
+    "protocol_value": 20009,
+    "request_class": "CafeClearPresetRequest"
+  },
+  "CafeClearPresetRequest": {
+    "protocol_name": "Cafe_ClearPreset",
+    "protocol_value": 20009,
+    "request_class": "CafeClearPresetRequest"
+  },
+  "CafeDeployFurniture": {
+    "protocol_name": "Cafe_Deploy",
+    "protocol_value": 20002,
+    "request_class": "CafeDeployFurnitureRequest"
+  },
+  "CafeDeployFurnitureRequest": {
+    "protocol_name": "Cafe_Deploy",
+    "protocol_value": 20002,
+    "request_class": "CafeDeployFurnitureRequest"
+  },
+  "CafeGetInfo": {
+    "protocol_name": "Cafe_Get",
+    "protocol_value": 20000,
+    "request_class": "CafeGetInfoRequest"
+  },
+  "CafeGetInfoRequest": {
+    "protocol_name": "Cafe_Get",
+    "protocol_value": 20000,
+    "request_class": "CafeGetInfoRequest"
+  },
+  "CafeGiveGift": {
+    "protocol_name": "Cafe_GiveGift",
+    "protocol_value": 20014,
+    "request_class": "CafeGiveGiftRequest"
+  },
+  "CafeGiveGiftRequest": {
+    "protocol_name": "Cafe_GiveGift",
+    "protocol_value": 20014,
+    "request_class": "CafeGiveGiftRequest"
+  },
+  "CafeInteractWithCharacter": {
+    "protocol_name": "Cafe_Interact",
+    "protocol_value": 20006,
+    "request_class": "CafeInteractWithCharacterRequest"
+  },
+  "CafeInteractWithCharacterRequest": {
+    "protocol_name": "Cafe_Interact",
+    "protocol_value": 20006,
+    "request_class": "CafeInteractWithCharacterRequest"
+  },
+  "CafeListPreset": {
+    "protocol_name": "Cafe_ListPreset",
+    "protocol_value": 20007,
+    "request_class": "CafeListPresetRequest"
+  },
+  "CafeListPresetRequest": {
+    "protocol_name": "Cafe_ListPreset",
+    "protocol_value": 20007,
+    "request_class": "CafeListPresetRequest"
+  },
+  "CafeOpen": {
+    "protocol_name": "Cafe_Open",
+    "protocol_value": 20018,
+    "request_class": "CafeOpenRequest"
+  },
+  "CafeOpenRequest": {
+    "protocol_name": "Cafe_Open",
+    "protocol_value": 20018,
+    "request_class": "CafeOpenRequest"
+  },
+  "CafePresetDetail": {
+    "protocol_name": "Cafe_PresetDetail",
+    "protocol_value": 20021,
+    "request_class": "CafePresetDetailRequest"
+  },
+  "CafePresetDetailRequest": {
+    "protocol_name": "Cafe_PresetDetail",
+    "protocol_value": 20021,
+    "request_class": "CafePresetDetailRequest"
+  },
+  "CafeRankUp": {
+    "protocol_name": "Cafe_RankUp",
+    "protocol_value": 20012,
+    "request_class": "CafeRankUpRequest"
+  },
+  "CafeRankUpRequest": {
+    "protocol_name": "Cafe_RankUp",
+    "protocol_value": 20012,
+    "request_class": "CafeRankUpRequest"
+  },
+  "CafeReceiveCurrency": {
+    "protocol_name": "Cafe_ReceiveCurrency",
+    "protocol_value": 20013,
+    "request_class": "CafeReceiveCurrencyRequest"
+  },
+  "CafeReceiveCurrencyRequest": {
+    "protocol_name": "Cafe_ReceiveCurrency",
+    "protocol_value": 20013,
+    "request_class": "CafeReceiveCurrencyRequest"
+  },
+  "CafeRelocateFurniture": {
+    "protocol_name": "Cafe_Relocate",
+    "protocol_value": 20003,
+    "request_class": "CafeRelocateFurnitureRequest"
+  },
+  "CafeRelocateFurnitureRequest": {
+    "protocol_name": "Cafe_Relocate",
+    "protocol_value": 20003,
+    "request_class": "CafeRelocateFurnitureRequest"
+  },
+  "CafeRemoveAllFurniture": {
+    "protocol_name": "Cafe_RemoveAll",
+    "protocol_value": 20005,
+    "request_class": "CafeRemoveAllFurnitureRequest"
+  },
+  "CafeRemoveAllFurnitureRequest": {
+    "protocol_name": "Cafe_RemoveAll",
+    "protocol_value": 20005,
+    "request_class": "CafeRemoveAllFurnitureRequest"
+  },
+  "CafeRemoveFurniture": {
+    "protocol_name": "Cafe_Remove",
+    "protocol_value": 20004,
+    "request_class": "CafeRemoveFurnitureRequest"
+  },
+  "CafeRemoveFurnitureRequest": {
+    "protocol_name": "Cafe_Remove",
+    "protocol_value": 20004,
+    "request_class": "CafeRemoveFurnitureRequest"
+  },
+  "CafeRenamePreset": {
+    "protocol_name": "Cafe_RenamePreset",
+    "protocol_value": 20008,
+    "request_class": "CafeRenamePresetRequest"
+  },
+  "CafeRenamePresetRequest": {
+    "protocol_name": "Cafe_RenamePreset",
+    "protocol_value": 20008,
+    "request_class": "CafeRenamePresetRequest"
+  },
+  "CafeSummonCharacter": {
+    "protocol_name": "Cafe_SummonCharacter",
+    "protocol_value": 20015,
+    "request_class": "CafeSummonCharacterRequest"
+  },
+  "CafeSummonCharacterRequest": {
+    "protocol_name": "Cafe_SummonCharacter",
+    "protocol_value": 20015,
+    "request_class": "CafeSummonCharacterRequest"
+  },
+  "CafeSummonCharacterTicketUse": {
+    "protocol_name": "Cafe_SummonCharacterTicketUse",
+    "protocol_value": 20020,
+    "request_class": "CafeSummonCharacterTicketUseRequest"
+  },
+  "CafeSummonCharacterTicketUseRequest": {
+    "protocol_name": "Cafe_SummonCharacterTicketUse",
+    "protocol_value": 20020,
+    "request_class": "CafeSummonCharacterTicketUseRequest"
+  },
+  "CafeTravel": {
+    "protocol_name": "Cafe_Travel",
+    "protocol_value": 20019,
+    "request_class": "CafeTravelRequest"
+  },
+  "CafeTravelRequest": {
+    "protocol_name": "Cafe_Travel",
+    "protocol_value": 20019,
+    "request_class": "CafeTravelRequest"
+  },
+  "CafeTrophyHistory": {
+    "protocol_name": "Cafe_TrophyHistory",
+    "protocol_value": 20016,
+    "request_class": "CafeTrophyHistoryRequest"
+  },
+  "CafeTrophyHistoryRequest": {
+    "protocol_name": "Cafe_TrophyHistory",
+    "protocol_value": 20016,
+    "request_class": "CafeTrophyHistoryRequest"
+  },
+  "CafeUpdateCopyPresetFurniture": {
+    "protocol_name": "Cafe_UpdateCopyPresetFurniture",
+    "protocol_value": 20022,
+    "request_class": "CafeUpdateCopyPresetFurnitureRequest"
+  },
+  "CafeUpdateCopyPresetFurnitureRequest": {
+    "protocol_name": "Cafe_UpdateCopyPresetFurniture",
+    "protocol_value": 20022,
+    "request_class": "CafeUpdateCopyPresetFurnitureRequest"
+  },
+  "CafeUpdatePresetFurniture": {
+    "protocol_name": "Cafe_UpdatePresetFurniture",
+    "protocol_value": 20010,
+    "request_class": "CafeUpdatePresetFurnitureRequest"
+  },
+  "CafeUpdatePresetFurnitureRequest": {
+    "protocol_name": "Cafe_UpdatePresetFurniture",
+    "protocol_value": 20010,
+    "request_class": "CafeUpdatePresetFurnitureRequest"
+  },
+  "CampaignChapterClearReward": {
+    "protocol_name": "Campaign_ChapterClearReward",
+    "protocol_value": 6010,
+    "request_class": "CampaignChapterClearRewardRequest"
+  },
+  "CampaignChapterClearRewardRequest": {
+    "protocol_name": "Campaign_ChapterClearReward",
+    "protocol_value": 6010,
+    "request_class": "CampaignChapterClearRewardRequest"
+  },
+  "CampaignConfirmMainStage": {
+    "protocol_name": "Campaign_ConfirmMainStage",
+    "protocol_value": 6002,
+    "request_class": "CampaignConfirmMainStageRequest"
+  },
+  "CampaignConfirmMainStageRequest": {
+    "protocol_name": "Campaign_ConfirmMainStage",
+    "protocol_value": 6002,
+    "request_class": "CampaignConfirmMainStageRequest"
+  },
+  "CampaignConfirmTutorialStage": {
+    "protocol_name": "Campaign_ConfirmTutorialStage",
+    "protocol_value": 6015,
+    "request_class": "CampaignConfirmTutorialStageRequest"
+  },
+  "CampaignConfirmTutorialStageRequest": {
+    "protocol_name": "Campaign_ConfirmTutorialStage",
+    "protocol_value": 6015,
+    "request_class": "CampaignConfirmTutorialStageRequest"
+  },
+  "CampaignDeployEchelon": {
+    "protocol_name": "Campaign_DeployEchelon",
+    "protocol_value": 6003,
+    "request_class": "CampaignDeployEchelonRequest"
+  },
+  "CampaignDeployEchelonRequest": {
+    "protocol_name": "Campaign_DeployEchelon",
+    "protocol_value": 6003,
+    "request_class": "CampaignDeployEchelonRequest"
+  },
+  "CampaignEndTurn": {
+    "protocol_name": "Campaign_EndTurn",
+    "protocol_value": 6006,
+    "request_class": "CampaignEndTurnRequest"
+  },
+  "CampaignEndTurnRequest": {
+    "protocol_name": "Campaign_EndTurn",
+    "protocol_value": 6006,
+    "request_class": "CampaignEndTurnRequest"
+  },
+  "CampaignEnterMainStage": {
+    "protocol_name": "Campaign_EnterMainStage",
+    "protocol_value": 6001,
+    "request_class": "CampaignEnterMainStageRequest"
+  },
+  "CampaignEnterMainStageRequest": {
+    "protocol_name": "Campaign_EnterMainStage",
+    "protocol_value": 6001,
+    "request_class": "CampaignEnterMainStageRequest"
+  },
+  "CampaignEnterMainStageStrategySkip": {
+    "protocol_name": "Campaign_EnterMainStageStrategySkip",
+    "protocol_value": 6020,
+    "request_class": "CampaignEnterMainStageStrategySkipRequest"
+  },
+  "CampaignEnterMainStageStrategySkipRequest": {
+    "protocol_name": "Campaign_EnterMainStageStrategySkip",
+    "protocol_value": 6020,
+    "request_class": "CampaignEnterMainStageStrategySkipRequest"
+  },
+  "CampaignEnterSubStage": {
+    "protocol_name": "Campaign_EnterSubStage",
+    "protocol_value": 6012,
+    "request_class": "CampaignEnterSubStageRequest"
+  },
+  "CampaignEnterSubStageRequest": {
+    "protocol_name": "Campaign_EnterSubStage",
+    "protocol_value": 6012,
+    "request_class": "CampaignEnterSubStageRequest"
+  },
+  "CampaignEnterTactic": {
+    "protocol_name": "Campaign_EnterTactic",
+    "protocol_value": 6007,
+    "request_class": "CampaignEnterTacticRequest"
+  },
+  "CampaignEnterTacticRequest": {
+    "protocol_name": "Campaign_EnterTactic",
+    "protocol_value": 6007,
+    "request_class": "CampaignEnterTacticRequest"
+  },
+  "CampaignEnterTutorialStage": {
+    "protocol_name": "Campaign_EnterTutorialStage",
+    "protocol_value": 6017,
+    "request_class": "CampaignEnterTutorialStageRequest"
+  },
+  "CampaignEnterTutorialStageRequest": {
+    "protocol_name": "Campaign_EnterTutorialStage",
+    "protocol_value": 6017,
+    "request_class": "CampaignEnterTutorialStageRequest"
+  },
+  "CampaignHeal": {
+    "protocol_name": "Campaign_Heal",
+    "protocol_value": 6011,
+    "request_class": "CampaignHealRequest"
+  },
+  "CampaignHealRequest": {
+    "protocol_name": "Campaign_Heal",
+    "protocol_value": 6011,
+    "request_class": "CampaignHealRequest"
+  },
+  "CampaignList": {
+    "protocol_name": "Campaign_List",
+    "protocol_value": 6000,
+    "request_class": "CampaignListRequest"
+  },
+  "CampaignListRequest": {
+    "protocol_name": "Campaign_List",
+    "protocol_value": 6000,
+    "request_class": "CampaignListRequest"
+  },
+  "CampaignMainStageStrategySkipResult": {
+    "protocol_name": "Campaign_MainStageStrategySkipResult",
+    "protocol_value": 6021,
+    "request_class": "CampaignMainStageStrategySkipResultRequest"
+  },
+  "CampaignMainStageStrategySkipResultRequest": {
+    "protocol_name": "Campaign_MainStageStrategySkipResult",
+    "protocol_value": 6021,
+    "request_class": "CampaignMainStageStrategySkipResultRequest"
+  },
+  "CampaignMapMove": {
+    "protocol_name": "Campaign_MapMove",
+    "protocol_value": 6005,
+    "request_class": "CampaignMapMoveRequest"
+  },
+  "CampaignMapMoveRequest": {
+    "protocol_name": "Campaign_MapMove",
+    "protocol_value": 6005,
+    "request_class": "CampaignMapMoveRequest"
+  },
+  "CampaignPortal": {
+    "protocol_name": "Campaign_Portal",
+    "protocol_value": 6014,
+    "request_class": "CampaignPortalRequest"
+  },
+  "CampaignPortalRequest": {
+    "protocol_name": "Campaign_Portal",
+    "protocol_value": 6014,
+    "request_class": "CampaignPortalRequest"
+  },
+  "CampaignPurchasePlayCountHardStage": {
+    "protocol_name": "Campaign_PurchasePlayCountHardStage",
+    "protocol_value": 6016,
+    "request_class": "CampaignPurchasePlayCountHardStageRequest"
+  },
+  "CampaignPurchasePlayCountHardStageRequest": {
+    "protocol_name": "Campaign_PurchasePlayCountHardStage",
+    "protocol_value": 6016,
+    "request_class": "CampaignPurchasePlayCountHardStageRequest"
+  },
+  "CampaignRestartMainStage": {
+    "protocol_name": "Campaign_RestartMainStage",
+    "protocol_value": 6019,
+    "request_class": "CampaignRestartMainStageRequest"
+  },
+  "CampaignRestartMainStageRequest": {
+    "protocol_name": "Campaign_RestartMainStage",
+    "protocol_value": 6019,
+    "request_class": "CampaignRestartMainStageRequest"
+  },
+  "CampaignRetreat": {
+    "protocol_name": "Campaign_Retreat",
+    "protocol_value": 6009,
+    "request_class": "CampaignRetreatRequest"
+  },
+  "CampaignRetreatRequest": {
+    "protocol_name": "Campaign_Retreat",
+    "protocol_value": 6009,
+    "request_class": "CampaignRetreatRequest"
+  },
+  "CampaignSubStageResult": {
+    "protocol_name": "Campaign_SubStageResult",
+    "protocol_value": 6013,
+    "request_class": "CampaignSubStageResultRequest"
+  },
+  "CampaignSubStageResultRequest": {
+    "protocol_name": "Campaign_SubStageResult",
+    "protocol_value": 6013,
+    "request_class": "CampaignSubStageResultRequest"
+  },
+  "CampaignTacticResult": {
+    "protocol_name": "Campaign_TacticResult",
+    "protocol_value": 6008,
+    "request_class": "CampaignTacticResultRequest"
+  },
+  "CampaignTacticResultRequest": {
+    "protocol_name": "Campaign_TacticResult",
+    "protocol_value": 6008,
+    "request_class": "CampaignTacticResultRequest"
+  },
+  "CampaignTutorialStageResult": {
+    "protocol_name": "Campaign_TutorialStageResult",
+    "protocol_value": 6018,
+    "request_class": "CampaignTutorialStageResultRequest"
+  },
+  "CampaignTutorialStageResultRequest": {
+    "protocol_name": "Campaign_TutorialStageResult",
+    "protocol_value": 6018,
+    "request_class": "CampaignTutorialStageResultRequest"
+  },
+  "CampaignWithdrawEchelon": {
+    "protocol_name": "Campaign_WithdrawEchelon",
+    "protocol_value": 6004,
+    "request_class": "CampaignWithdrawEchelonRequest"
+  },
+  "CampaignWithdrawEchelonRequest": {
+    "protocol_name": "Campaign_WithdrawEchelon",
+    "protocol_value": 6004,
+    "request_class": "CampaignWithdrawEchelonRequest"
+  },
+  "CharacterBatchSkillLevelUpdate": {
+    "protocol_name": "Character_BatchSkillLevelUpdate",
+    "protocol_value": 2010,
+    "request_class": "CharacterBatchSkillLevelUpdateRequest"
+  },
+  "CharacterBatchSkillLevelUpdateRequest": {
+    "protocol_name": "Character_BatchSkillLevelUpdate",
+    "protocol_value": 2010,
+    "request_class": "CharacterBatchSkillLevelUpdateRequest"
+  },
+  "CharacterExpGrowth": {
+    "protocol_name": "Character_ExpGrowth",
+    "protocol_value": 2002,
+    "request_class": "CharacterExpGrowthRequest"
+  },
+  "CharacterExpGrowthRequest": {
+    "protocol_name": "Character_ExpGrowth",
+    "protocol_value": 2002,
+    "request_class": "CharacterExpGrowthRequest"
+  },
+  "CharacterFavorGrowth": {
+    "protocol_name": "Character_FavorGrowth",
+    "protocol_value": 2003,
+    "request_class": "CharacterFavorGrowthRequest"
+  },
+  "CharacterFavorGrowthRequest": {
+    "protocol_name": "Character_FavorGrowth",
+    "protocol_value": 2003,
+    "request_class": "CharacterFavorGrowthRequest"
+  },
+  "CharacterGearList": {
+    "protocol_name": "CharacterGear_List",
+    "protocol_value": 44000,
+    "request_class": "CharacterGearListRequest"
+  },
+  "CharacterGearListRequest": {
+    "protocol_name": "CharacterGear_List",
+    "protocol_value": 44000,
+    "request_class": "CharacterGearListRequest"
+  },
+  "CharacterGearTierUp": {
+    "protocol_name": "CharacterGear_TierUp",
+    "protocol_value": 44002,
+    "request_class": "CharacterGearTierUpRequest"
+  },
+  "CharacterGearTierUpRequest": {
+    "protocol_name": "CharacterGear_TierUp",
+    "protocol_value": 44002,
+    "request_class": "CharacterGearTierUpRequest"
+  },
+  "CharacterGearUnlock": {
+    "protocol_name": "CharacterGear_Unlock",
+    "protocol_value": 44001,
+    "request_class": "CharacterGearUnlockRequest"
+  },
+  "CharacterGearUnlockRequest": {
+    "protocol_name": "CharacterGear_Unlock",
+    "protocol_value": 44001,
+    "request_class": "CharacterGearUnlockRequest"
+  },
+  "CharacterList": {
+    "protocol_name": "Character_List",
+    "protocol_value": 2000,
+    "request_class": "CharacterListRequest"
+  },
+  "CharacterListRequest": {
+    "protocol_name": "Character_List",
+    "protocol_value": 2000,
+    "request_class": "CharacterListRequest"
+  },
+  "CharacterPotentialGrowth": {
+    "protocol_name": "Character_PotentialGrowth",
+    "protocol_value": 2011,
+    "request_class": "CharacterPotentialGrowthRequest"
+  },
+  "CharacterPotentialGrowthRequest": {
+    "protocol_name": "Character_PotentialGrowth",
+    "protocol_value": 2011,
+    "request_class": "CharacterPotentialGrowthRequest"
+  },
+  "CharacterSetCostume": {
+    "protocol_name": "Character_SetCostume",
+    "protocol_value": 2009,
+    "request_class": "CharacterSetCostumeRequest"
+  },
+  "CharacterSetCostumeRequest": {
+    "protocol_name": "Character_SetCostume",
+    "protocol_value": 2009,
+    "request_class": "CharacterSetCostumeRequest"
+  },
+  "CharacterSetFavorites": {
+    "protocol_name": "Character_SetFavorites",
+    "protocol_value": 2008,
+    "request_class": "CharacterSetFavoritesRequest"
+  },
+  "CharacterSetFavoritesRequest": {
+    "protocol_name": "Character_SetFavorites",
+    "protocol_value": 2008,
+    "request_class": "CharacterSetFavoritesRequest"
+  },
+  "CharacterSkillLevelUpdate": {
+    "protocol_name": "Character_UpdateSkillLevel",
+    "protocol_value": 2004,
+    "request_class": "CharacterSkillLevelUpdateRequest"
+  },
+  "CharacterSkillLevelUpdateRequest": {
+    "protocol_name": "Character_UpdateSkillLevel",
+    "protocol_value": 2004,
+    "request_class": "CharacterSkillLevelUpdateRequest"
+  },
+  "CharacterTranscendence": {
+    "protocol_name": "Character_Transcendence",
+    "protocol_value": 2001,
+    "request_class": "CharacterTranscendenceRequest"
+  },
+  "CharacterTranscendenceRequest": {
+    "protocol_name": "Character_Transcendence",
+    "protocol_value": 2001,
+    "request_class": "CharacterTranscendenceRequest"
+  },
+  "CharacterUnlockWeapon": {
+    "protocol_name": "Character_UnlockWeapon",
+    "protocol_value": 2005,
+    "request_class": "CharacterUnlockWeaponRequest"
+  },
+  "CharacterUnlockWeaponRequest": {
+    "protocol_name": "Character_UnlockWeapon",
+    "protocol_value": 2005,
+    "request_class": "CharacterUnlockWeaponRequest"
+  },
+  "CharacterWeaponExpGrowth": {
+    "protocol_name": "Character_WeaponExpGrowth",
+    "protocol_value": 2006,
+    "request_class": "CharacterWeaponExpGrowthRequest"
+  },
+  "CharacterWeaponExpGrowthRequest": {
+    "protocol_name": "Character_WeaponExpGrowth",
+    "protocol_value": 2006,
+    "request_class": "CharacterWeaponExpGrowthRequest"
+  },
+  "CharacterWeaponTranscendence": {
+    "protocol_name": "Character_WeaponTranscendence",
+    "protocol_value": 2007,
+    "request_class": "CharacterWeaponTranscendenceRequest"
+  },
+  "CharacterWeaponTranscendenceRequest": {
+    "protocol_name": "Character_WeaponTranscendence",
+    "protocol_value": 2007,
+    "request_class": "CharacterWeaponTranscendenceRequest"
+  },
+  "CheckAccountLevelReward": {
+    "protocol_name": "Account_CheckAccountLevelReward",
+    "protocol_value": 1024,
+    "request_class": "CheckAccountLevelRewardRequest"
+  },
+  "CheckAccountLevelRewardRequest": {
+    "protocol_name": "Account_CheckAccountLevelReward",
+    "protocol_value": 1024,
+    "request_class": "CheckAccountLevelRewardRequest"
+  },
+  "ClanAllAssistList": {
+    "protocol_name": "Clan_AllAssistList",
+    "protocol_value": 28020,
+    "request_class": "ClanAllAssistListRequest"
+  },
+  "ClanAllAssistListRequest": {
+    "protocol_name": "Clan_AllAssistList",
+    "protocol_value": 28020,
+    "request_class": "ClanAllAssistListRequest"
+  },
+  "ClanApplicant": {
+    "protocol_name": "Clan_Applicant",
+    "protocol_value": 28005,
+    "request_class": "ClanApplicantRequest"
+  },
+  "ClanApplicantRequest": {
+    "protocol_name": "Clan_Applicant",
+    "protocol_value": 28005,
+    "request_class": "ClanApplicantRequest"
+  },
+  "ClanAutoJoin": {
+    "protocol_name": "Clan_AutoJoin",
+    "protocol_value": 28013,
+    "request_class": "ClanAutoJoinRequest"
+  },
+  "ClanAutoJoinRequest": {
+    "protocol_name": "Clan_AutoJoin",
+    "protocol_value": 28013,
+    "request_class": "ClanAutoJoinRequest"
+  },
+  "ClanCancelApply": {
+    "protocol_name": "Clan_CancelApply",
+    "protocol_value": 28015,
+    "request_class": "ClanCancelApplyRequest"
+  },
+  "ClanCancelApplyRequest": {
+    "protocol_name": "Clan_CancelApply",
+    "protocol_value": 28015,
+    "request_class": "ClanCancelApplyRequest"
+  },
+  "ClanChatLog": {
+    "protocol_name": "Clan_ChatLog",
+    "protocol_value": 28018,
+    "request_class": "ClanChatLogRequest"
+  },
+  "ClanChatLogRequest": {
+    "protocol_name": "Clan_ChatLog",
+    "protocol_value": 28018,
+    "request_class": "ClanChatLogRequest"
+  },
+  "ClanCheck": {
+    "protocol_name": "Clan_Check",
+    "protocol_value": 28019,
+    "request_class": "ClanCheckRequest"
+  },
+  "ClanCheckRequest": {
+    "protocol_name": "Clan_Check",
+    "protocol_value": 28019,
+    "request_class": "ClanCheckRequest"
+  },
+  "ClanConfer": {
+    "protocol_name": "Clan_Confer",
+    "protocol_value": 28011,
+    "request_class": "ClanConferRequest"
+  },
+  "ClanConferRequest": {
+    "protocol_name": "Clan_Confer",
+    "protocol_value": 28011,
+    "request_class": "ClanConferRequest"
+  },
+  "ClanCreate": {
+    "protocol_name": "Clan_Create",
+    "protocol_value": 28003,
+    "request_class": "ClanCreateRequest"
+  },
+  "ClanCreateRequest": {
+    "protocol_name": "Clan_Create",
+    "protocol_value": 28003,
+    "request_class": "ClanCreateRequest"
+  },
+  "ClanDismiss": {
+    "protocol_name": "Clan_Dismiss",
+    "protocol_value": 28012,
+    "request_class": "ClanDismissRequest"
+  },
+  "ClanDismissRequest": {
+    "protocol_name": "Clan_Dismiss",
+    "protocol_value": 28012,
+    "request_class": "ClanDismissRequest"
+  },
+  "ClanJoin": {
+    "protocol_name": "Clan_Join",
+    "protocol_value": 28006,
+    "request_class": "ClanJoinRequest"
+  },
+  "ClanJoinRequest": {
+    "protocol_name": "Clan_Join",
+    "protocol_value": 28006,
+    "request_class": "ClanJoinRequest"
+  },
+  "ClanKick": {
+    "protocol_name": "Clan_Kick",
+    "protocol_value": 28009,
+    "request_class": "ClanKickRequest"
+  },
+  "ClanKickRequest": {
+    "protocol_name": "Clan_Kick",
+    "protocol_value": 28009,
+    "request_class": "ClanKickRequest"
+  },
+  "ClanLobby": {
+    "protocol_name": "Clan_Lobby",
+    "protocol_value": 28000,
+    "request_class": "ClanLobbyRequest"
+  },
+  "ClanLobbyRequest": {
+    "protocol_name": "Clan_Lobby",
+    "protocol_value": 28000,
+    "request_class": "ClanLobbyRequest"
+  },
+  "ClanLogin": {
+    "protocol_name": "Clan_Login",
+    "protocol_value": 28001,
+    "request_class": "ClanLoginRequest"
+  },
+  "ClanLoginRequest": {
+    "protocol_name": "Clan_Login",
+    "protocol_value": 28001,
+    "request_class": "ClanLoginRequest"
+  },
+  "ClanMember": {
+    "protocol_name": "Clan_Member",
+    "protocol_value": 28004,
+    "request_class": "ClanMemberRequest"
+  },
+  "ClanMemberList": {
+    "protocol_name": "Clan_MemberList",
+    "protocol_value": 28014,
+    "request_class": "ClanMemberListRequest"
+  },
+  "ClanMemberListRequest": {
+    "protocol_name": "Clan_MemberList",
+    "protocol_value": 28014,
+    "request_class": "ClanMemberListRequest"
+  },
+  "ClanMemberRequest": {
+    "protocol_name": "Clan_Member",
+    "protocol_value": 28004,
+    "request_class": "ClanMemberRequest"
+  },
+  "ClanMyAssistList": {
+    "protocol_name": "Clan_MyAssistList",
+    "protocol_value": 28016,
+    "request_class": "ClanMyAssistListRequest"
+  },
+  "ClanMyAssistListRequest": {
+    "protocol_name": "Clan_MyAssistList",
+    "protocol_value": 28016,
+    "request_class": "ClanMyAssistListRequest"
+  },
+  "ClanPermit": {
+    "protocol_name": "Clan_Permit",
+    "protocol_value": 28008,
+    "request_class": "ClanPermitRequest"
+  },
+  "ClanPermitRequest": {
+    "protocol_name": "Clan_Permit",
+    "protocol_value": 28008,
+    "request_class": "ClanPermitRequest"
+  },
+  "ClanQuit": {
+    "protocol_name": "Clan_Quit",
+    "protocol_value": 28007,
+    "request_class": "ClanQuitRequest"
+  },
+  "ClanQuitRequest": {
+    "protocol_name": "Clan_Quit",
+    "protocol_value": 28007,
+    "request_class": "ClanQuitRequest"
+  },
+  "ClanSearch": {
+    "protocol_name": "Clan_Search",
+    "protocol_value": 28002,
+    "request_class": "ClanSearchRequest"
+  },
+  "ClanSearchRequest": {
+    "protocol_name": "Clan_Search",
+    "protocol_value": 28002,
+    "request_class": "ClanSearchRequest"
+  },
+  "ClanSetAssist": {
+    "protocol_name": "Clan_SetAssist",
+    "protocol_value": 28017,
+    "request_class": "ClanSetAssistRequest"
+  },
+  "ClanSetAssistRequest": {
+    "protocol_name": "Clan_SetAssist",
+    "protocol_value": 28017,
+    "request_class": "ClanSetAssistRequest"
+  },
+  "ClanSetting": {
+    "protocol_name": "Clan_Setting",
+    "protocol_value": 28010,
+    "request_class": "ClanSettingRequest"
+  },
+  "ClanSettingRequest": {
+    "protocol_name": "Clan_Setting",
+    "protocol_value": 28010,
+    "request_class": "ClanSettingRequest"
+  },
+  "ClearDeckGroupedList": {
+    "protocol_name": "ClearDeck_GroupedList",
+    "protocol_value": 34001,
+    "request_class": "ClearDeckGroupedListRequest"
+  },
+  "ClearDeckGroupedListRequest": {
+    "protocol_name": "ClearDeck_GroupedList",
+    "protocol_value": 34001,
+    "request_class": "ClearDeckGroupedListRequest"
+  },
+  "ClearDeckList": {
+    "protocol_name": "ClearDeck_List",
+    "protocol_value": 34000,
+    "request_class": "ClearDeckListRequest"
+  },
+  "ClearDeckListRequest": {
+    "protocol_name": "ClearDeck_List",
+    "protocol_value": 34000,
+    "request_class": "ClearDeckListRequest"
+  },
+  "CommonCheat": {
+    "protocol_name": "Common_Cheat",
+    "protocol_value": -9999,
+    "request_class": "CommonCheatRequest"
+  },
+  "CommonCheatRequest": {
+    "protocol_name": "Common_Cheat",
+    "protocol_value": -9999,
+    "request_class": "CommonCheatRequest"
+  },
+  "ConquestCheck": {
+    "protocol_name": "Conquest_Check",
+    "protocol_value": 42012,
+    "request_class": "ConquestCheckRequest"
+  },
+  "ConquestCheckRequest": {
+    "protocol_name": "Conquest_Check",
+    "protocol_value": 42012,
+    "request_class": "ConquestCheckRequest"
+  },
+  "ConquestConquer": {
+    "protocol_name": "Conquest_Conquer",
+    "protocol_value": 42001,
+    "request_class": "ConquestConquerRequest"
+  },
+  "ConquestConquerDeployEchelon": {
+    "protocol_name": "Conquest_DeployEchelon",
+    "protocol_value": 42004,
+    "request_class": "ConquestConquerDeployEchelonRequest"
+  },
+  "ConquestConquerDeployEchelonRequest": {
+    "protocol_name": "Conquest_DeployEchelon",
+    "protocol_value": 42004,
+    "request_class": "ConquestConquerDeployEchelonRequest"
+  },
+  "ConquestConquerRequest": {
+    "protocol_name": "Conquest_Conquer",
+    "protocol_value": 42001,
+    "request_class": "ConquestConquerRequest"
+  },
+  "ConquestConquerWithBattleResult": {
+    "protocol_name": "Conquest_ConquerWithBattleResult",
+    "protocol_value": 42003,
+    "request_class": "ConquestConquerWithBattleResultRequest"
+  },
+  "ConquestConquerWithBattleResultRequest": {
+    "protocol_name": "Conquest_ConquerWithBattleResult",
+    "protocol_value": 42003,
+    "request_class": "ConquestConquerWithBattleResultRequest"
+  },
+  "ConquestConquerWithBattleStart": {
+    "protocol_name": "Conquest_ConquerWithBattleStart",
+    "protocol_value": 42002,
+    "request_class": "ConquestConquerWithBattleStartRequest"
+  },
+  "ConquestConquerWithBattleStartRequest": {
+    "protocol_name": "Conquest_ConquerWithBattleStart",
+    "protocol_value": 42002,
+    "request_class": "ConquestConquerWithBattleStartRequest"
+  },
+  "ConquestErosionBattleResult": {
+    "protocol_name": "Conquest_ErosionBattleResult",
+    "protocol_value": 42014,
+    "request_class": "ConquestErosionBattleResultRequest"
+  },
+  "ConquestErosionBattleResultRequest": {
+    "protocol_name": "Conquest_ErosionBattleResult",
+    "protocol_value": 42014,
+    "request_class": "ConquestErosionBattleResultRequest"
+  },
+  "ConquestErosionBattleStart": {
+    "protocol_name": "Conquest_ErosionBattleStart",
+    "protocol_value": 42013,
+    "request_class": "ConquestErosionBattleStartRequest"
+  },
+  "ConquestErosionBattleStartRequest": {
+    "protocol_name": "Conquest_ErosionBattleStart",
+    "protocol_value": 42013,
+    "request_class": "ConquestErosionBattleStartRequest"
+  },
+  "ConquestEventObjectBattleResult": {
+    "protocol_name": "Conquest_EventObjectBattleResult",
+    "protocol_value": 42009,
+    "request_class": "ConquestEventObjectBattleResultRequest"
+  },
+  "ConquestEventObjectBattleResultRequest": {
+    "protocol_name": "Conquest_EventObjectBattleResult",
+    "protocol_value": 42009,
+    "request_class": "ConquestEventObjectBattleResultRequest"
+  },
+  "ConquestEventObjectBattleStart": {
+    "protocol_name": "Conquest_EventObjectBattleStart",
+    "protocol_value": 42008,
+    "request_class": "ConquestEventObjectBattleStartRequest"
+  },
+  "ConquestEventObjectBattleStartRequest": {
+    "protocol_name": "Conquest_EventObjectBattleStart",
+    "protocol_value": 42008,
+    "request_class": "ConquestEventObjectBattleStartRequest"
+  },
+  "ConquestGetInfo": {
+    "protocol_name": "Conquest_GetInfo",
+    "protocol_value": 42000,
+    "request_class": "ConquestGetInfoRequest"
+  },
+  "ConquestGetInfoRequest": {
+    "protocol_name": "Conquest_GetInfo",
+    "protocol_value": 42000,
+    "request_class": "ConquestGetInfoRequest"
+  },
+  "ConquestMainStoryCheck": {
+    "protocol_name": "Conquest_MainStoryCheck",
+    "protocol_value": 42019,
+    "request_class": "ConquestMainStoryCheckRequest"
+  },
+  "ConquestMainStoryCheckRequest": {
+    "protocol_name": "Conquest_MainStoryCheck",
+    "protocol_value": 42019,
+    "request_class": "ConquestMainStoryCheckRequest"
+  },
+  "ConquestMainStoryConquer": {
+    "protocol_name": "Conquest_MainStoryConquer",
+    "protocol_value": 42016,
+    "request_class": "ConquestMainStoryConquerRequest"
+  },
+  "ConquestMainStoryConquerRequest": {
+    "protocol_name": "Conquest_MainStoryConquer",
+    "protocol_value": 42016,
+    "request_class": "ConquestMainStoryConquerRequest"
+  },
+  "ConquestMainStoryConquerWithBattleResult": {
+    "protocol_name": "Conquest_MainStoryConquerWithBattleResult",
+    "protocol_value": 42018,
+    "request_class": "ConquestMainStoryConquerWithBattleResultRequest"
+  },
+  "ConquestMainStoryConquerWithBattleResultRequest": {
+    "protocol_name": "Conquest_MainStoryConquerWithBattleResult",
+    "protocol_value": 42018,
+    "request_class": "ConquestMainStoryConquerWithBattleResultRequest"
+  },
+  "ConquestMainStoryConquerWithBattleStart": {
+    "protocol_name": "Conquest_MainStoryConquerWithBattleStart",
+    "protocol_value": 42017,
+    "request_class": "ConquestMainStoryConquerWithBattleStartRequest"
+  },
+  "ConquestMainStoryConquerWithBattleStartRequest": {
+    "protocol_name": "Conquest_MainStoryConquerWithBattleStart",
+    "protocol_value": 42017,
+    "request_class": "ConquestMainStoryConquerWithBattleStartRequest"
+  },
+  "ConquestMainStoryGetInfo": {
+    "protocol_name": "Conquest_MainStoryGetInfo",
+    "protocol_value": 42015,
+    "request_class": "ConquestMainStoryGetInfoRequest"
+  },
+  "ConquestMainStoryGetInfoRequest": {
+    "protocol_name": "Conquest_MainStoryGetInfo",
+    "protocol_value": 42015,
+    "request_class": "ConquestMainStoryGetInfoRequest"
+  },
+  "ConquestManageBase": {
+    "protocol_name": "Conquest_ManageBase",
+    "protocol_value": 42005,
+    "request_class": "ConquestManageBaseRequest"
+  },
+  "ConquestManageBaseRequest": {
+    "protocol_name": "Conquest_ManageBase",
+    "protocol_value": 42005,
+    "request_class": "ConquestManageBaseRequest"
+  },
+  "ConquestNormalizeEchelon": {
+    "protocol_name": "Conquest_NormalizeEchelon",
+    "protocol_value": 42011,
+    "request_class": "ConquestNormalizeEchelonRequest"
+  },
+  "ConquestNormalizeEchelonRequest": {
+    "protocol_name": "Conquest_NormalizeEchelon",
+    "protocol_value": 42011,
+    "request_class": "ConquestNormalizeEchelonRequest"
+  },
+  "ConquestReceiveRewards": {
+    "protocol_name": "Conquest_ReceiveCalculateRewards",
+    "protocol_value": 42010,
+    "request_class": "ConquestReceiveRewardsRequest"
+  },
+  "ConquestReceiveRewardsRequest": {
+    "protocol_name": "Conquest_ReceiveCalculateRewards",
+    "protocol_value": 42010,
+    "request_class": "ConquestReceiveRewardsRequest"
+  },
+  "ConquestTakeEventObject": {
+    "protocol_name": "Conquest_TakeEventObject",
+    "protocol_value": 42007,
+    "request_class": "ConquestTakeEventObjectRequest"
+  },
+  "ConquestTakeEventObjectRequest": {
+    "protocol_name": "Conquest_TakeEventObject",
+    "protocol_value": 42007,
+    "request_class": "ConquestTakeEventObjectRequest"
+  },
+  "ConquestUpgradeBase": {
+    "protocol_name": "Conquest_UpgradeBase",
+    "protocol_value": 42006,
+    "request_class": "ConquestUpgradeBaseRequest"
+  },
+  "ConquestUpgradeBaseRequest": {
+    "protocol_name": "Conquest_UpgradeBase",
+    "protocol_value": 42006,
+    "request_class": "ConquestUpgradeBaseRequest"
+  },
+  "ContentSaveDiscard": {
+    "protocol_name": "ContentSave_Discard",
+    "protocol_value": 26001,
+    "request_class": "ContentSaveDiscardRequest"
+  },
+  "ContentSaveDiscardRequest": {
+    "protocol_name": "ContentSave_Discard",
+    "protocol_value": 26001,
+    "request_class": "ContentSaveDiscardRequest"
+  },
+  "ContentSaveGet": {
+    "protocol_name": "ContentSave_Get",
+    "protocol_value": 26000,
+    "request_class": "ContentSaveGetRequest"
+  },
+  "ContentSaveGetRequest": {
+    "protocol_name": "ContentSave_Get",
+    "protocol_value": 26000,
+    "request_class": "ContentSaveGetRequest"
+  },
+  "ContentSweep": {
+    "protocol_name": "ContentSweep_Request",
+    "protocol_value": 27000,
+    "request_class": "ContentSweepRequest"
+  },
+  "ContentSweepMultiSweep": {
+    "protocol_name": "ContentSweep_MultiSweep",
+    "protocol_value": 27001,
+    "request_class": "ContentSweepMultiSweepRequest"
+  },
+  "ContentSweepMultiSweepPresetList": {
+    "protocol_name": "ContentSweep_MultiSweepPresetList",
+    "protocol_value": 27002,
+    "request_class": "ContentSweepMultiSweepPresetListRequest"
+  },
+  "ContentSweepMultiSweepPresetListRequest": {
+    "protocol_name": "ContentSweep_MultiSweepPresetList",
+    "protocol_value": 27002,
+    "request_class": "ContentSweepMultiSweepPresetListRequest"
+  },
+  "ContentSweepMultiSweepRequest": {
+    "protocol_name": "ContentSweep_MultiSweep",
+    "protocol_value": 27001,
+    "request_class": "ContentSweepMultiSweepRequest"
+  },
+  "ContentSweepRequest": {
+    "protocol_name": "ContentSweep_Request",
+    "protocol_value": 27000,
+    "request_class": "ContentSweepRequest"
+  },
+  "ContentSweepSetMultiSweepPreset": {
+    "protocol_name": "ContentSweep_SetMultiSweepPreset",
+    "protocol_value": 27003,
+    "request_class": "ContentSweepSetMultiSweepPresetRequest"
+  },
+  "ContentSweepSetMultiSweepPresetName": {
+    "protocol_name": "ContentSweep_SetMultiSweepPresetName",
+    "protocol_value": 27004,
+    "request_class": "ContentSweepSetMultiSweepPresetNameRequest"
+  },
+  "ContentSweepSetMultiSweepPresetNameRequest": {
+    "protocol_name": "ContentSweep_SetMultiSweepPresetName",
+    "protocol_value": 27004,
+    "request_class": "ContentSweepSetMultiSweepPresetNameRequest"
+  },
+  "ContentSweepSetMultiSweepPresetRequest": {
+    "protocol_name": "ContentSweep_SetMultiSweepPreset",
+    "protocol_value": 27003,
+    "request_class": "ContentSweepSetMultiSweepPresetRequest"
+  },
+  "CraftAutoBeginProcess": {
+    "protocol_name": "Craft_AutoBeginProcess",
+    "protocol_value": 21010,
+    "request_class": "CraftAutoBeginProcessRequest"
+  },
+  "CraftAutoBeginProcessRequest": {
+    "protocol_name": "Craft_AutoBeginProcess",
+    "protocol_value": 21010,
+    "request_class": "CraftAutoBeginProcessRequest"
+  },
+  "CraftBeginProcess": {
+    "protocol_name": "Craft_BeginProcess",
+    "protocol_value": 21003,
+    "request_class": "CraftBeginProcessRequest"
+  },
+  "CraftBeginProcessRequest": {
+    "protocol_name": "Craft_BeginProcess",
+    "protocol_value": 21003,
+    "request_class": "CraftBeginProcessRequest"
+  },
+  "CraftCompleteProcess": {
+    "protocol_name": "Craft_CompleteProcess",
+    "protocol_value": 21004,
+    "request_class": "CraftCompleteProcessRequest"
+  },
+  "CraftCompleteProcessAll": {
+    "protocol_name": "Craft_CompleteProcessAll",
+    "protocol_value": 21011,
+    "request_class": "CraftCompleteProcessAllRequest"
+  },
+  "CraftCompleteProcessAllRequest": {
+    "protocol_name": "Craft_CompleteProcessAll",
+    "protocol_value": 21011,
+    "request_class": "CraftCompleteProcessAllRequest"
+  },
+  "CraftCompleteProcessRequest": {
+    "protocol_name": "Craft_CompleteProcess",
+    "protocol_value": 21004,
+    "request_class": "CraftCompleteProcessRequest"
+  },
+  "CraftInfoList": {
+    "protocol_name": "Craft_List",
+    "protocol_value": 21000,
+    "request_class": "CraftInfoListRequest"
+  },
+  "CraftInfoListRequest": {
+    "protocol_name": "Craft_List",
+    "protocol_value": 21000,
+    "request_class": "CraftInfoListRequest"
+  },
+  "CraftReward": {
+    "protocol_name": "Craft_Reward",
+    "protocol_value": 21005,
+    "request_class": "CraftRewardRequest"
+  },
+  "CraftRewardAll": {
+    "protocol_name": "Craft_RewardAll",
+    "protocol_value": 21012,
+    "request_class": "CraftRewardAllRequest"
+  },
+  "CraftRewardAllRequest": {
+    "protocol_name": "Craft_RewardAll",
+    "protocol_value": 21012,
+    "request_class": "CraftRewardAllRequest"
+  },
+  "CraftRewardRequest": {
+    "protocol_name": "Craft_Reward",
+    "protocol_value": 21005,
+    "request_class": "CraftRewardRequest"
+  },
+  "CraftSavePreset": {
+    "protocol_name": "Craft_SavePreset",
+    "protocol_value": 21015,
+    "request_class": "CraftSavePresetRequest"
+  },
+  "CraftSavePresetName": {
+    "protocol_name": "Craft_SavePresetName",
+    "protocol_value": 21016,
+    "request_class": "CraftSavePresetNameRequest"
+  },
+  "CraftSavePresetNameRequest": {
+    "protocol_name": "Craft_SavePresetName",
+    "protocol_value": 21016,
+    "request_class": "CraftSavePresetNameRequest"
+  },
+  "CraftSavePresetRequest": {
+    "protocol_name": "Craft_SavePreset",
+    "protocol_value": 21015,
+    "request_class": "CraftSavePresetRequest"
+  },
+  "CraftSelectNode": {
+    "protocol_name": "Craft_SelectNode",
+    "protocol_value": 21001,
+    "request_class": "CraftSelectNodeRequest"
+  },
+  "CraftSelectNodeRequest": {
+    "protocol_name": "Craft_SelectNode",
+    "protocol_value": 21001,
+    "request_class": "CraftSelectNodeRequest"
+  },
+  "CraftShiftingBeginProcess": {
+    "protocol_name": "Craft_ShiftingBeginProcess",
+    "protocol_value": 21007,
+    "request_class": "CraftShiftingBeginProcessRequest"
+  },
+  "CraftShiftingBeginProcessRequest": {
+    "protocol_name": "Craft_ShiftingBeginProcess",
+    "protocol_value": 21007,
+    "request_class": "CraftShiftingBeginProcessRequest"
+  },
+  "CraftShiftingCompleteProcess": {
+    "protocol_name": "Craft_ShiftingCompleteProcess",
+    "protocol_value": 21008,
+    "request_class": "CraftShiftingCompleteProcessRequest"
+  },
+  "CraftShiftingCompleteProcessAll": {
+    "protocol_name": "Craft_ShiftingCompleteProcessAll",
+    "protocol_value": 21013,
+    "request_class": "CraftShiftingCompleteProcessAllRequest"
+  },
+  "CraftShiftingCompleteProcessAllRequest": {
+    "protocol_name": "Craft_ShiftingCompleteProcessAll",
+    "protocol_value": 21013,
+    "request_class": "CraftShiftingCompleteProcessAllRequest"
+  },
+  "CraftShiftingCompleteProcessRequest": {
+    "protocol_name": "Craft_ShiftingCompleteProcess",
+    "protocol_value": 21008,
+    "request_class": "CraftShiftingCompleteProcessRequest"
+  },
+  "CraftShiftingReward": {
+    "protocol_name": "Craft_ShiftingReward",
+    "protocol_value": 21009,
+    "request_class": "CraftShiftingRewardRequest"
+  },
+  "CraftShiftingRewardAll": {
+    "protocol_name": "Craft_ShiftingRewardAll",
+    "protocol_value": 21014,
+    "request_class": "CraftShiftingRewardAllRequest"
+  },
+  "CraftShiftingRewardAllRequest": {
+    "protocol_name": "Craft_ShiftingRewardAll",
+    "protocol_value": 21014,
+    "request_class": "CraftShiftingRewardAllRequest"
+  },
+  "CraftShiftingRewardRequest": {
+    "protocol_name": "Craft_ShiftingReward",
+    "protocol_value": 21009,
+    "request_class": "CraftShiftingRewardRequest"
+  },
+  "CraftUpdateNodeLevel": {
+    "protocol_name": "Craft_UpdateNodeLevel",
+    "protocol_value": 21002,
+    "request_class": "CraftUpdateNodeLevelRequest"
+  },
+  "CraftUpdateNodeLevelRequest": {
+    "protocol_name": "Craft_UpdateNodeLevel",
+    "protocol_value": 21002,
+    "request_class": "CraftUpdateNodeLevelRequest"
+  },
+  "DailyRecordReward": {
+    "protocol_name": "DailyRecord_Reward",
+    "protocol_value": 52000,
+    "request_class": "DailyRecordRewardRequest"
+  },
+  "DailyRecordRewardRequest": {
+    "protocol_name": "DailyRecord_Reward",
+    "protocol_value": 52000,
+    "request_class": "DailyRecordRewardRequest"
+  },
+  "EchelonList": {
+    "protocol_name": "Echelon_List",
+    "protocol_value": 5000,
+    "request_class": "EchelonListRequest"
+  },
+  "EchelonListRequest": {
+    "protocol_name": "Echelon_List",
+    "protocol_value": 5000,
+    "request_class": "EchelonListRequest"
+  },
+  "EchelonPresetGroupRename": {
+    "protocol_name": "Echelon_PresetGroupRename",
+    "protocol_value": 5004,
+    "request_class": "EchelonPresetGroupRenameRequest"
+  },
+  "EchelonPresetGroupRenameRequest": {
+    "protocol_name": "Echelon_PresetGroupRename",
+    "protocol_value": 5004,
+    "request_class": "EchelonPresetGroupRenameRequest"
+  },
+  "EchelonPresetList": {
+    "protocol_name": "Echelon_PresetList",
+    "protocol_value": 5002,
+    "request_class": "EchelonPresetListRequest"
+  },
+  "EchelonPresetListRequest": {
+    "protocol_name": "Echelon_PresetList",
+    "protocol_value": 5002,
+    "request_class": "EchelonPresetListRequest"
+  },
+  "EchelonPresetSave": {
+    "protocol_name": "Echelon_PresetSave",
+    "protocol_value": 5003,
+    "request_class": "EchelonPresetSaveRequest"
+  },
+  "EchelonPresetSaveRequest": {
+    "protocol_name": "Echelon_PresetSave",
+    "protocol_value": 5003,
+    "request_class": "EchelonPresetSaveRequest"
+  },
+  "EchelonSave": {
+    "protocol_name": "Echelon_Save",
+    "protocol_value": 5001,
+    "request_class": "EchelonSaveRequest"
+  },
+  "EchelonSaveRequest": {
+    "protocol_name": "Echelon_Save",
+    "protocol_value": 5001,
+    "request_class": "EchelonSaveRequest"
+  },
+  "EliminateRaidCreateBattle": {
+    "protocol_name": "EliminateRaid_CreateBattle",
+    "protocol_value": 45004,
+    "request_class": "EliminateRaidCreateBattleRequest"
+  },
+  "EliminateRaidCreateBattleRequest": {
+    "protocol_name": "EliminateRaid_CreateBattle",
+    "protocol_value": 45004,
+    "request_class": "EliminateRaidCreateBattleRequest"
+  },
+  "EliminateRaidEndBattle": {
+    "protocol_name": "EliminateRaid_EndBattle",
+    "protocol_value": 45006,
+    "request_class": "EliminateRaidEndBattleRequest"
+  },
+  "EliminateRaidEndBattleRequest": {
+    "protocol_name": "EliminateRaid_EndBattle",
+    "protocol_value": 45006,
+    "request_class": "EliminateRaidEndBattleRequest"
+  },
+  "EliminateRaidEnterBattle": {
+    "protocol_name": "EliminateRaid_EnterBattle",
+    "protocol_value": 45005,
+    "request_class": "EliminateRaidEnterBattleRequest"
+  },
+  "EliminateRaidEnterBattleRequest": {
+    "protocol_name": "EliminateRaid_EnterBattle",
+    "protocol_value": 45005,
+    "request_class": "EliminateRaidEnterBattleRequest"
+  },
+  "EliminateRaidGetBestTeam": {
+    "protocol_name": "EliminateRaid_GetBestTeam",
+    "protocol_value": 45003,
+    "request_class": "EliminateRaidGetBestTeamRequest"
+  },
+  "EliminateRaidGetBestTeamRequest": {
+    "protocol_name": "EliminateRaid_GetBestTeam",
+    "protocol_value": 45003,
+    "request_class": "EliminateRaidGetBestTeamRequest"
+  },
+  "EliminateRaidGiveUp": {
+    "protocol_name": "EliminateRaid_GiveUp",
+    "protocol_value": 45007,
+    "request_class": "EliminateRaidGiveUpRequest"
+  },
+  "EliminateRaidGiveUpRequest": {
+    "protocol_name": "EliminateRaid_GiveUp",
+    "protocol_value": 45007,
+    "request_class": "EliminateRaidGiveUpRequest"
+  },
+  "EliminateRaidLimitedReward": {
+    "protocol_name": "EliminateRaid_LimitedReward",
+    "protocol_value": 45011,
+    "request_class": "EliminateRaidLimitedRewardRequest"
+  },
+  "EliminateRaidLimitedRewardRequest": {
+    "protocol_name": "EliminateRaid_LimitedReward",
+    "protocol_value": 45011,
+    "request_class": "EliminateRaidLimitedRewardRequest"
+  },
+  "EliminateRaidLobby": {
+    "protocol_name": "EliminateRaid_Lobby",
+    "protocol_value": 45001,
+    "request_class": "EliminateRaidLobbyRequest"
+  },
+  "EliminateRaidLobbyRequest": {
+    "protocol_name": "EliminateRaid_Lobby",
+    "protocol_value": 45001,
+    "request_class": "EliminateRaidLobbyRequest"
+  },
+  "EliminateRaidLogin": {
+    "protocol_name": "EliminateRaid_Login",
+    "protocol_value": 45000,
+    "request_class": "EliminateRaidLoginRequest"
+  },
+  "EliminateRaidLoginRequest": {
+    "protocol_name": "EliminateRaid_Login",
+    "protocol_value": 45000,
+    "request_class": "EliminateRaidLoginRequest"
+  },
+  "EliminateRaidOpponentList": {
+    "protocol_name": "EliminateRaid_OpponentList",
+    "protocol_value": 45002,
+    "request_class": "EliminateRaidOpponentListRequest"
+  },
+  "EliminateRaidOpponentListRequest": {
+    "protocol_name": "EliminateRaid_OpponentList",
+    "protocol_value": 45002,
+    "request_class": "EliminateRaidOpponentListRequest"
+  },
+  "EliminateRaidRankingIndex": {
+    "protocol_name": "EliminateRaid_RankingIndex",
+    "protocol_value": 45012,
+    "request_class": "EliminateRaidRankingIndexRequest"
+  },
+  "EliminateRaidRankingIndexRequest": {
+    "protocol_name": "EliminateRaid_RankingIndex",
+    "protocol_value": 45012,
+    "request_class": "EliminateRaidRankingIndexRequest"
+  },
+  "EliminateRaidRankingReward": {
+    "protocol_name": "EliminateRaid_RankingReward",
+    "protocol_value": 45010,
+    "request_class": "EliminateRaidRankingRewardRequest"
+  },
+  "EliminateRaidRankingRewardRequest": {
+    "protocol_name": "EliminateRaid_RankingReward",
+    "protocol_value": 45010,
+    "request_class": "EliminateRaidRankingRewardRequest"
+  },
+  "EliminateRaidSeasonReward": {
+    "protocol_name": "EliminateRaid_SeasonReward",
+    "protocol_value": 45009,
+    "request_class": "EliminateRaidSeasonRewardRequest"
+  },
+  "EliminateRaidSeasonRewardRequest": {
+    "protocol_name": "EliminateRaid_SeasonReward",
+    "protocol_value": 45009,
+    "request_class": "EliminateRaidSeasonRewardRequest"
+  },
+  "EliminateRaidSweep": {
+    "protocol_name": "EliminateRaid_Sweep",
+    "protocol_value": 45008,
+    "request_class": "EliminateRaidSweepRequest"
+  },
+  "EliminateRaidSweepRequest": {
+    "protocol_name": "EliminateRaid_Sweep",
+    "protocol_value": 45008,
+    "request_class": "EliminateRaidSweepRequest"
+  },
+  "EquipmentBatchGrowth": {
+    "protocol_name": "Equipment_BatchGrowth",
+    "protocol_value": 3006,
+    "request_class": "EquipmentBatchGrowthRequest"
+  },
+  "EquipmentBatchGrowthRequest": {
+    "protocol_name": "Equipment_BatchGrowth",
+    "protocol_value": 3006,
+    "request_class": "EquipmentBatchGrowthRequest"
+  },
+  "EquipmentItemEquip": {
+    "protocol_name": "Equipment_Equip",
+    "protocol_value": 3002,
+    "request_class": "EquipmentItemEquipRequest"
+  },
+  "EquipmentItemEquipRequest": {
+    "protocol_name": "Equipment_Equip",
+    "protocol_value": 3002,
+    "request_class": "EquipmentItemEquipRequest"
+  },
+  "EquipmentItemLevelUp": {
+    "protocol_name": "Equipment_LevelUp",
+    "protocol_value": 3003,
+    "request_class": "EquipmentItemLevelUpRequest"
+  },
+  "EquipmentItemLevelUpRequest": {
+    "protocol_name": "Equipment_LevelUp",
+    "protocol_value": 3003,
+    "request_class": "EquipmentItemLevelUpRequest"
+  },
+  "EquipmentItemList": {
+    "protocol_name": "Equipment_List",
+    "protocol_value": 3000,
+    "request_class": "EquipmentItemListRequest"
+  },
+  "EquipmentItemListRequest": {
+    "protocol_name": "Equipment_List",
+    "protocol_value": 3000,
+    "request_class": "EquipmentItemListRequest"
+  },
+  "EquipmentItemLock": {
+    "protocol_name": "Equipment_Lock",
+    "protocol_value": 3005,
+    "request_class": "EquipmentItemLockRequest"
+  },
+  "EquipmentItemLockRequest": {
+    "protocol_name": "Equipment_Lock",
+    "protocol_value": 3005,
+    "request_class": "EquipmentItemLockRequest"
+  },
+  "EquipmentItemSell": {
+    "protocol_name": "Equipment_Sell",
+    "protocol_value": 3001,
+    "request_class": "EquipmentItemSellRequest"
+  },
+  "EquipmentItemSellRequest": {
+    "protocol_name": "Equipment_Sell",
+    "protocol_value": 3001,
+    "request_class": "EquipmentItemSellRequest"
+  },
+  "EquipmentItemTierUp": {
+    "protocol_name": "Equipment_TierUp",
+    "protocol_value": 3004,
+    "request_class": "EquipmentItemTierUpRequest"
+  },
+  "EquipmentItemTierUpRequest": {
+    "protocol_name": "Equipment_TierUp",
+    "protocol_value": 3004,
+    "request_class": "EquipmentItemTierUpRequest"
+  },
+  "EventContentAdventureList": {
+    "protocol_name": "EventContent_AdventureList",
+    "protocol_value": 30000,
+    "request_class": "EventContentAdventureListRequest"
+  },
+  "EventContentAdventureListRequest": {
+    "protocol_name": "EventContent_AdventureList",
+    "protocol_value": 30000,
+    "request_class": "EventContentAdventureListRequest"
+  },
+  "EventContentBoxGachaShopList": {
+    "protocol_name": "EventContent_BoxGachaShopList",
+    "protocol_value": 30022,
+    "request_class": "EventContentBoxGachaShopListRequest"
+  },
+  "EventContentBoxGachaShopListRequest": {
+    "protocol_name": "EventContent_BoxGachaShopList",
+    "protocol_value": 30022,
+    "request_class": "EventContentBoxGachaShopListRequest"
+  },
+  "EventContentBoxGachaShopPurchase": {
+    "protocol_name": "EventContent_BoxGachaShopPurchase",
+    "protocol_value": 30023,
+    "request_class": "EventContentBoxGachaShopPurchaseRequest"
+  },
+  "EventContentBoxGachaShopPurchaseRequest": {
+    "protocol_name": "EventContent_BoxGachaShopPurchase",
+    "protocol_value": 30023,
+    "request_class": "EventContentBoxGachaShopPurchaseRequest"
+  },
+  "EventContentBoxGachaShopRefresh": {
+    "protocol_name": "EventContent_BoxGachaShopRefresh",
+    "protocol_value": 30024,
+    "request_class": "EventContentBoxGachaShopRefreshRequest"
+  },
+  "EventContentBoxGachaShopRefreshRequest": {
+    "protocol_name": "EventContent_BoxGachaShopRefresh",
+    "protocol_value": 30024,
+    "request_class": "EventContentBoxGachaShopRefreshRequest"
+  },
+  "EventContentCardShopList": {
+    "protocol_name": "EventContent_CardShopList",
+    "protocol_value": 30028,
+    "request_class": "EventContentCardShopListRequest"
+  },
+  "EventContentCardShopListRequest": {
+    "protocol_name": "EventContent_CardShopList",
+    "protocol_value": 30028,
+    "request_class": "EventContentCardShopListRequest"
+  },
+  "EventContentCardShopPurchase": {
+    "protocol_name": "EventContent_CardShopPurchase",
+    "protocol_value": 30030,
+    "request_class": "EventContentCardShopPurchaseRequest"
+  },
+  "EventContentCardShopPurchaseAll": {
+    "protocol_name": "EventContent_CardShopPurchaseAll",
+    "protocol_value": 30043,
+    "request_class": "EventContentCardShopPurchaseAllRequest"
+  },
+  "EventContentCardShopPurchaseAllRequest": {
+    "protocol_name": "EventContent_CardShopPurchaseAll",
+    "protocol_value": 30043,
+    "request_class": "EventContentCardShopPurchaseAllRequest"
+  },
+  "EventContentCardShopPurchaseRequest": {
+    "protocol_name": "EventContent_CardShopPurchase",
+    "protocol_value": 30030,
+    "request_class": "EventContentCardShopPurchaseRequest"
+  },
+  "EventContentCardShopShuffle": {
+    "protocol_name": "EventContent_CardShopShuffle",
+    "protocol_value": 30029,
+    "request_class": "EventContentCardShopShuffleRequest"
+  },
+  "EventContentCardShopShuffleRequest": {
+    "protocol_name": "EventContent_CardShopShuffle",
+    "protocol_value": 30029,
+    "request_class": "EventContentCardShopShuffleRequest"
+  },
+  "EventContentClueSearchGetInfo": {
+    "protocol_name": "EventContent_ClueSearchGetInfo",
+    "protocol_value": 30051,
+    "request_class": "EventContentClueSearchGetInfoRequest"
+  },
+  "EventContentClueSearchGetInfoRequest": {
+    "protocol_name": "EventContent_ClueSearchGetInfo",
+    "protocol_value": 30051,
+    "request_class": "EventContentClueSearchGetInfoRequest"
+  },
+  "EventContentClueSearchRoundComplete": {
+    "protocol_name": "EventContent_ClueSearchRoundComplete",
+    "protocol_value": 30053,
+    "request_class": "EventContentClueSearchRoundCompleteRequest"
+  },
+  "EventContentClueSearchRoundCompleteRequest": {
+    "protocol_name": "EventContent_ClueSearchRoundComplete",
+    "protocol_value": 30053,
+    "request_class": "EventContentClueSearchRoundCompleteRequest"
+  },
+  "EventContentClueSearchSubmit": {
+    "protocol_name": "EventContent_ClueSearchSubmit",
+    "protocol_value": 30052,
+    "request_class": "EventContentClueSearchSubmitRequest"
+  },
+  "EventContentClueSearchSubmitRequest": {
+    "protocol_name": "EventContent_ClueSearchSubmit",
+    "protocol_value": 30052,
+    "request_class": "EventContentClueSearchSubmitRequest"
+  },
+  "EventContentCollectionForMission": {
+    "protocol_name": "EventContent_CollectionForMission",
+    "protocol_value": 30026,
+    "request_class": "EventContentCollectionForMissionRequest"
+  },
+  "EventContentCollectionForMissionRequest": {
+    "protocol_name": "EventContent_CollectionForMission",
+    "protocol_value": 30026,
+    "request_class": "EventContentCollectionForMissionRequest"
+  },
+  "EventContentCollectionList": {
+    "protocol_name": "EventContent_CollectionList",
+    "protocol_value": 30025,
+    "request_class": "EventContentCollectionListRequest"
+  },
+  "EventContentCollectionListRequest": {
+    "protocol_name": "EventContent_CollectionList",
+    "protocol_value": 30025,
+    "request_class": "EventContentCollectionListRequest"
+  },
+  "EventContentConcentrationFlipCard": {
+    "protocol_name": "EventContent_ConcentrationFlipCard",
+    "protocol_value": 30048,
+    "request_class": "EventContentConcentrationFlipCardRequest"
+  },
+  "EventContentConcentrationFlipCardRequest": {
+    "protocol_name": "EventContent_ConcentrationFlipCard",
+    "protocol_value": 30048,
+    "request_class": "EventContentConcentrationFlipCardRequest"
+  },
+  "EventContentConcentrationGetInfo": {
+    "protocol_name": "EventContent_ConcentrationGetInfo",
+    "protocol_value": 30047,
+    "request_class": "EventContentConcentrationGetInfoRequest"
+  },
+  "EventContentConcentrationGetInfoRequest": {
+    "protocol_name": "EventContent_ConcentrationGetInfo",
+    "protocol_value": 30047,
+    "request_class": "EventContentConcentrationGetInfoRequest"
+  },
+  "EventContentConcentrationRoundComplete": {
+    "protocol_name": "EventContent_ConcentrationRoundComplete",
+    "protocol_value": 30049,
+    "request_class": "EventContentConcentrationRoundCompleteRequest"
+  },
+  "EventContentConcentrationRoundCompleteRequest": {
+    "protocol_name": "EventContent_ConcentrationRoundComplete",
+    "protocol_value": 30049,
+    "request_class": "EventContentConcentrationRoundCompleteRequest"
+  },
+  "EventContentConcentrationRoundSkip": {
+    "protocol_name": "EventContent_ConcentrationRoundSkip",
+    "protocol_value": 30050,
+    "request_class": "EventContentConcentrationRoundSkipRequest"
+  },
+  "EventContentConcentrationRoundSkipRequest": {
+    "protocol_name": "EventContent_ConcentrationRoundSkip",
+    "protocol_value": 30050,
+    "request_class": "EventContentConcentrationRoundSkipRequest"
+  },
+  "EventContentConfirmMainStage": {
+    "protocol_name": "EventContent_ConfirmMainStage",
+    "protocol_value": 30002,
+    "request_class": "EventContentConfirmMainStageRequest"
+  },
+  "EventContentConfirmMainStageRequest": {
+    "protocol_name": "EventContent_ConfirmMainStage",
+    "protocol_value": 30002,
+    "request_class": "EventContentConfirmMainStageRequest"
+  },
+  "EventContentDeployEchelon": {
+    "protocol_name": "EventContent_DeployEchelon",
+    "protocol_value": 30007,
+    "request_class": "EventContentDeployEchelonRequest"
+  },
+  "EventContentDeployEchelonRequest": {
+    "protocol_name": "EventContent_DeployEchelon",
+    "protocol_value": 30007,
+    "request_class": "EventContentDeployEchelonRequest"
+  },
+  "EventContentDiceRaceLapReward": {
+    "protocol_name": "EventContent_DiceRaceLapReward",
+    "protocol_value": 30040,
+    "request_class": "EventContentDiceRaceLapRewardRequest"
+  },
+  "EventContentDiceRaceLapRewardRequest": {
+    "protocol_name": "EventContent_DiceRaceLapReward",
+    "protocol_value": 30040,
+    "request_class": "EventContentDiceRaceLapRewardRequest"
+  },
+  "EventContentDiceRaceLobby": {
+    "protocol_name": "EventContent_DiceRaceLobby",
+    "protocol_value": 30038,
+    "request_class": "EventContentDiceRaceLobbyRequest"
+  },
+  "EventContentDiceRaceLobbyRequest": {
+    "protocol_name": "EventContent_DiceRaceLobby",
+    "protocol_value": 30038,
+    "request_class": "EventContentDiceRaceLobbyRequest"
+  },
+  "EventContentDiceRaceRoll": {
+    "protocol_name": "EventContent_DiceRaceRoll",
+    "protocol_value": 30039,
+    "request_class": "EventContentDiceRaceRollRequest"
+  },
+  "EventContentDiceRaceRollRequest": {
+    "protocol_name": "EventContent_DiceRaceRoll",
+    "protocol_value": 30039,
+    "request_class": "EventContentDiceRaceRollRequest"
+  },
+  "EventContentDiceRaceUseItem": {
+    "protocol_name": "EventContent_DiceRaceUseItem",
+    "protocol_value": 30042,
+    "request_class": "EventContentDiceRaceUseItemRequest"
+  },
+  "EventContentDiceRaceUseItemRequest": {
+    "protocol_name": "EventContent_DiceRaceUseItem",
+    "protocol_value": 30042,
+    "request_class": "EventContentDiceRaceUseItemRequest"
+  },
+  "EventContentEndTurn": {
+    "protocol_name": "EventContent_EndTurn",
+    "protocol_value": 30010,
+    "request_class": "EventContentEndTurnRequest"
+  },
+  "EventContentEndTurnRequest": {
+    "protocol_name": "EventContent_EndTurn",
+    "protocol_value": 30010,
+    "request_class": "EventContentEndTurnRequest"
+  },
+  "EventContentEnterMainGroundStage": {
+    "protocol_name": "EventContent_EnterMainGroundStage",
+    "protocol_value": 30017,
+    "request_class": "EventContentEnterMainGroundStageRequest"
+  },
+  "EventContentEnterMainGroundStageRequest": {
+    "protocol_name": "EventContent_EnterMainGroundStage",
+    "protocol_value": 30017,
+    "request_class": "EventContentEnterMainGroundStageRequest"
+  },
+  "EventContentEnterMainStage": {
+    "protocol_name": "EventContent_EnterMainStage",
+    "protocol_value": 30001,
+    "request_class": "EventContentEnterMainStageRequest"
+  },
+  "EventContentEnterMainStageRequest": {
+    "protocol_name": "EventContent_EnterMainStage",
+    "protocol_value": 30001,
+    "request_class": "EventContentEnterMainStageRequest"
+  },
+  "EventContentEnterStoryStage": {
+    "protocol_name": "EventContent_EnterStoryStage",
+    "protocol_value": 30036,
+    "request_class": "EventContentEnterStoryStageRequest"
+  },
+  "EventContentEnterStoryStageRequest": {
+    "protocol_name": "EventContent_EnterStoryStage",
+    "protocol_value": 30036,
+    "request_class": "EventContentEnterStoryStageRequest"
+  },
+  "EventContentEnterSubStage": {
+    "protocol_name": "EventContent_EnterSubStage",
+    "protocol_value": 30005,
+    "request_class": "EventContentEnterSubStageRequest"
+  },
+  "EventContentEnterSubStageRequest": {
+    "protocol_name": "EventContent_EnterSubStage",
+    "protocol_value": 30005,
+    "request_class": "EventContentEnterSubStageRequest"
+  },
+  "EventContentEnterTactic": {
+    "protocol_name": "EventContent_EnterTactic",
+    "protocol_value": 30003,
+    "request_class": "EventContentEnterTacticRequest"
+  },
+  "EventContentEnterTacticRequest": {
+    "protocol_name": "EventContent_EnterTactic",
+    "protocol_value": 30003,
+    "request_class": "EventContentEnterTacticRequest"
+  },
+  "EventContentFortuneGachaPurchase": {
+    "protocol_name": "EventContent_FortuneGachaPurchase",
+    "protocol_value": 30034,
+    "request_class": "EventContentFortuneGachaPurchaseRequest"
+  },
+  "EventContentFortuneGachaPurchaseRequest": {
+    "protocol_name": "EventContent_FortuneGachaPurchase",
+    "protocol_value": 30034,
+    "request_class": "EventContentFortuneGachaPurchaseRequest"
+  },
+  "EventContentLocationAttendSchedule": {
+    "protocol_name": "EventContent_LocationAttendSchedule",
+    "protocol_value": 30033,
+    "request_class": "EventContentLocationAttendScheduleRequest"
+  },
+  "EventContentLocationAttendScheduleRequest": {
+    "protocol_name": "EventContent_LocationAttendSchedule",
+    "protocol_value": 30033,
+    "request_class": "EventContentLocationAttendScheduleRequest"
+  },
+  "EventContentLocationGetInfo": {
+    "protocol_name": "EventContent_LocationGetInfo",
+    "protocol_value": 30032,
+    "request_class": "EventContentLocationGetInfoRequest"
+  },
+  "EventContentLocationGetInfoRequest": {
+    "protocol_name": "EventContent_LocationGetInfo",
+    "protocol_value": 30032,
+    "request_class": "EventContentLocationGetInfoRequest"
+  },
+  "EventContentMainGroundStageResult": {
+    "protocol_name": "EventContent_MainGroundStageResult",
+    "protocol_value": 30018,
+    "request_class": "EventContentMainGroundStageResultRequest"
+  },
+  "EventContentMainGroundStageResultRequest": {
+    "protocol_name": "EventContent_MainGroundStageResult",
+    "protocol_value": 30018,
+    "request_class": "EventContentMainGroundStageResultRequest"
+  },
+  "EventContentMapMove": {
+    "protocol_name": "EventContent_MapMove",
+    "protocol_value": 30009,
+    "request_class": "EventContentMapMoveRequest"
+  },
+  "EventContentMapMoveRequest": {
+    "protocol_name": "EventContent_MapMove",
+    "protocol_value": 30009,
+    "request_class": "EventContentMapMoveRequest"
+  },
+  "EventContentPermanentList": {
+    "protocol_name": "EventContent_PermanentList",
+    "protocol_value": 30041,
+    "request_class": "EventContentPermanentListRequest"
+  },
+  "EventContentPermanentListRequest": {
+    "protocol_name": "EventContent_PermanentList",
+    "protocol_value": 30041,
+    "request_class": "EventContentPermanentListRequest"
+  },
+  "EventContentPortal": {
+    "protocol_name": "EventContent_Portal",
+    "protocol_value": 30012,
+    "request_class": "EventContentPortalRequest"
+  },
+  "EventContentPortalRequest": {
+    "protocol_name": "EventContent_Portal",
+    "protocol_value": 30012,
+    "request_class": "EventContentPortalRequest"
+  },
+  "EventContentPurchasePlayCountHardStage": {
+    "protocol_name": "EventContent_PurchasePlayCountHardStage",
+    "protocol_value": 30013,
+    "request_class": "EventContentPurchasePlayCountHardStageRequest"
+  },
+  "EventContentPurchasePlayCountHardStageRequest": {
+    "protocol_name": "EventContent_PurchasePlayCountHardStage",
+    "protocol_value": 30013,
+    "request_class": "EventContentPurchasePlayCountHardStageRequest"
+  },
+  "EventContentReceiveStageTotalReward": {
+    "protocol_name": "EventContent_ReceiveStageTotalReward",
+    "protocol_value": 30016,
+    "request_class": "EventContentReceiveStageTotalRewardRequest"
+  },
+  "EventContentReceiveStageTotalRewardRequest": {
+    "protocol_name": "EventContent_ReceiveStageTotalReward",
+    "protocol_value": 30016,
+    "request_class": "EventContentReceiveStageTotalRewardRequest"
+  },
+  "EventContentRestartMainStage": {
+    "protocol_name": "EventContent_RestartMainStage",
+    "protocol_value": 30031,
+    "request_class": "EventContentRestartMainStageRequest"
+  },
+  "EventContentRestartMainStageRequest": {
+    "protocol_name": "EventContent_RestartMainStage",
+    "protocol_value": 30031,
+    "request_class": "EventContentRestartMainStageRequest"
+  },
+  "EventContentRetreat": {
+    "protocol_name": "EventContent_Retreat",
+    "protocol_value": 30011,
+    "request_class": "EventContentRetreatRequest"
+  },
+  "EventContentRetreatRequest": {
+    "protocol_name": "EventContent_Retreat",
+    "protocol_value": 30011,
+    "request_class": "EventContentRetreatRequest"
+  },
+  "EventContentScenarioGroupHistoryUpdate": {
+    "protocol_name": "EventContent_ScenarioGroupHistoryUpdate",
+    "protocol_value": 30027,
+    "request_class": "EventContentScenarioGroupHistoryUpdateRequest"
+  },
+  "EventContentScenarioGroupHistoryUpdateRequest": {
+    "protocol_name": "EventContent_ScenarioGroupHistoryUpdate",
+    "protocol_value": 30027,
+    "request_class": "EventContentScenarioGroupHistoryUpdateRequest"
+  },
+  "EventContentSelectBuff": {
+    "protocol_name": "EventContent_SelectBuff",
+    "protocol_value": 30021,
+    "request_class": "EventContentSelectBuffRequest"
+  },
+  "EventContentSelectBuffRequest": {
+    "protocol_name": "EventContent_SelectBuff",
+    "protocol_value": 30021,
+    "request_class": "EventContentSelectBuffRequest"
+  },
+  "EventContentShopBuyMerchandise": {
+    "protocol_name": "EventContent_ShopBuyMerchandise",
+    "protocol_value": 30019,
+    "request_class": "EventContentShopBuyMerchandiseRequest"
+  },
+  "EventContentShopBuyMerchandiseRequest": {
+    "protocol_name": "EventContent_ShopBuyMerchandise",
+    "protocol_value": 30019,
+    "request_class": "EventContentShopBuyMerchandiseRequest"
+  },
+  "EventContentShopBuyRefreshMerchandise": {
+    "protocol_name": "EventContent_ShopBuyRefreshMerchandise",
+    "protocol_value": 30020,
+    "request_class": "EventContentShopBuyRefreshMerchandiseRequest"
+  },
+  "EventContentShopBuyRefreshMerchandiseRequest": {
+    "protocol_name": "EventContent_ShopBuyRefreshMerchandise",
+    "protocol_value": 30020,
+    "request_class": "EventContentShopBuyRefreshMerchandiseRequest"
+  },
+  "EventContentShopList": {
+    "protocol_name": "EventContent_ShopList",
+    "protocol_value": 30014,
+    "request_class": "EventContentShopListRequest"
+  },
+  "EventContentShopListRequest": {
+    "protocol_name": "EventContent_ShopList",
+    "protocol_value": 30014,
+    "request_class": "EventContentShopListRequest"
+  },
+  "EventContentShopRefresh": {
+    "protocol_name": "EventContent_ShopRefresh",
+    "protocol_value": 30015,
+    "request_class": "EventContentShopRefreshRequest"
+  },
+  "EventContentShopRefreshRequest": {
+    "protocol_name": "EventContent_ShopRefresh",
+    "protocol_value": 30015,
+    "request_class": "EventContentShopRefreshRequest"
+  },
+  "EventContentStoryStageResult": {
+    "protocol_name": "EventContent_StoryStageResult",
+    "protocol_value": 30037,
+    "request_class": "EventContentStoryStageResultRequest"
+  },
+  "EventContentStoryStageResultRequest": {
+    "protocol_name": "EventContent_StoryStageResult",
+    "protocol_value": 30037,
+    "request_class": "EventContentStoryStageResultRequest"
+  },
+  "EventContentSubEventLobby": {
+    "protocol_name": "EventContent_SubEventLobby",
+    "protocol_value": 30035,
+    "request_class": "EventContentSubEventLobbyRequest"
+  },
+  "EventContentSubEventLobbyRequest": {
+    "protocol_name": "EventContent_SubEventLobby",
+    "protocol_value": 30035,
+    "request_class": "EventContentSubEventLobbyRequest"
+  },
+  "EventContentSubStageResult": {
+    "protocol_name": "EventContent_SubStageResult",
+    "protocol_value": 30006,
+    "request_class": "EventContentSubStageResultRequest"
+  },
+  "EventContentSubStageResultRequest": {
+    "protocol_name": "EventContent_SubStageResult",
+    "protocol_value": 30006,
+    "request_class": "EventContentSubStageResultRequest"
+  },
+  "EventContentTacticResult": {
+    "protocol_name": "EventContent_TacticResult",
+    "protocol_value": 30004,
+    "request_class": "EventContentTacticResultRequest"
+  },
+  "EventContentTacticResultRequest": {
+    "protocol_name": "EventContent_TacticResult",
+    "protocol_value": 30004,
+    "request_class": "EventContentTacticResultRequest"
+  },
+  "EventContentTreasureFlip": {
+    "protocol_name": "EventContent_TreasureFlip",
+    "protocol_value": 30045,
+    "request_class": "EventContentTreasureFlipRequest"
+  },
+  "EventContentTreasureFlipRequest": {
+    "protocol_name": "EventContent_TreasureFlip",
+    "protocol_value": 30045,
+    "request_class": "EventContentTreasureFlipRequest"
+  },
+  "EventContentTreasureLobby": {
+    "protocol_name": "EventContent_TreasureLobby",
+    "protocol_value": 30044,
+    "request_class": "EventContentTreasureLobbyRequest"
+  },
+  "EventContentTreasureLobbyRequest": {
+    "protocol_name": "EventContent_TreasureLobby",
+    "protocol_value": 30044,
+    "request_class": "EventContentTreasureLobbyRequest"
+  },
+  "EventContentTreasureNextRound": {
+    "protocol_name": "EventContent_TreasureNextRound",
+    "protocol_value": 30046,
+    "request_class": "EventContentTreasureNextRoundRequest"
+  },
+  "EventContentTreasureNextRoundRequest": {
+    "protocol_name": "EventContent_TreasureNextRound",
+    "protocol_value": 30046,
+    "request_class": "EventContentTreasureNextRoundRequest"
+  },
+  "EventContentWithdrawEchelon": {
+    "protocol_name": "EventContent_WithdrawEchelon",
+    "protocol_value": 30008,
+    "request_class": "EventContentWithdrawEchelonRequest"
+  },
+  "EventContentWithdrawEchelonRequest": {
+    "protocol_name": "EventContent_WithdrawEchelon",
+    "protocol_value": 30008,
+    "request_class": "EventContentWithdrawEchelonRequest"
+  },
+  "EventImage": {
+    "protocol_name": "Event_GetImage",
+    "protocol_value": 25001,
+    "request_class": "EventImageRequest"
+  },
+  "EventImageRequest": {
+    "protocol_name": "Event_GetImage",
+    "protocol_value": 25001,
+    "request_class": "EventImageRequest"
+  },
+  "EventList": {
+    "protocol_name": "Event_GetList",
+    "protocol_value": 25000,
+    "request_class": "EventListRequest"
+  },
+  "EventListRequest": {
+    "protocol_name": "Event_GetList",
+    "protocol_value": 25000,
+    "request_class": "EventListRequest"
+  },
+  "EventRewardIncrease": {
+    "protocol_name": "Event_RewardIncrease",
+    "protocol_value": 25003,
+    "request_class": "EventRewardIncreaseRequest"
+  },
+  "EventRewardIncreaseRequest": {
+    "protocol_name": "Event_RewardIncrease",
+    "protocol_value": 25003,
+    "request_class": "EventRewardIncreaseRequest"
+  },
+  "FieldEndDate": {
+    "protocol_name": "Field_EndDate",
+    "protocol_value": 48004,
+    "request_class": "FieldEndDateRequest"
+  },
+  "FieldEndDateRequest": {
+    "protocol_name": "Field_EndDate",
+    "protocol_value": 48004,
+    "request_class": "FieldEndDateRequest"
+  },
+  "FieldEnterStage": {
+    "protocol_name": "Field_EnterStage",
+    "protocol_value": 48005,
+    "request_class": "FieldEnterStageRequest"
+  },
+  "FieldEnterStageRequest": {
+    "protocol_name": "Field_EnterStage",
+    "protocol_value": 48005,
+    "request_class": "FieldEnterStageRequest"
+  },
+  "FieldInteraction": {
+    "protocol_name": "Field_Interaction",
+    "protocol_value": 48001,
+    "request_class": "FieldInteractionRequest"
+  },
+  "FieldInteractionRequest": {
+    "protocol_name": "Field_Interaction",
+    "protocol_value": 48001,
+    "request_class": "FieldInteractionRequest"
+  },
+  "FieldQuestClear": {
+    "protocol_name": "Field_QuestClear",
+    "protocol_value": 48002,
+    "request_class": "FieldQuestClearRequest"
+  },
+  "FieldQuestClearRequest": {
+    "protocol_name": "Field_QuestClear",
+    "protocol_value": 48002,
+    "request_class": "FieldQuestClearRequest"
+  },
+  "FieldSceneChanged": {
+    "protocol_name": "Field_SceneChanged",
+    "protocol_value": 48003,
+    "request_class": "FieldSceneChangedRequest"
+  },
+  "FieldSceneChangedRequest": {
+    "protocol_name": "Field_SceneChanged",
+    "protocol_value": 48003,
+    "request_class": "FieldSceneChangedRequest"
+  },
+  "FieldStageResult": {
+    "protocol_name": "Field_StageResult",
+    "protocol_value": 48006,
+    "request_class": "FieldStageResultRequest"
+  },
+  "FieldStageResultRequest": {
+    "protocol_name": "Field_StageResult",
+    "protocol_value": 48006,
+    "request_class": "FieldStageResultRequest"
+  },
+  "FieldSync": {
+    "protocol_name": "Field_Sync",
+    "protocol_value": 48000,
+    "request_class": "FieldSyncRequest"
+  },
+  "FieldSyncRequest": {
+    "protocol_name": "Field_Sync",
+    "protocol_value": 48000,
+    "request_class": "FieldSyncRequest"
+  },
+  "FriendAcceptFriendRequest": {
+    "protocol_name": "Friend_AcceptFriendRequest",
+    "protocol_value": 43007,
+    "request_class": "FriendAcceptFriendRequestRequest"
+  },
+  "FriendAcceptFriendRequestRequest": {
+    "protocol_name": "Friend_AcceptFriendRequest",
+    "protocol_value": 43007,
+    "request_class": "FriendAcceptFriendRequestRequest"
+  },
+  "FriendBlock": {
+    "protocol_name": "Friend_Block",
+    "protocol_value": 43012,
+    "request_class": "FriendBlockRequest"
+  },
+  "FriendBlockRequest": {
+    "protocol_name": "Friend_Block",
+    "protocol_value": 43012,
+    "request_class": "FriendBlockRequest"
+  },
+  "FriendCancelFriendRequest": {
+    "protocol_name": "Friend_CancelFriendRequest",
+    "protocol_value": 43009,
+    "request_class": "FriendCancelFriendRequestRequest"
+  },
+  "FriendCancelFriendRequestRequest": {
+    "protocol_name": "Friend_CancelFriendRequest",
+    "protocol_value": 43009,
+    "request_class": "FriendCancelFriendRequestRequest"
+  },
+  "FriendCheck": {
+    "protocol_name": "Friend_Check",
+    "protocol_value": 43010,
+    "request_class": "FriendCheckRequest"
+  },
+  "FriendCheckRequest": {
+    "protocol_name": "Friend_Check",
+    "protocol_value": 43010,
+    "request_class": "FriendCheckRequest"
+  },
+  "FriendDeclineFriendRequest": {
+    "protocol_name": "Friend_DeclineFriendRequest",
+    "protocol_value": 43008,
+    "request_class": "FriendDeclineFriendRequestRequest"
+  },
+  "FriendDeclineFriendRequestRequest": {
+    "protocol_name": "Friend_DeclineFriendRequest",
+    "protocol_value": 43008,
+    "request_class": "FriendDeclineFriendRequestRequest"
+  },
+  "FriendGetFriendDetailedInfo": {
+    "protocol_name": "Friend_GetFriendDetailedInfo",
+    "protocol_value": 43002,
+    "request_class": "FriendGetFriendDetailedInfoRequest"
+  },
+  "FriendGetFriendDetailedInfoRequest": {
+    "protocol_name": "Friend_GetFriendDetailedInfo",
+    "protocol_value": 43002,
+    "request_class": "FriendGetFriendDetailedInfoRequest"
+  },
+  "FriendGetIdCard": {
+    "protocol_name": "Friend_GetIdCard",
+    "protocol_value": 43003,
+    "request_class": "FriendGetIdCardRequest"
+  },
+  "FriendGetIdCardRequest": {
+    "protocol_name": "Friend_GetIdCard",
+    "protocol_value": 43003,
+    "request_class": "FriendGetIdCardRequest"
+  },
+  "FriendList": {
+    "protocol_name": "Friend_List",
+    "protocol_value": 43000,
+    "request_class": "FriendListRequest"
+  },
+  "FriendListByIds": {
+    "protocol_name": "Friend_ListByIds",
+    "protocol_value": 43011,
+    "request_class": "FriendListByIdsRequest"
+  },
+  "FriendListByIdsRequest": {
+    "protocol_name": "Friend_ListByIds",
+    "protocol_value": 43011,
+    "request_class": "FriendListByIdsRequest"
+  },
+  "FriendListRequest": {
+    "protocol_name": "Friend_List",
+    "protocol_value": 43000,
+    "request_class": "FriendListRequest"
+  },
+  "FriendRemove": {
+    "protocol_name": "Friend_Remove",
+    "protocol_value": 43001,
+    "request_class": "FriendRemoveRequest"
+  },
+  "FriendRemoveRequest": {
+    "protocol_name": "Friend_Remove",
+    "protocol_value": 43001,
+    "request_class": "FriendRemoveRequest"
+  },
+  "FriendSearch": {
+    "protocol_name": "Friend_Search",
+    "protocol_value": 43005,
+    "request_class": "FriendSearchRequest"
+  },
+  "FriendSearchRequest": {
+    "protocol_name": "Friend_Search",
+    "protocol_value": 43005,
+    "request_class": "FriendSearchRequest"
+  },
+  "FriendSendFriendRequest": {
+    "protocol_name": "Friend_SendFriendRequest",
+    "protocol_value": 43006,
+    "request_class": "FriendSendFriendRequestRequest"
+  },
+  "FriendSendFriendRequestRequest": {
+    "protocol_name": "Friend_SendFriendRequest",
+    "protocol_value": 43006,
+    "request_class": "FriendSendFriendRequestRequest"
+  },
+  "FriendSetIdCard": {
+    "protocol_name": "Friend_SetIdCard",
+    "protocol_value": 43004,
+    "request_class": "FriendSetIdCardRequest"
+  },
+  "FriendSetIdCardRequest": {
+    "protocol_name": "Friend_SetIdCard",
+    "protocol_value": 43004,
+    "request_class": "FriendSetIdCardRequest"
+  },
+  "FriendUnblock": {
+    "protocol_name": "Friend_Unblock",
+    "protocol_value": 43013,
+    "request_class": "FriendUnblockRequest"
+  },
+  "FriendUnblockRequest": {
+    "protocol_name": "Friend_Unblock",
+    "protocol_value": 43013,
+    "request_class": "FriendUnblockRequest"
+  },
+  "GuideMissionSeasonList": {
+    "protocol_name": "Mission_GuideMissionSeasonList",
+    "protocol_value": 8006,
+    "request_class": "GuideMissionSeasonListRequest"
+  },
+  "GuideMissionSeasonListRequest": {
+    "protocol_name": "Mission_GuideMissionSeasonList",
+    "protocol_value": 8006,
+    "request_class": "GuideMissionSeasonListRequest"
+  },
+  "ItemAutoSynth": {
+    "protocol_name": "Item_AutoSynth",
+    "protocol_value": 4006,
+    "request_class": "ItemAutoSynthRequest"
+  },
+  "ItemAutoSynthRequest": {
+    "protocol_name": "Item_AutoSynth",
+    "protocol_value": 4006,
+    "request_class": "ItemAutoSynthRequest"
+  },
+  "ItemBulkConsume": {
+    "protocol_name": "Item_BulkConsume",
+    "protocol_value": 4004,
+    "request_class": "ItemBulkConsumeRequest"
+  },
+  "ItemBulkConsumeRequest": {
+    "protocol_name": "Item_BulkConsume",
+    "protocol_value": 4004,
+    "request_class": "ItemBulkConsumeRequest"
+  },
+  "ItemConsume": {
+    "protocol_name": "Item_Consume",
+    "protocol_value": 4002,
+    "request_class": "ItemConsumeRequest"
+  },
+  "ItemConsumeRequest": {
+    "protocol_name": "Item_Consume",
+    "protocol_value": 4002,
+    "request_class": "ItemConsumeRequest"
+  },
+  "ItemList": {
+    "protocol_name": "Item_List",
+    "protocol_value": 4000,
+    "request_class": "ItemListRequest"
+  },
+  "ItemListRequest": {
+    "protocol_name": "Item_List",
+    "protocol_value": 4000,
+    "request_class": "ItemListRequest"
+  },
+  "ItemLock": {
+    "protocol_name": "Item_Lock",
+    "protocol_value": 4003,
+    "request_class": "ItemLockRequest"
+  },
+  "ItemLockRequest": {
+    "protocol_name": "Item_Lock",
+    "protocol_value": 4003,
+    "request_class": "ItemLockRequest"
+  },
+  "ItemSelectTicket": {
+    "protocol_name": "Item_SelectTicket",
+    "protocol_value": 4005,
+    "request_class": "ItemSelectTicketRequest"
+  },
+  "ItemSelectTicketRequest": {
+    "protocol_name": "Item_SelectTicket",
+    "protocol_value": 4005,
+    "request_class": "ItemSelectTicketRequest"
+  },
+  "ItemSell": {
+    "protocol_name": "Item_Sell",
+    "protocol_value": 4001,
+    "request_class": "ItemSellRequest"
+  },
+  "ItemSellRequest": {
+    "protocol_name": "Item_Sell",
+    "protocol_value": 4001,
+    "request_class": "ItemSellRequest"
+  },
+  "MailCheck": {
+    "protocol_name": "Mail_Check",
+    "protocol_value": 7001,
+    "request_class": "MailCheckRequest"
+  },
+  "MailCheckRequest": {
+    "protocol_name": "Mail_Check",
+    "protocol_value": 7001,
+    "request_class": "MailCheckRequest"
+  },
+  "MailList": {
+    "protocol_name": "Mail_List",
+    "protocol_value": 7000,
+    "request_class": "MailListRequest"
+  },
+  "MailListRequest": {
+    "protocol_name": "Mail_List",
+    "protocol_value": 7000,
+    "request_class": "MailListRequest"
+  },
+  "MailListSemiPermanent": {
+    "protocol_name": "Mail_ListSemiPermanent",
+    "protocol_value": 7003,
+    "request_class": "MailListSemiPermanentRequest"
+  },
+  "MailListSemiPermanentRequest": {
+    "protocol_name": "Mail_ListSemiPermanent",
+    "protocol_value": 7003,
+    "request_class": "MailListSemiPermanentRequest"
+  },
+  "MailReceive": {
+    "protocol_name": "Mail_Receive",
+    "protocol_value": 7002,
+    "request_class": "MailReceiveRequest"
+  },
+  "MailReceiveRequest": {
+    "protocol_name": "Mail_Receive",
+    "protocol_value": 7002,
+    "request_class": "MailReceiveRequest"
+  },
+  "MailReceiveSemiPermanent": {
+    "protocol_name": "Mail_ReceiveSemiPermanent",
+    "protocol_value": 7004,
+    "request_class": "MailReceiveSemiPermanentRequest"
+  },
+  "MailReceiveSemiPermanentRequest": {
+    "protocol_name": "Mail_ReceiveSemiPermanent",
+    "protocol_value": 7004,
+    "request_class": "MailReceiveSemiPermanentRequest"
+  },
+  "ManagementBannerList": {
+    "protocol_name": "Management_BannerList",
+    "protocol_value": 100000,
+    "request_class": "ManagementBannerListRequest"
+  },
+  "ManagementBannerListRequest": {
+    "protocol_name": "Management_BannerList",
+    "protocol_value": 100000,
+    "request_class": "ManagementBannerListRequest"
+  },
+  "ManagementProtocolLockList": {
+    "protocol_name": "Management_ProtocolLockList",
+    "protocol_value": 100001,
+    "request_class": "ManagementProtocolLockListRequest"
+  },
+  "ManagementProtocolLockListRequest": {
+    "protocol_name": "Management_ProtocolLockList",
+    "protocol_value": 100001,
+    "request_class": "ManagementProtocolLockListRequest"
+  },
+  "MemoryLobbyInteract": {
+    "protocol_name": "MemoryLobby_Interact",
+    "protocol_value": 12003,
+    "request_class": "MemoryLobbyInteractRequest"
+  },
+  "MemoryLobbyInteractRequest": {
+    "protocol_name": "MemoryLobby_Interact",
+    "protocol_value": 12003,
+    "request_class": "MemoryLobbyInteractRequest"
+  },
+  "MemoryLobbyList": {
+    "protocol_name": "MemoryLobby_List",
+    "protocol_value": 12000,
+    "request_class": "MemoryLobbyListRequest"
+  },
+  "MemoryLobbyListRequest": {
+    "protocol_name": "MemoryLobby_List",
+    "protocol_value": 12000,
+    "request_class": "MemoryLobbyListRequest"
+  },
+  "MemoryLobbySetMain": {
+    "protocol_name": "MemoryLobby_SetMain",
+    "protocol_value": 12001,
+    "request_class": "MemoryLobbySetMainRequest"
+  },
+  "MemoryLobbySetMainRequest": {
+    "protocol_name": "MemoryLobby_SetMain",
+    "protocol_value": 12001,
+    "request_class": "MemoryLobbySetMainRequest"
+  },
+  "MemoryLobbyUpdateLobbyMode": {
+    "protocol_name": "MemoryLobby_UpdateLobbyMode",
+    "protocol_value": 12002,
+    "request_class": "MemoryLobbyUpdateLobbyModeRequest"
+  },
+  "MemoryLobbyUpdateLobbyModeRequest": {
+    "protocol_name": "MemoryLobby_UpdateLobbyMode",
+    "protocol_value": 12002,
+    "request_class": "MemoryLobbyUpdateLobbyModeRequest"
+  },
+  "MiniGameCCGBuyPerk": {
+    "protocol_name": "MiniGame_CCGBuyPerk",
+    "protocol_value": 35045,
+    "request_class": "MiniGameCCGBuyPerkRequest"
+  },
+  "MiniGameCCGBuyPerkRequest": {
+    "protocol_name": "MiniGame_CCGBuyPerk",
+    "protocol_value": 35045,
+    "request_class": "MiniGameCCGBuyPerkRequest"
+  },
+  "MiniGameCCGCompleteGame": {
+    "protocol_name": "MiniGame_CCGCompleteGame",
+    "protocol_value": 35042,
+    "request_class": "MiniGameCCGCompleteGameRequest"
+  },
+  "MiniGameCCGCompleteGameRequest": {
+    "protocol_name": "MiniGame_CCGCompleteGame",
+    "protocol_value": 35042,
+    "request_class": "MiniGameCCGCompleteGameRequest"
+  },
+  "MiniGameCCGCreateGame": {
+    "protocol_name": "MiniGame_CCGCreateGame",
+    "protocol_value": 35034,
+    "request_class": "MiniGameCCGCreateGameRequest"
+  },
+  "MiniGameCCGCreateGameRequest": {
+    "protocol_name": "MiniGame_CCGCreateGame",
+    "protocol_value": 35034,
+    "request_class": "MiniGameCCGCreateGameRequest"
+  },
+  "MiniGameCCGEndStageDual": {
+    "protocol_name": "MiniGame_CCGEndStageDual",
+    "protocol_value": 35037,
+    "request_class": "MiniGameCCGEndStageDualRequest"
+  },
+  "MiniGameCCGEndStageDualRequest": {
+    "protocol_name": "MiniGame_CCGEndStageDual",
+    "protocol_value": 35037,
+    "request_class": "MiniGameCCGEndStageDualRequest"
+  },
+  "MiniGameCCGEndStageEvent": {
+    "protocol_name": "MiniGame_CCGEndStageEvent",
+    "protocol_value": 35038,
+    "request_class": "MiniGameCCGEndStageEventRequest"
+  },
+  "MiniGameCCGEndStageEventRequest": {
+    "protocol_name": "MiniGame_CCGEndStageEvent",
+    "protocol_value": 35038,
+    "request_class": "MiniGameCCGEndStageEventRequest"
+  },
+  "MiniGameCCGEnterStage": {
+    "protocol_name": "MiniGame_CCGEnterStage",
+    "protocol_value": 35036,
+    "request_class": "MiniGameCCGEnterStageRequest"
+  },
+  "MiniGameCCGEnterStageRequest": {
+    "protocol_name": "MiniGame_CCGEnterStage",
+    "protocol_value": 35036,
+    "request_class": "MiniGameCCGEnterStageRequest"
+  },
+  "MiniGameCCGGiveupGame": {
+    "protocol_name": "MiniGame_CCGGiveupGame",
+    "protocol_value": 35043,
+    "request_class": "MiniGameCCGGiveupGameRequest"
+  },
+  "MiniGameCCGGiveupGameRequest": {
+    "protocol_name": "MiniGame_CCGGiveupGame",
+    "protocol_value": 35043,
+    "request_class": "MiniGameCCGGiveupGameRequest"
+  },
+  "MiniGameCCGLobby": {
+    "protocol_name": "MiniGame_CCGLobby",
+    "protocol_value": 35033,
+    "request_class": "MiniGameCCGLobbyRequest"
+  },
+  "MiniGameCCGLobbyRequest": {
+    "protocol_name": "MiniGame_CCGLobby",
+    "protocol_value": 35033,
+    "request_class": "MiniGameCCGLobbyRequest"
+  },
+  "MiniGameCCGReplaceCharacter": {
+    "protocol_name": "Minigame_CCGReplaceCharacter",
+    "protocol_value": 35040,
+    "request_class": "MiniGameCCGReplaceCharacterRequest"
+  },
+  "MiniGameCCGReplaceCharacterRequest": {
+    "protocol_name": "Minigame_CCGReplaceCharacter",
+    "protocol_value": 35040,
+    "request_class": "MiniGameCCGReplaceCharacterRequest"
+  },
+  "MiniGameCCGRerollReward": {
+    "protocol_name": "MiniGame_CCGRerollReward",
+    "protocol_value": 35044,
+    "request_class": "MiniGameCCGRerollRewardRequest"
+  },
+  "MiniGameCCGRerollRewardRequest": {
+    "protocol_name": "MiniGame_CCGRerollReward",
+    "protocol_value": 35044,
+    "request_class": "MiniGameCCGRerollRewardRequest"
+  },
+  "MiniGameCCGSelectCampAction": {
+    "protocol_name": "MiniGame_CCGSelectCampAction",
+    "protocol_value": 35041,
+    "request_class": "MiniGameCCGSelectCampActionRequest"
+  },
+  "MiniGameCCGSelectCampActionRequest": {
+    "protocol_name": "MiniGame_CCGSelectCampAction",
+    "protocol_value": 35041,
+    "request_class": "MiniGameCCGSelectCampActionRequest"
+  },
+  "MiniGameCCGSelectRewardCard": {
+    "protocol_name": "MiniGame_CCGSelectRewardCard",
+    "protocol_value": 35039,
+    "request_class": "MiniGameCCGSelectRewardCardRequest"
+  },
+  "MiniGameCCGSelectRewardCardRequest": {
+    "protocol_name": "MiniGame_CCGSelectRewardCard",
+    "protocol_value": 35039,
+    "request_class": "MiniGameCCGSelectRewardCardRequest"
+  },
+  "MiniGameCCGSweep": {
+    "protocol_name": "MiniGame_CCGSweep",
+    "protocol_value": 35035,
+    "request_class": "MiniGameCCGSweepRequest"
+  },
+  "MiniGameCCGSweepRequest": {
+    "protocol_name": "MiniGame_CCGSweep",
+    "protocol_value": 35035,
+    "request_class": "MiniGameCCGSweepRequest"
+  },
+  "MiniGameDefenseBattleResult": {
+    "protocol_name": "MiniGame_DefenseBattleResult",
+    "protocol_value": 35028,
+    "request_class": "MiniGameDefenseBattleResultRequest"
+  },
+  "MiniGameDefenseBattleResultRequest": {
+    "protocol_name": "MiniGame_DefenseBattleResult",
+    "protocol_value": 35028,
+    "request_class": "MiniGameDefenseBattleResultRequest"
+  },
+  "MiniGameDefenseEnterBattle": {
+    "protocol_name": "MiniGame_DefenseEnterBattle",
+    "protocol_value": 35027,
+    "request_class": "MiniGameDefenseEnterBattleRequest"
+  },
+  "MiniGameDefenseEnterBattleRequest": {
+    "protocol_name": "MiniGame_DefenseEnterBattle",
+    "protocol_value": 35027,
+    "request_class": "MiniGameDefenseEnterBattleRequest"
+  },
+  "MiniGameDefenseGetInfo": {
+    "protocol_name": "MiniGame_DefenseGetInfo",
+    "protocol_value": 35026,
+    "request_class": "MiniGameDefenseGetInfoRequest"
+  },
+  "MiniGameDefenseGetInfoRequest": {
+    "protocol_name": "MiniGame_DefenseGetInfo",
+    "protocol_value": 35026,
+    "request_class": "MiniGameDefenseGetInfoRequest"
+  },
+  "MiniGameDreamMakerAttendSchedule": {
+    "protocol_name": "MiniGame_DreamMakerAttendSchedule",
+    "protocol_value": 35023,
+    "request_class": "MiniGameDreamMakerAttendScheduleRequest"
+  },
+  "MiniGameDreamMakerAttendScheduleRequest": {
+    "protocol_name": "MiniGame_DreamMakerAttendSchedule",
+    "protocol_value": 35023,
+    "request_class": "MiniGameDreamMakerAttendScheduleRequest"
+  },
+  "MiniGameDreamMakerDailyClosing": {
+    "protocol_name": "MiniGame_DreamMakerDailyClosing",
+    "protocol_value": 35024,
+    "request_class": "MiniGameDreamMakerDailyClosingRequest"
+  },
+  "MiniGameDreamMakerDailyClosingRequest": {
+    "protocol_name": "MiniGame_DreamMakerDailyClosing",
+    "protocol_value": 35024,
+    "request_class": "MiniGameDreamMakerDailyClosingRequest"
+  },
+  "MiniGameDreamMakerEnding": {
+    "protocol_name": "MiniGame_DreamMakerEnding",
+    "protocol_value": 35025,
+    "request_class": "MiniGameDreamMakerEndingRequest"
+  },
+  "MiniGameDreamMakerEndingRequest": {
+    "protocol_name": "MiniGame_DreamMakerEnding",
+    "protocol_value": 35025,
+    "request_class": "MiniGameDreamMakerEndingRequest"
+  },
+  "MiniGameDreamMakerGetInfo": {
+    "protocol_name": "MiniGame_DreamMakerGetInfo",
+    "protocol_value": 35020,
+    "request_class": "MiniGameDreamMakerGetInfoRequest"
+  },
+  "MiniGameDreamMakerGetInfoRequest": {
+    "protocol_name": "MiniGame_DreamMakerGetInfo",
+    "protocol_value": 35020,
+    "request_class": "MiniGameDreamMakerGetInfoRequest"
+  },
+  "MiniGameDreamMakerNewGame": {
+    "protocol_name": "MiniGame_DreamMakerNewGame",
+    "protocol_value": 35021,
+    "request_class": "MiniGameDreamMakerNewGameRequest"
+  },
+  "MiniGameDreamMakerNewGameRequest": {
+    "protocol_name": "MiniGame_DreamMakerNewGame",
+    "protocol_value": 35021,
+    "request_class": "MiniGameDreamMakerNewGameRequest"
+  },
+  "MiniGameDreamMakerReset": {
+    "protocol_name": "MiniGame_DreamMakerRestart",
+    "protocol_value": 35022,
+    "request_class": "MiniGameDreamMakerResetRequest"
+  },
+  "MiniGameDreamMakerResetRequest": {
+    "protocol_name": "MiniGame_DreamMakerRestart",
+    "protocol_value": 35022,
+    "request_class": "MiniGameDreamMakerResetRequest"
+  },
+  "MiniGameEnterStage": {
+    "protocol_name": "MiniGame_EnterStage",
+    "protocol_value": 35001,
+    "request_class": "MiniGameEnterStageRequest"
+  },
+  "MiniGameEnterStageRequest": {
+    "protocol_name": "MiniGame_EnterStage",
+    "protocol_value": 35001,
+    "request_class": "MiniGameEnterStageRequest"
+  },
+  "MiniGameMissionList": {
+    "protocol_name": "MiniGame_MissionList",
+    "protocol_value": 35003,
+    "request_class": "MiniGameMissionListRequest"
+  },
+  "MiniGameMissionListRequest": {
+    "protocol_name": "MiniGame_MissionList",
+    "protocol_value": 35003,
+    "request_class": "MiniGameMissionListRequest"
+  },
+  "MiniGameMissionMultipleReward": {
+    "protocol_name": "MiniGame_MissionMultipleReward",
+    "protocol_value": 35005,
+    "request_class": "MiniGameMissionMultipleRewardRequest"
+  },
+  "MiniGameMissionMultipleRewardRequest": {
+    "protocol_name": "MiniGame_MissionMultipleReward",
+    "protocol_value": 35005,
+    "request_class": "MiniGameMissionMultipleRewardRequest"
+  },
+  "MiniGameMissionReward": {
+    "protocol_name": "MiniGame_MissionReward",
+    "protocol_value": 35004,
+    "request_class": "MiniGameMissionRewardRequest"
+  },
+  "MiniGameMissionRewardRequest": {
+    "protocol_name": "MiniGame_MissionReward",
+    "protocol_value": 35004,
+    "request_class": "MiniGameMissionRewardRequest"
+  },
+  "MiniGameResult": {
+    "protocol_name": "MiniGame_Result",
+    "protocol_value": 35002,
+    "request_class": "MiniGameResultRequest"
+  },
+  "MiniGameResultRequest": {
+    "protocol_name": "MiniGame_Result",
+    "protocol_value": 35002,
+    "request_class": "MiniGameResultRequest"
+  },
+  "MiniGameRoadPuzzleClearStage": {
+    "protocol_name": "MiniGame_RoadPuzzleClearStage",
+    "protocol_value": 35032,
+    "request_class": "MiniGameRoadPuzzleClearStageRequest"
+  },
+  "MiniGameRoadPuzzleClearStageRequest": {
+    "protocol_name": "MiniGame_RoadPuzzleClearStage",
+    "protocol_value": 35032,
+    "request_class": "MiniGameRoadPuzzleClearStageRequest"
+  },
+  "MiniGameRoadPuzzleGetInfo": {
+    "protocol_name": "MiniGame_RoadPuzzleGetInfo",
+    "protocol_value": 35029,
+    "request_class": "MiniGameRoadPuzzleGetInfoRequest"
+  },
+  "MiniGameRoadPuzzleGetInfoRequest": {
+    "protocol_name": "MiniGame_RoadPuzzleGetInfo",
+    "protocol_value": 35029,
+    "request_class": "MiniGameRoadPuzzleGetInfoRequest"
+  },
+  "MiniGameRoadPuzzleSaveStage": {
+    "protocol_name": "MiniGame_RoadPuzzleSaveStage",
+    "protocol_value": 35031,
+    "request_class": "MiniGameRoadPuzzleSaveStageRequest"
+  },
+  "MiniGameRoadPuzzleSaveStageRequest": {
+    "protocol_name": "MiniGame_RoadPuzzleSaveStage",
+    "protocol_value": 35031,
+    "request_class": "MiniGameRoadPuzzleSaveStageRequest"
+  },
+  "MiniGameRoadPuzzleTilePlace": {
+    "protocol_name": "MiniGame_RoadPuzzleTilePlace",
+    "protocol_value": 35030,
+    "request_class": "MiniGameRoadPuzzleTilePlaceRequest"
+  },
+  "MiniGameRoadPuzzleTilePlaceRequest": {
+    "protocol_name": "MiniGame_RoadPuzzleTilePlace",
+    "protocol_value": 35030,
+    "request_class": "MiniGameRoadPuzzleTilePlaceRequest"
+  },
+  "MiniGameShootingBattleEnter": {
+    "protocol_name": "MiniGame_ShootingBattleEnter",
+    "protocol_value": 35007,
+    "request_class": "MiniGameShootingBattleEnterRequest"
+  },
+  "MiniGameShootingBattleEnterRequest": {
+    "protocol_name": "MiniGame_ShootingBattleEnter",
+    "protocol_value": 35007,
+    "request_class": "MiniGameShootingBattleEnterRequest"
+  },
+  "MiniGameShootingBattleResult": {
+    "protocol_name": "MiniGame_ShootingBattleResult",
+    "protocol_value": 35008,
+    "request_class": "MiniGameShootingBattleResultRequest"
+  },
+  "MiniGameShootingBattleResultRequest": {
+    "protocol_name": "MiniGame_ShootingBattleResult",
+    "protocol_value": 35008,
+    "request_class": "MiniGameShootingBattleResultRequest"
+  },
+  "MiniGameShootingLobby": {
+    "protocol_name": "MiniGame_ShootingLobby",
+    "protocol_value": 35006,
+    "request_class": "MiniGameShootingLobbyRequest"
+  },
+  "MiniGameShootingLobbyRequest": {
+    "protocol_name": "MiniGame_ShootingLobby",
+    "protocol_value": 35006,
+    "request_class": "MiniGameShootingLobbyRequest"
+  },
+  "MiniGameShootingSweep": {
+    "protocol_name": "MiniGame_ShootingSweep",
+    "protocol_value": 35009,
+    "request_class": "MiniGameShootingSweepRequest"
+  },
+  "MiniGameShootingSweepRequest": {
+    "protocol_name": "MiniGame_ShootingSweep",
+    "protocol_value": 35009,
+    "request_class": "MiniGameShootingSweepRequest"
+  },
+  "MiniGameStageList": {
+    "protocol_name": "MiniGame_StageList",
+    "protocol_value": 35000,
+    "request_class": "MiniGameStageListRequest"
+  },
+  "MiniGameStageListRequest": {
+    "protocol_name": "MiniGame_StageList",
+    "protocol_value": 35000,
+    "request_class": "MiniGameStageListRequest"
+  },
+  "MiniGameTableBoardClearThema": {
+    "protocol_name": "MiniGame_TableBoardClearThema",
+    "protocol_value": 35015,
+    "request_class": "MiniGameTableBoardClearThemaRequest"
+  },
+  "MiniGameTableBoardClearThemaRequest": {
+    "protocol_name": "MiniGame_TableBoardClearThema",
+    "protocol_value": 35015,
+    "request_class": "MiniGameTableBoardClearThemaRequest"
+  },
+  "MiniGameTableBoardEncounterInput": {
+    "protocol_name": "MiniGame_TableBoardEncounterInput",
+    "protocol_value": 35012,
+    "request_class": "MiniGameTableBoardEncounterInputRequest"
+  },
+  "MiniGameTableBoardEncounterInputRequest": {
+    "protocol_name": "MiniGame_TableBoardEncounterInput",
+    "protocol_value": 35012,
+    "request_class": "MiniGameTableBoardEncounterInputRequest"
+  },
+  "MiniGameTableBoardMove": {
+    "protocol_name": "MiniGame_TableBoardMove",
+    "protocol_value": 35011,
+    "request_class": "MiniGameTableBoardMoveRequest"
+  },
+  "MiniGameTableBoardMoveRequest": {
+    "protocol_name": "MiniGame_TableBoardMove",
+    "protocol_value": 35011,
+    "request_class": "MiniGameTableBoardMoveRequest"
+  },
+  "MiniGameTableBoardMoveThema": {
+    "protocol_name": "MiniGame_TableBoardMoveThema",
+    "protocol_value": 35019,
+    "request_class": "MiniGameTableBoardMoveThemaRequest"
+  },
+  "MiniGameTableBoardMoveThemaRequest": {
+    "protocol_name": "MiniGame_TableBoardMoveThema",
+    "protocol_value": 35019,
+    "request_class": "MiniGameTableBoardMoveThemaRequest"
+  },
+  "MiniGameTableBoardResurrect": {
+    "protocol_name": "MiniGame_TableBoardResurrect",
+    "protocol_value": 35017,
+    "request_class": "MiniGameTableBoardResurrectRequest"
+  },
+  "MiniGameTableBoardResurrectRequest": {
+    "protocol_name": "MiniGame_TableBoardResurrect",
+    "protocol_value": 35017,
+    "request_class": "MiniGameTableBoardResurrectRequest"
+  },
+  "MiniGameTableBoardSweep": {
+    "protocol_name": "MiniGame_TableBoardSweep",
+    "protocol_value": 35018,
+    "request_class": "MiniGameTableBoardSweepRequest"
+  },
+  "MiniGameTableBoardSweepRequest": {
+    "protocol_name": "MiniGame_TableBoardSweep",
+    "protocol_value": 35018,
+    "request_class": "MiniGameTableBoardSweepRequest"
+  },
+  "MiniGameTableBoardSync": {
+    "protocol_name": "MiniGame_TableBoardSync",
+    "protocol_value": 35010,
+    "request_class": "MiniGameTableBoardSyncRequest"
+  },
+  "MiniGameTableBoardSyncRequest": {
+    "protocol_name": "MiniGame_TableBoardSync",
+    "protocol_value": 35010,
+    "request_class": "MiniGameTableBoardSyncRequest"
+  },
+  "MiniGameTableBoardUseItem": {
+    "protocol_name": "MiniGame_TableBoardUseItem",
+    "protocol_value": 35016,
+    "request_class": "MiniGameTableBoardUseItemRequest"
+  },
+  "MiniGameTableBoardUseItemRequest": {
+    "protocol_name": "MiniGame_TableBoardUseItem",
+    "protocol_value": 35016,
+    "request_class": "MiniGameTableBoardUseItemRequest"
+  },
+  "MissionList": {
+    "protocol_name": "Mission_List",
+    "protocol_value": 8000,
+    "request_class": "MissionListRequest"
+  },
+  "MissionListRequest": {
+    "protocol_name": "Mission_List",
+    "protocol_value": 8000,
+    "request_class": "MissionListRequest"
+  },
+  "MissionMultipleReward": {
+    "protocol_name": "Mission_MultipleReward",
+    "protocol_value": 8002,
+    "request_class": "MissionMultipleRewardRequest"
+  },
+  "MissionMultipleRewardRequest": {
+    "protocol_name": "Mission_MultipleReward",
+    "protocol_value": 8002,
+    "request_class": "MissionMultipleRewardRequest"
+  },
+  "MissionReward": {
+    "protocol_name": "Mission_Reward",
+    "protocol_value": 8001,
+    "request_class": "MissionRewardRequest"
+  },
+  "MissionRewardRequest": {
+    "protocol_name": "Mission_Reward",
+    "protocol_value": 8001,
+    "request_class": "MissionRewardRequest"
+  },
+  "MissionSync": {
+    "protocol_name": "Mission_Sync",
+    "protocol_value": 8005,
+    "request_class": "MissionSyncRequest"
+  },
+  "MissionSyncRequest": {
+    "protocol_name": "Mission_Sync",
+    "protocol_value": 8005,
+    "request_class": "MissionSyncRequest"
+  },
+  "MomoTalkFavorSchedule": {
+    "protocol_name": "MomoTalk_FavorSchedule",
+    "protocol_value": 33004,
+    "request_class": "MomoTalkFavorScheduleRequest"
+  },
+  "MomoTalkFavorScheduleRequest": {
+    "protocol_name": "MomoTalk_FavorSchedule",
+    "protocol_value": 33004,
+    "request_class": "MomoTalkFavorScheduleRequest"
+  },
+  "MomoTalkMessageList": {
+    "protocol_name": "MomoTalk_MessageList",
+    "protocol_value": 33001,
+    "request_class": "MomoTalkMessageListRequest"
+  },
+  "MomoTalkMessageListRequest": {
+    "protocol_name": "MomoTalk_MessageList",
+    "protocol_value": 33001,
+    "request_class": "MomoTalkMessageListRequest"
+  },
+  "MomoTalkOutLine": {
+    "protocol_name": "MomoTalk_OutLine",
+    "protocol_value": 33000,
+    "request_class": "MomoTalkOutLineRequest"
+  },
+  "MomoTalkOutLineRequest": {
+    "protocol_name": "MomoTalk_OutLine",
+    "protocol_value": 33000,
+    "request_class": "MomoTalkOutLineRequest"
+  },
+  "MomoTalkRead": {
+    "protocol_name": "MomoTalk_Read",
+    "protocol_value": 33002,
+    "request_class": "MomoTalkReadRequest"
+  },
+  "MomoTalkReadRequest": {
+    "protocol_name": "MomoTalk_Read",
+    "protocol_value": 33002,
+    "request_class": "MomoTalkReadRequest"
+  },
+  "MultiFloorRaidEndBattle": {
+    "protocol_name": "MultiFloorRaid_EndBattle",
+    "protocol_value": 49002,
+    "request_class": "MultiFloorRaidEndBattleRequest"
+  },
+  "MultiFloorRaidEndBattleRequest": {
+    "protocol_name": "MultiFloorRaid_EndBattle",
+    "protocol_value": 49002,
+    "request_class": "MultiFloorRaidEndBattleRequest"
+  },
+  "MultiFloorRaidEnterBattle": {
+    "protocol_name": "MultiFloorRaid_EnterBattle",
+    "protocol_value": 49001,
+    "request_class": "MultiFloorRaidEnterBattleRequest"
+  },
+  "MultiFloorRaidEnterBattleRequest": {
+    "protocol_name": "MultiFloorRaid_EnterBattle",
+    "protocol_value": 49001,
+    "request_class": "MultiFloorRaidEnterBattleRequest"
+  },
+  "MultiFloorRaidLogin": {
+    "protocol_name": "MultiFloorRaid_Login",
+    "protocol_value": 49004,
+    "request_class": "MultiFloorRaidLoginRequest"
+  },
+  "MultiFloorRaidLoginRequest": {
+    "protocol_name": "MultiFloorRaid_Login",
+    "protocol_value": 49004,
+    "request_class": "MultiFloorRaidLoginRequest"
+  },
+  "MultiFloorRaidReceiveReward": {
+    "protocol_name": "MultiFloorRaid_ReceiveReward",
+    "protocol_value": 49003,
+    "request_class": "MultiFloorRaidReceiveRewardRequest"
+  },
+  "MultiFloorRaidReceiveRewardRequest": {
+    "protocol_name": "MultiFloorRaid_ReceiveReward",
+    "protocol_value": 49003,
+    "request_class": "MultiFloorRaidReceiveRewardRequest"
+  },
+  "MultiFloorRaidSync": {
+    "protocol_name": "MultiFloorRaid_Sync",
+    "protocol_value": 49000,
+    "request_class": "MultiFloorRaidSyncRequest"
+  },
+  "MultiFloorRaidSyncRequest": {
+    "protocol_name": "MultiFloorRaid_Sync",
+    "protocol_value": 49000,
+    "request_class": "MultiFloorRaidSyncRequest"
+  },
+  "NetworkTimeSync": {
+    "protocol_name": "NetworkTime_Sync",
+    "protocol_value": 3,
+    "request_class": "NetworkTimeSyncRequest"
+  },
+  "NetworkTimeSyncRequest": {
+    "protocol_name": "NetworkTime_Sync",
+    "protocol_value": 3,
+    "request_class": "NetworkTimeSyncRequest"
+  },
+  "NotificationEventContentReddot": {
+    "protocol_name": "Notification_EventContentReddotCheck",
+    "protocol_value": 36001,
+    "request_class": "NotificationEventContentReddotRequest"
+  },
+  "NotificationEventContentReddotRequest": {
+    "protocol_name": "Notification_EventContentReddotCheck",
+    "protocol_value": 36001,
+    "request_class": "NotificationEventContentReddotRequest"
+  },
+  "NotificationLobbyCheck": {
+    "protocol_name": "Notification_LobbyCheck",
+    "protocol_value": 36000,
+    "request_class": "NotificationLobbyCheckRequest"
+  },
+  "NotificationLobbyCheckRequest": {
+    "protocol_name": "Notification_LobbyCheck",
+    "protocol_value": 36000,
+    "request_class": "NotificationLobbyCheckRequest"
+  },
+  "OpenConditionEventList": {
+    "protocol_name": "OpenCondition_EventList",
+    "protocol_value": 15002,
+    "request_class": "OpenConditionEventListRequest"
+  },
+  "OpenConditionEventListRequest": {
+    "protocol_name": "OpenCondition_EventList",
+    "protocol_value": 15002,
+    "request_class": "OpenConditionEventListRequest"
+  },
+  "OpenConditionList": {
+    "protocol_name": "OpenCondition_List",
+    "protocol_value": 15000,
+    "request_class": "OpenConditionListRequest"
+  },
+  "OpenConditionListRequest": {
+    "protocol_name": "OpenCondition_List",
+    "protocol_value": 15000,
+    "request_class": "OpenConditionListRequest"
+  },
+  "OpenConditionSet": {
+    "protocol_name": "OpenCondition_Set",
+    "protocol_value": 15001,
+    "request_class": "OpenConditionSetRequest"
+  },
+  "OpenConditionSetRequest": {
+    "protocol_name": "OpenCondition_Set",
+    "protocol_value": 15001,
+    "request_class": "OpenConditionSetRequest"
+  },
+  "OptionSave": {
+    "protocol_name": "Option_Save",
+    "protocol_value": 53000,
+    "request_class": "OptionSaveRequest"
+  },
+  "OptionSaveRequest": {
+    "protocol_name": "Option_Save",
+    "protocol_value": 53000,
+    "request_class": "OptionSaveRequest"
+  },
+  "PermanentRaidEndBattle": {
+    "protocol_name": "PermanentRaid_EndBattle",
+    "protocol_value": 54002,
+    "request_class": "PermanentRaidEndBattleRequest"
+  },
+  "PermanentRaidEndBattleRequest": {
+    "protocol_name": "PermanentRaid_EndBattle",
+    "protocol_value": 54002,
+    "request_class": "PermanentRaidEndBattleRequest"
+  },
+  "PermanentRaidEnterBattle": {
+    "protocol_name": "PermanentRaid_EnterBattle",
+    "protocol_value": 54001,
+    "request_class": "PermanentRaidEnterBattleRequest"
+  },
+  "PermanentRaidEnterBattleRequest": {
+    "protocol_name": "PermanentRaid_EnterBattle",
+    "protocol_value": 54001,
+    "request_class": "PermanentRaidEnterBattleRequest"
+  },
+  "PermanentRaidGiveUp": {
+    "protocol_name": "PermanentRaid_GiveUp",
+    "protocol_value": 54003,
+    "request_class": "PermanentRaidGiveUpRequest"
+  },
+  "PermanentRaidGiveUpRequest": {
+    "protocol_name": "PermanentRaid_GiveUp",
+    "protocol_value": 54003,
+    "request_class": "PermanentRaidGiveUpRequest"
+  },
+  "PermanentRaidLobby": {
+    "protocol_name": "PermanentRaid_Lobby",
+    "protocol_value": 54000,
+    "request_class": "PermanentRaidLobbyRequest"
+  },
+  "PermanentRaidLobbyRequest": {
+    "protocol_name": "PermanentRaid_Lobby",
+    "protocol_value": 54000,
+    "request_class": "PermanentRaidLobbyRequest"
+  },
+  "ProofTokenRequestQuestion": {
+    "protocol_name": "ProofToken_RequestQuestion",
+    "protocol_value": 37000,
+    "request_class": "ProofTokenRequestQuestionRequest"
+  },
+  "ProofTokenRequestQuestionRequest": {
+    "protocol_name": "ProofToken_RequestQuestion",
+    "protocol_value": 37000,
+    "request_class": "ProofTokenRequestQuestionRequest"
+  },
+  "ProofTokenSubmit": {
+    "protocol_name": "ProofToken_Submit",
+    "protocol_value": 37001,
+    "request_class": "ProofTokenSubmitRequest"
+  },
+  "ProofTokenSubmitRequest": {
+    "protocol_name": "ProofToken_Submit",
+    "protocol_value": 37001,
+    "request_class": "ProofTokenSubmitRequest"
+  },
+  "QueuingGetAuthTicket": {
+    "protocol_name": "Queuing_GetAuthTicket",
+    "protocol_value": 50002,
+    "request_class": "QueuingGetAuthTicketRequest"
+  },
+  "QueuingGetAuthTicketRequest": {
+    "protocol_name": "Queuing_GetAuthTicket",
+    "protocol_value": 50002,
+    "request_class": "QueuingGetAuthTicketRequest"
+  },
+  "QueuingGetCryptoKeys": {
+    "protocol_name": "Queuing_GetCryptoKeys",
+    "protocol_value": 50001,
+    "request_class": "QueuingGetCryptoKeysRequest"
+  },
+  "QueuingGetCryptoKeysRequest": {
+    "protocol_name": "Queuing_GetCryptoKeys",
+    "protocol_value": 50001,
+    "request_class": "QueuingGetCryptoKeysRequest"
+  },
+  "QueuingGetTicket": {
+    "protocol_name": "Queuing_GetTicket",
+    "protocol_value": 50000,
+    "request_class": "QueuingGetTicketRequest"
+  },
+  "QueuingGetTicketRequest": {
+    "protocol_name": "Queuing_GetTicket",
+    "protocol_value": 50000,
+    "request_class": "QueuingGetTicketRequest"
+  },
+  "QueuingProcessWaitingQueue": {
+    "protocol_name": "Queuing_ProcessWaitingQueue",
+    "protocol_value": 50003,
+    "request_class": "QueuingProcessWaitingQueueRequest"
+  },
+  "QueuingProcessWaitingQueueRequest": {
+    "protocol_name": "Queuing_ProcessWaitingQueue",
+    "protocol_value": 50003,
+    "request_class": "QueuingProcessWaitingQueueRequest"
+  },
+  "RaidBattleUpdate": {
+    "protocol_name": "Raid_BattleUpdate",
+    "protocol_value": 17006,
+    "request_class": "RaidBattleUpdateRequest"
+  },
+  "RaidBattleUpdateRequest": {
+    "protocol_name": "Raid_BattleUpdate",
+    "protocol_value": 17006,
+    "request_class": "RaidBattleUpdateRequest"
+  },
+  "RaidCompleteList": {
+    "protocol_name": "Raid_CompleteList",
+    "protocol_value": 17001,
+    "request_class": "RaidCompleteListRequest"
+  },
+  "RaidCompleteListRequest": {
+    "protocol_name": "Raid_CompleteList",
+    "protocol_value": 17001,
+    "request_class": "RaidCompleteListRequest"
+  },
+  "RaidCreateBattle": {
+    "protocol_name": "Raid_CreateBattle",
+    "protocol_value": 17004,
+    "request_class": "RaidCreateBattleRequest"
+  },
+  "RaidCreateBattleRequest": {
+    "protocol_name": "Raid_CreateBattle",
+    "protocol_value": 17004,
+    "request_class": "RaidCreateBattleRequest"
+  },
+  "RaidDetail": {
+    "protocol_name": "Raid_Detail",
+    "protocol_value": 17002,
+    "request_class": "RaidDetailRequest"
+  },
+  "RaidDetailRequest": {
+    "protocol_name": "Raid_Detail",
+    "protocol_value": 17002,
+    "request_class": "RaidDetailRequest"
+  },
+  "RaidEndBattle": {
+    "protocol_name": "Raid_EndBattle",
+    "protocol_value": 17007,
+    "request_class": "RaidEndBattleRequest"
+  },
+  "RaidEndBattleRequest": {
+    "protocol_name": "Raid_EndBattle",
+    "protocol_value": 17007,
+    "request_class": "RaidEndBattleRequest"
+  },
+  "RaidEnterBattle": {
+    "protocol_name": "Raid_EnterBattle",
+    "protocol_value": 17005,
+    "request_class": "RaidEnterBattleRequest"
+  },
+  "RaidEnterBattleRequest": {
+    "protocol_name": "Raid_EnterBattle",
+    "protocol_value": 17005,
+    "request_class": "RaidEnterBattleRequest"
+  },
+  "RaidGetBestTeam": {
+    "protocol_name": "Raid_GetBestTeam",
+    "protocol_value": 17020,
+    "request_class": "RaidGetBestTeamRequest"
+  },
+  "RaidGetBestTeamRequest": {
+    "protocol_name": "Raid_GetBestTeam",
+    "protocol_value": 17020,
+    "request_class": "RaidGetBestTeamRequest"
+  },
+  "RaidGiveUp": {
+    "protocol_name": "Raid_GiveUp",
+    "protocol_value": 17015,
+    "request_class": "RaidGiveUpRequest"
+  },
+  "RaidGiveUpRequest": {
+    "protocol_name": "Raid_GiveUp",
+    "protocol_value": 17015,
+    "request_class": "RaidGiveUpRequest"
+  },
+  "RaidList": {
+    "protocol_name": "Raid_List",
+    "protocol_value": 17000,
+    "request_class": "RaidListRequest"
+  },
+  "RaidListRequest": {
+    "protocol_name": "Raid_List",
+    "protocol_value": 17000,
+    "request_class": "RaidListRequest"
+  },
+  "RaidLobby": {
+    "protocol_name": "Raid_Lobby",
+    "protocol_value": 17014,
+    "request_class": "RaidLobbyRequest"
+  },
+  "RaidLobbyRequest": {
+    "protocol_name": "Raid_Lobby",
+    "protocol_value": 17014,
+    "request_class": "RaidLobbyRequest"
+  },
+  "RaidLogin": {
+    "protocol_name": "Raid_Login",
+    "protocol_value": 17018,
+    "request_class": "RaidLoginRequest"
+  },
+  "RaidLoginRequest": {
+    "protocol_name": "Raid_Login",
+    "protocol_value": 17018,
+    "request_class": "RaidLoginRequest"
+  },
+  "RaidOpponentList": {
+    "protocol_name": "Raid_OpponentList",
+    "protocol_value": 17016,
+    "request_class": "RaidOpponentListRequest"
+  },
+  "RaidOpponentListRequest": {
+    "protocol_name": "Raid_OpponentList",
+    "protocol_value": 17016,
+    "request_class": "RaidOpponentListRequest"
+  },
+  "RaidRankingIndex": {
+    "protocol_name": "Raid_RankingIndex",
+    "protocol_value": 17021,
+    "request_class": "RaidRankingIndexRequest"
+  },
+  "RaidRankingIndexRequest": {
+    "protocol_name": "Raid_RankingIndex",
+    "protocol_value": 17021,
+    "request_class": "RaidRankingIndexRequest"
+  },
+  "RaidRankingReward": {
+    "protocol_name": "Raid_RankingReward",
+    "protocol_value": 17017,
+    "request_class": "RaidRankingRewardRequest"
+  },
+  "RaidRankingRewardRequest": {
+    "protocol_name": "Raid_RankingReward",
+    "protocol_value": 17017,
+    "request_class": "RaidRankingRewardRequest"
+  },
+  "RaidReward": {
+    "protocol_name": "Raid_Reward",
+    "protocol_value": 17008,
+    "request_class": "RaidRewardRequest"
+  },
+  "RaidRewardAll": {
+    "protocol_name": "Raid_RewardAll",
+    "protocol_value": 17009,
+    "request_class": "RaidRewardAllRequest"
+  },
+  "RaidRewardAllRequest": {
+    "protocol_name": "Raid_RewardAll",
+    "protocol_value": 17009,
+    "request_class": "RaidRewardAllRequest"
+  },
+  "RaidRewardRequest": {
+    "protocol_name": "Raid_Reward",
+    "protocol_value": 17008,
+    "request_class": "RaidRewardRequest"
+  },
+  "RaidSearch": {
+    "protocol_name": "Raid_Search",
+    "protocol_value": 17003,
+    "request_class": "RaidSearchRequest"
+  },
+  "RaidSearchRequest": {
+    "protocol_name": "Raid_Search",
+    "protocol_value": 17003,
+    "request_class": "RaidSearchRequest"
+  },
+  "RaidSeasonReward": {
+    "protocol_name": "Raid_SeasonReward",
+    "protocol_value": 17013,
+    "request_class": "RaidSeasonRewardRequest"
+  },
+  "RaidSeasonRewardRequest": {
+    "protocol_name": "Raid_SeasonReward",
+    "protocol_value": 17013,
+    "request_class": "RaidSeasonRewardRequest"
+  },
+  "RaidShare": {
+    "protocol_name": "Raid_Share",
+    "protocol_value": 17011,
+    "request_class": "RaidShareRequest"
+  },
+  "RaidShareRequest": {
+    "protocol_name": "Raid_Share",
+    "protocol_value": 17011,
+    "request_class": "RaidShareRequest"
+  },
+  "RaidSweep": {
+    "protocol_name": "Raid_Sweep",
+    "protocol_value": 17019,
+    "request_class": "RaidSweepRequest"
+  },
+  "RaidSweepRequest": {
+    "protocol_name": "Raid_Sweep",
+    "protocol_value": 17019,
+    "request_class": "RaidSweepRequest"
+  },
+  "ReceiveAccountLevelReward": {
+    "protocol_name": "Account_ReceiveAccountLevelReward",
+    "protocol_value": 1025,
+    "request_class": "ReceiveAccountLevelRewardRequest"
+  },
+  "ReceiveAccountLevelRewardRequest": {
+    "protocol_name": "Account_ReceiveAccountLevelReward",
+    "protocol_value": 1025,
+    "request_class": "ReceiveAccountLevelRewardRequest"
+  },
+  "RecipeCraft": {
+    "protocol_name": "Recipe_Craft",
+    "protocol_value": 11000,
+    "request_class": "RecipeCraftRequest"
+  },
+  "RecipeCraftRequest": {
+    "protocol_name": "Recipe_Craft",
+    "protocol_value": 11000,
+    "request_class": "RecipeCraftRequest"
+  },
+  "ResetableContentGet": {
+    "protocol_name": "ResetableContent_Get",
+    "protocol_value": 41000,
+    "request_class": "ResetableContentGetRequest"
+  },
+  "ResetableContentGetRequest": {
+    "protocol_name": "ResetableContent_Get",
+    "protocol_value": 41000,
+    "request_class": "ResetableContentGetRequest"
+  },
+  "ScenarioAccountStudentChange": {
+    "protocol_name": "Scenario_AccountStudentChange",
+    "protocol_value": 19005,
+    "request_class": "ScenarioAccountStudentChangeRequest"
+  },
+  "ScenarioAccountStudentChangeRequest": {
+    "protocol_name": "Scenario_AccountStudentChange",
+    "protocol_value": 19005,
+    "request_class": "ScenarioAccountStudentChangeRequest"
+  },
+  "ScenarioClear": {
+    "protocol_name": "Scenario_Clear",
+    "protocol_value": 19001,
+    "request_class": "ScenarioClearRequest"
+  },
+  "ScenarioClearRequest": {
+    "protocol_name": "Scenario_Clear",
+    "protocol_value": 19001,
+    "request_class": "ScenarioClearRequest"
+  },
+  "ScenarioConfirmMainStage": {
+    "protocol_name": "Scenario_ConfirmMainStage",
+    "protocol_value": 19010,
+    "request_class": "ScenarioConfirmMainStageRequest"
+  },
+  "ScenarioConfirmMainStageRequest": {
+    "protocol_name": "Scenario_ConfirmMainStage",
+    "protocol_value": 19010,
+    "request_class": "ScenarioConfirmMainStageRequest"
+  },
+  "ScenarioDeployEchelon": {
+    "protocol_name": "Scenario_DeployEchelon",
+    "protocol_value": 19011,
+    "request_class": "ScenarioDeployEchelonRequest"
+  },
+  "ScenarioDeployEchelonRequest": {
+    "protocol_name": "Scenario_DeployEchelon",
+    "protocol_value": 19011,
+    "request_class": "ScenarioDeployEchelonRequest"
+  },
+  "ScenarioEndTurn": {
+    "protocol_name": "Scenario_EndTurn",
+    "protocol_value": 19014,
+    "request_class": "ScenarioEndTurnRequest"
+  },
+  "ScenarioEndTurnRequest": {
+    "protocol_name": "Scenario_EndTurn",
+    "protocol_value": 19014,
+    "request_class": "ScenarioEndTurnRequest"
+  },
+  "ScenarioEnter": {
+    "protocol_name": "Scenario_Enter",
+    "protocol_value": 19008,
+    "request_class": "ScenarioEnterRequest"
+  },
+  "ScenarioEnterMainStage": {
+    "protocol_name": "Scenario_EnterMainStage",
+    "protocol_value": 19009,
+    "request_class": "ScenarioEnterMainStageRequest"
+  },
+  "ScenarioEnterMainStageRequest": {
+    "protocol_name": "Scenario_EnterMainStage",
+    "protocol_value": 19009,
+    "request_class": "ScenarioEnterMainStageRequest"
+  },
+  "ScenarioEnterRequest": {
+    "protocol_name": "Scenario_Enter",
+    "protocol_value": 19008,
+    "request_class": "ScenarioEnterRequest"
+  },
+  "ScenarioEnterTactic": {
+    "protocol_name": "Scenario_EnterTactic",
+    "protocol_value": 19015,
+    "request_class": "ScenarioEnterTacticRequest"
+  },
+  "ScenarioEnterTacticRequest": {
+    "protocol_name": "Scenario_EnterTactic",
+    "protocol_value": 19015,
+    "request_class": "ScenarioEnterTacticRequest"
+  },
+  "ScenarioGroupHistoryUpdate": {
+    "protocol_name": "Scenario_GroupHistoryUpdate",
+    "protocol_value": 19002,
+    "request_class": "ScenarioGroupHistoryUpdateRequest"
+  },
+  "ScenarioGroupHistoryUpdateRequest": {
+    "protocol_name": "Scenario_GroupHistoryUpdate",
+    "protocol_value": 19002,
+    "request_class": "ScenarioGroupHistoryUpdateRequest"
+  },
+  "ScenarioList": {
+    "protocol_name": "Scenario_List",
+    "protocol_value": 19000,
+    "request_class": "ScenarioListRequest"
+  },
+  "ScenarioListRequest": {
+    "protocol_name": "Scenario_List",
+    "protocol_value": 19000,
+    "request_class": "ScenarioListRequest"
+  },
+  "ScenarioLobbyStudentChange": {
+    "protocol_name": "Scenario_LobbyStudentChange",
+    "protocol_value": 19006,
+    "request_class": "ScenarioLobbyStudentChangeRequest"
+  },
+  "ScenarioLobbyStudentChangeRequest": {
+    "protocol_name": "Scenario_LobbyStudentChange",
+    "protocol_value": 19006,
+    "request_class": "ScenarioLobbyStudentChangeRequest"
+  },
+  "ScenarioMapMove": {
+    "protocol_name": "Scenario_MapMove",
+    "protocol_value": 19013,
+    "request_class": "ScenarioMapMoveRequest"
+  },
+  "ScenarioMapMoveRequest": {
+    "protocol_name": "Scenario_MapMove",
+    "protocol_value": 19013,
+    "request_class": "ScenarioMapMoveRequest"
+  },
+  "ScenarioPortal": {
+    "protocol_name": "Scenario_Portal",
+    "protocol_value": 19018,
+    "request_class": "ScenarioPortalRequest"
+  },
+  "ScenarioPortalRequest": {
+    "protocol_name": "Scenario_Portal",
+    "protocol_value": 19018,
+    "request_class": "ScenarioPortalRequest"
+  },
+  "ScenarioRestartMainStage": {
+    "protocol_name": "Scenario_RestartMainStage",
+    "protocol_value": 19019,
+    "request_class": "ScenarioRestartMainStageRequest"
+  },
+  "ScenarioRestartMainStageRequest": {
+    "protocol_name": "Scenario_RestartMainStage",
+    "protocol_value": 19019,
+    "request_class": "ScenarioRestartMainStageRequest"
+  },
+  "ScenarioRetreat": {
+    "protocol_name": "Scenario_Retreat",
+    "protocol_value": 19017,
+    "request_class": "ScenarioRetreatRequest"
+  },
+  "ScenarioRetreatRequest": {
+    "protocol_name": "Scenario_Retreat",
+    "protocol_value": 19017,
+    "request_class": "ScenarioRetreatRequest"
+  },
+  "ScenarioSelect": {
+    "protocol_name": "Scenario_Select",
+    "protocol_value": 19004,
+    "request_class": "ScenarioSelectRequest"
+  },
+  "ScenarioSelectRequest": {
+    "protocol_name": "Scenario_Select",
+    "protocol_value": 19004,
+    "request_class": "ScenarioSelectRequest"
+  },
+  "ScenarioSkip": {
+    "protocol_name": "Scenario_Skip",
+    "protocol_value": 19003,
+    "request_class": "ScenarioSkipRequest"
+  },
+  "ScenarioSkipMainStage": {
+    "protocol_name": "Scenario_SkipMainStage",
+    "protocol_value": 19020,
+    "request_class": "ScenarioSkipMainStageRequest"
+  },
+  "ScenarioSkipMainStageRequest": {
+    "protocol_name": "Scenario_SkipMainStage",
+    "protocol_value": 19020,
+    "request_class": "ScenarioSkipMainStageRequest"
+  },
+  "ScenarioSkipRequest": {
+    "protocol_name": "Scenario_Skip",
+    "protocol_value": 19003,
+    "request_class": "ScenarioSkipRequest"
+  },
+  "ScenarioSpecialLobbyChange": {
+    "protocol_name": "Scenario_SpecialLobbyChange",
+    "protocol_value": 19007,
+    "request_class": "ScenarioSpecialLobbyChangeRequest"
+  },
+  "ScenarioSpecialLobbyChangeRequest": {
+    "protocol_name": "Scenario_SpecialLobbyChange",
+    "protocol_value": 19007,
+    "request_class": "ScenarioSpecialLobbyChangeRequest"
+  },
+  "ScenarioTacticResult": {
+    "protocol_name": "Scenario_TacticResult",
+    "protocol_value": 19016,
+    "request_class": "ScenarioTacticResultRequest"
+  },
+  "ScenarioTacticResultRequest": {
+    "protocol_name": "Scenario_TacticResult",
+    "protocol_value": 19016,
+    "request_class": "ScenarioTacticResultRequest"
+  },
+  "ScenarioWithdrawEchelon": {
+    "protocol_name": "Scenario_WithdrawEchelon",
+    "protocol_value": 19012,
+    "request_class": "ScenarioWithdrawEchelonRequest"
+  },
+  "ScenarioWithdrawEchelonRequest": {
+    "protocol_name": "Scenario_WithdrawEchelon",
+    "protocol_value": 19012,
+    "request_class": "ScenarioWithdrawEchelonRequest"
+  },
+  "SchoolDungeonBattleResult": {
+    "protocol_name": "SchoolDungeon_BattleResult",
+    "protocol_value": 38002,
+    "request_class": "SchoolDungeonBattleResultRequest"
+  },
+  "SchoolDungeonBattleResultRequest": {
+    "protocol_name": "SchoolDungeon_BattleResult",
+    "protocol_value": 38002,
+    "request_class": "SchoolDungeonBattleResultRequest"
+  },
+  "SchoolDungeonEnterBattle": {
+    "protocol_name": "SchoolDungeon_EnterBattle",
+    "protocol_value": 38001,
+    "request_class": "SchoolDungeonEnterBattleRequest"
+  },
+  "SchoolDungeonEnterBattleRequest": {
+    "protocol_name": "SchoolDungeon_EnterBattle",
+    "protocol_value": 38001,
+    "request_class": "SchoolDungeonEnterBattleRequest"
+  },
+  "SchoolDungeonList": {
+    "protocol_name": "SchoolDungeon_List",
+    "protocol_value": 38000,
+    "request_class": "SchoolDungeonListRequest"
+  },
+  "SchoolDungeonListRequest": {
+    "protocol_name": "SchoolDungeon_List",
+    "protocol_value": 38000,
+    "request_class": "SchoolDungeonListRequest"
+  },
+  "SchoolDungeonRetreat": {
+    "protocol_name": "SchoolDungeon_Retreat",
+    "protocol_value": 38003,
+    "request_class": "SchoolDungeonRetreatRequest"
+  },
+  "SchoolDungeonRetreatRequest": {
+    "protocol_name": "SchoolDungeon_Retreat",
+    "protocol_value": 38003,
+    "request_class": "SchoolDungeonRetreatRequest"
+  },
+  "ShopBeforehandGachaGet": {
+    "protocol_name": "Shop_BeforehandGachaGet",
+    "protocol_value": 10010,
+    "request_class": "ShopBeforehandGachaGetRequest"
+  },
+  "ShopBeforehandGachaGetRequest": {
+    "protocol_name": "Shop_BeforehandGachaGet",
+    "protocol_value": 10010,
+    "request_class": "ShopBeforehandGachaGetRequest"
+  },
+  "ShopBeforehandGachaPick": {
+    "protocol_name": "Shop_BeforehandGachaPick",
+    "protocol_value": 10013,
+    "request_class": "ShopBeforehandGachaPickRequest"
+  },
+  "ShopBeforehandGachaPickRequest": {
+    "protocol_name": "Shop_BeforehandGachaPick",
+    "protocol_value": 10013,
+    "request_class": "ShopBeforehandGachaPickRequest"
+  },
+  "ShopBeforehandGachaRun": {
+    "protocol_name": "Shop_BeforehandGachaRun",
+    "protocol_value": 10011,
+    "request_class": "ShopBeforehandGachaRunRequest"
+  },
+  "ShopBeforehandGachaRunRequest": {
+    "protocol_name": "Shop_BeforehandGachaRun",
+    "protocol_value": 10011,
+    "request_class": "ShopBeforehandGachaRunRequest"
+  },
+  "ShopBeforehandGachaSave": {
+    "protocol_name": "Shop_BeforehandGachaSave",
+    "protocol_value": 10012,
+    "request_class": "ShopBeforehandGachaSaveRequest"
+  },
+  "ShopBeforehandGachaSaveRequest": {
+    "protocol_name": "Shop_BeforehandGachaSave",
+    "protocol_value": 10012,
+    "request_class": "ShopBeforehandGachaSaveRequest"
+  },
+  "ShopBuyAP": {
+    "protocol_name": "Shop_BuyAP",
+    "protocol_value": 10009,
+    "request_class": "ShopBuyAPRequest"
+  },
+  "ShopBuyAPRequest": {
+    "protocol_name": "Shop_BuyAP",
+    "protocol_value": 10009,
+    "request_class": "ShopBuyAPRequest"
+  },
+  "ShopBuyEligma": {
+    "protocol_name": "Shop_BuyEligma",
+    "protocol_value": 10004,
+    "request_class": "ShopBuyEligmaRequest"
+  },
+  "ShopBuyEligmaRequest": {
+    "protocol_name": "Shop_BuyEligma",
+    "protocol_value": 10004,
+    "request_class": "ShopBuyEligmaRequest"
+  },
+  "ShopBuyGacha": {
+    "protocol_name": "Shop_BuyGacha",
+    "protocol_value": 10001,
+    "request_class": "ShopBuyGachaRequest"
+  },
+  "ShopBuyGacha2": {
+    "protocol_name": "Shop_BuyGacha2",
+    "protocol_value": 10005,
+    "request_class": "ShopBuyGacha2Request"
+  },
+  "ShopBuyGacha2Request": {
+    "protocol_name": "Shop_BuyGacha2",
+    "protocol_value": 10005,
+    "request_class": "ShopBuyGacha2Request"
+  },
+  "ShopBuyGacha3": {
+    "protocol_name": "Shop_BuyGacha3",
+    "protocol_value": 10008,
+    "request_class": "ShopBuyGacha3Request"
+  },
+  "ShopBuyGacha3Request": {
+    "protocol_name": "Shop_BuyGacha3",
+    "protocol_value": 10008,
+    "request_class": "ShopBuyGacha3Request"
+  },
+  "ShopBuyGachaRequest": {
+    "protocol_name": "Shop_BuyGacha",
+    "protocol_value": 10001,
+    "request_class": "ShopBuyGachaRequest"
+  },
+  "ShopBuyMerchandise": {
+    "protocol_name": "Shop_BuyMerchandise",
+    "protocol_value": 10000,
+    "request_class": "ShopBuyMerchandiseRequest"
+  },
+  "ShopBuyMerchandiseRequest": {
+    "protocol_name": "Shop_BuyMerchandise",
+    "protocol_value": 10000,
+    "request_class": "ShopBuyMerchandiseRequest"
+  },
+  "ShopBuyRefreshMerchandise": {
+    "protocol_name": "Shop_BuyRefreshMerchandise",
+    "protocol_value": 10007,
+    "request_class": "ShopBuyRefreshMerchandiseRequest"
+  },
+  "ShopBuyRefreshMerchandiseRequest": {
+    "protocol_name": "Shop_BuyRefreshMerchandise",
+    "protocol_value": 10007,
+    "request_class": "ShopBuyRefreshMerchandiseRequest"
+  },
+  "ShopGachaRecruitList": {
+    "protocol_name": "Shop_GachaRecruitList",
+    "protocol_value": 10006,
+    "request_class": "ShopGachaRecruitListRequest"
+  },
+  "ShopGachaRecruitListRequest": {
+    "protocol_name": "Shop_GachaRecruitList",
+    "protocol_value": 10006,
+    "request_class": "ShopGachaRecruitListRequest"
+  },
+  "ShopList": {
+    "protocol_name": "Shop_List",
+    "protocol_value": 10002,
+    "request_class": "ShopListRequest"
+  },
+  "ShopListRequest": {
+    "protocol_name": "Shop_List",
+    "protocol_value": 10002,
+    "request_class": "ShopListRequest"
+  },
+  "ShopPickupSelectionGachaBuy": {
+    "protocol_name": "Shop_PickupSelectionGachaBuy",
+    "protocol_value": 10016,
+    "request_class": "ShopPickupSelectionGachaBuyRequest"
+  },
+  "ShopPickupSelectionGachaBuyRequest": {
+    "protocol_name": "Shop_PickupSelectionGachaBuy",
+    "protocol_value": 10016,
+    "request_class": "ShopPickupSelectionGachaBuyRequest"
+  },
+  "ShopPickupSelectionGachaGet": {
+    "protocol_name": "Shop_PickupSelectionGachaGet",
+    "protocol_value": 10014,
+    "request_class": "ShopPickupSelectionGachaGetRequest"
+  },
+  "ShopPickupSelectionGachaGetRequest": {
+    "protocol_name": "Shop_PickupSelectionGachaGet",
+    "protocol_value": 10014,
+    "request_class": "ShopPickupSelectionGachaGetRequest"
+  },
+  "ShopPickupSelectionGachaSet": {
+    "protocol_name": "Shop_PickupSelectionGachaSet",
+    "protocol_value": 10015,
+    "request_class": "ShopPickupSelectionGachaSetRequest"
+  },
+  "ShopPickupSelectionGachaSetRequest": {
+    "protocol_name": "Shop_PickupSelectionGachaSet",
+    "protocol_value": 10015,
+    "request_class": "ShopPickupSelectionGachaSetRequest"
+  },
+  "ShopRefresh": {
+    "protocol_name": "Shop_Refresh",
+    "protocol_value": 10003,
+    "request_class": "ShopRefreshRequest"
+  },
+  "ShopRefreshRequest": {
+    "protocol_name": "Shop_Refresh",
+    "protocol_value": 10003,
+    "request_class": "ShopRefreshRequest"
+  },
+  "SkipHistoryList": {
+    "protocol_name": "SkipHistory_List",
+    "protocol_value": 18000,
+    "request_class": "SkipHistoryListRequest"
+  },
+  "SkipHistoryListRequest": {
+    "protocol_name": "SkipHistory_List",
+    "protocol_value": 18000,
+    "request_class": "SkipHistoryListRequest"
+  },
+  "SkipHistorySave": {
+    "protocol_name": "SkipHistory_Save",
+    "protocol_value": 18001,
+    "request_class": "SkipHistorySaveRequest"
+  },
+  "SkipHistorySaveRequest": {
+    "protocol_name": "SkipHistory_Save",
+    "protocol_value": 18001,
+    "request_class": "SkipHistorySaveRequest"
+  },
+  "StickerLobby": {
+    "protocol_name": "Sticker_Lobby",
+    "protocol_value": 47001,
+    "request_class": "StickerLobbyRequest"
+  },
+  "StickerLobbyRequest": {
+    "protocol_name": "Sticker_Lobby",
+    "protocol_value": 47001,
+    "request_class": "StickerLobbyRequest"
+  },
+  "StickerLogin": {
+    "protocol_name": "Sticker_Login",
+    "protocol_value": 47000,
+    "request_class": "StickerLoginRequest"
+  },
+  "StickerLoginRequest": {
+    "protocol_name": "Sticker_Login",
+    "protocol_value": 47000,
+    "request_class": "StickerLoginRequest"
+  },
+  "StickerUseSticker": {
+    "protocol_name": "Sticker_UseSticker",
+    "protocol_value": 47002,
+    "request_class": "StickerUseStickerRequest"
+  },
+  "StickerUseStickerRequest": {
+    "protocol_name": "Sticker_UseSticker",
+    "protocol_value": 47002,
+    "request_class": "StickerUseStickerRequest"
+  },
+  "SystemVersion": {
+    "protocol_name": "System_Version",
+    "protocol_value": 1,
+    "request_class": "SystemVersionRequest"
+  },
+  "SystemVersionRequest": {
+    "protocol_name": "System_Version",
+    "protocol_value": 1,
+    "request_class": "SystemVersionRequest"
+  },
+  "TTSGetFile": {
+    "protocol_name": "TTS_GetFile",
+    "protocol_value": 31000,
+    "request_class": "TTSGetFileRequest"
+  },
+  "TTSGetFileRequest": {
+    "protocol_name": "TTS_GetFile",
+    "protocol_value": 31000,
+    "request_class": "TTSGetFileRequest"
+  },
+  "TTSGetKana": {
+    "protocol_name": "TTS_GetKana",
+    "protocol_value": 31001,
+    "request_class": "TTSGetKanaRequest"
+  },
+  "TTSGetKanaRequest": {
+    "protocol_name": "TTS_GetKana",
+    "protocol_value": 31001,
+    "request_class": "TTSGetKanaRequest"
+  },
+  "TimeAttackDungeonCreateBattle": {
+    "protocol_name": "TimeAttackDungeon_CreateBattle",
+    "protocol_value": 39001,
+    "request_class": "TimeAttackDungeonCreateBattleRequest"
+  },
+  "TimeAttackDungeonCreateBattleRequest": {
+    "protocol_name": "TimeAttackDungeon_CreateBattle",
+    "protocol_value": 39001,
+    "request_class": "TimeAttackDungeonCreateBattleRequest"
+  },
+  "TimeAttackDungeonEndBattle": {
+    "protocol_name": "TimeAttackDungeon_EndBattle",
+    "protocol_value": 39003,
+    "request_class": "TimeAttackDungeonEndBattleRequest"
+  },
+  "TimeAttackDungeonEndBattleRequest": {
+    "protocol_name": "TimeAttackDungeon_EndBattle",
+    "protocol_value": 39003,
+    "request_class": "TimeAttackDungeonEndBattleRequest"
+  },
+  "TimeAttackDungeonEnterBattle": {
+    "protocol_name": "TimeAttackDungeon_EnterBattle",
+    "protocol_value": 39002,
+    "request_class": "TimeAttackDungeonEnterBattleRequest"
+  },
+  "TimeAttackDungeonEnterBattleRequest": {
+    "protocol_name": "TimeAttackDungeon_EnterBattle",
+    "protocol_value": 39002,
+    "request_class": "TimeAttackDungeonEnterBattleRequest"
+  },
+  "TimeAttackDungeonGiveUp": {
+    "protocol_name": "TimeAttackDungeon_GiveUp",
+    "protocol_value": 39005,
+    "request_class": "TimeAttackDungeonGiveUpRequest"
+  },
+  "TimeAttackDungeonGiveUpRequest": {
+    "protocol_name": "TimeAttackDungeon_GiveUp",
+    "protocol_value": 39005,
+    "request_class": "TimeAttackDungeonGiveUpRequest"
+  },
+  "TimeAttackDungeonLobby": {
+    "protocol_name": "TimeAttackDungeon_Lobby",
+    "protocol_value": 39000,
+    "request_class": "TimeAttackDungeonLobbyRequest"
+  },
+  "TimeAttackDungeonLobbyRequest": {
+    "protocol_name": "TimeAttackDungeon_Lobby",
+    "protocol_value": 39000,
+    "request_class": "TimeAttackDungeonLobbyRequest"
+  },
+  "TimeAttackDungeonLogin": {
+    "protocol_name": "TimeAttackDungeon_Login",
+    "protocol_value": 39006,
+    "request_class": "TimeAttackDungeonLoginRequest"
+  },
+  "TimeAttackDungeonLoginRequest": {
+    "protocol_name": "TimeAttackDungeon_Login",
+    "protocol_value": 39006,
+    "request_class": "TimeAttackDungeonLoginRequest"
+  },
+  "TimeAttackDungeonSweep": {
+    "protocol_name": "TimeAttackDungeon_Sweep",
+    "protocol_value": 39004,
+    "request_class": "TimeAttackDungeonSweepRequest"
+  },
+  "TimeAttackDungeonSweepRequest": {
+    "protocol_name": "TimeAttackDungeon_Sweep",
+    "protocol_value": 39004,
+    "request_class": "TimeAttackDungeonSweepRequest"
+  },
+  "ToastList": {
+    "protocol_name": "Toast_List",
+    "protocol_value": 16000,
+    "request_class": "ToastListRequest"
+  },
+  "ToastListRequest": {
+    "protocol_name": "Toast_List",
+    "protocol_value": 16000,
+    "request_class": "ToastListRequest"
+  },
+  "UseCoupon": {
+    "protocol_name": "Event_UseCoupon",
+    "protocol_value": 25002,
+    "request_class": "UseCouponRequest"
+  },
+  "UseCouponRequest": {
+    "protocol_name": "Event_UseCoupon",
+    "protocol_value": 25002,
+    "request_class": "UseCouponRequest"
+  },
+  "WeekDungeonBattleResult": {
+    "protocol_name": "WeekDungeon_BattleResult",
+    "protocol_value": 23002,
+    "request_class": "WeekDungeonBattleResultRequest"
+  },
+  "WeekDungeonBattleResultRequest": {
+    "protocol_name": "WeekDungeon_BattleResult",
+    "protocol_value": 23002,
+    "request_class": "WeekDungeonBattleResultRequest"
+  },
+  "WeekDungeonEnterBattle": {
+    "protocol_name": "WeekDungeon_EnterBattle",
+    "protocol_value": 23001,
+    "request_class": "WeekDungeonEnterBattleRequest"
+  },
+  "WeekDungeonEnterBattleRequest": {
+    "protocol_name": "WeekDungeon_EnterBattle",
+    "protocol_value": 23001,
+    "request_class": "WeekDungeonEnterBattleRequest"
+  },
+  "WeekDungeonList": {
+    "protocol_name": "WeekDungeon_List",
+    "protocol_value": 23000,
+    "request_class": "WeekDungeonListRequest"
+  },
+  "WeekDungeonListRequest": {
+    "protocol_name": "WeekDungeon_List",
+    "protocol_value": 23000,
+    "request_class": "WeekDungeonListRequest"
+  },
+  "WeekDungeonRetreat": {
+    "protocol_name": "WeekDungeon_Retreat",
+    "protocol_value": 23003,
+    "request_class": "WeekDungeonRetreatRequest"
+  },
+  "WeekDungeonRetreatRequest": {
+    "protocol_name": "WeekDungeon_Retreat",
+    "protocol_value": 23003,
+    "request_class": "WeekDungeonRetreatRequest"
+  },
+  "WorldRaidBattleResult": {
+    "protocol_name": "WorldRaid_BattleResult",
+    "protocol_value": 40003,
+    "request_class": "WorldRaidBattleResultRequest"
+  },
+  "WorldRaidBattleResultRequest": {
+    "protocol_name": "WorldRaid_BattleResult",
+    "protocol_value": 40003,
+    "request_class": "WorldRaidBattleResultRequest"
+  },
+  "WorldRaidBossList": {
+    "protocol_name": "WorldRaid_BossList",
+    "protocol_value": 40001,
+    "request_class": "WorldRaidBossListRequest"
+  },
+  "WorldRaidBossListRequest": {
+    "protocol_name": "WorldRaid_BossList",
+    "protocol_value": 40001,
+    "request_class": "WorldRaidBossListRequest"
+  },
+  "WorldRaidEnterBattle": {
+    "protocol_name": "WorldRaid_EnterBattle",
+    "protocol_value": 40002,
+    "request_class": "WorldRaidEnterBattleRequest"
+  },
+  "WorldRaidEnterBattleRequest": {
+    "protocol_name": "WorldRaid_EnterBattle",
+    "protocol_value": 40002,
+    "request_class": "WorldRaidEnterBattleRequest"
+  },
+  "WorldRaidLobby": {
+    "protocol_name": "WorldRaid_Lobby",
+    "protocol_value": 40000,
+    "request_class": "WorldRaidLobbyRequest"
+  },
+  "WorldRaidLobbyRequest": {
+    "protocol_name": "WorldRaid_Lobby",
+    "protocol_value": 40000,
+    "request_class": "WorldRaidLobbyRequest"
+  },
+  "WorldRaidReceiveReward": {
+    "protocol_name": "WorldRaid_ReceiveReward",
+    "protocol_value": 40004,
+    "request_class": "WorldRaidReceiveRewardRequest"
+  },
+  "WorldRaidReceiveRewardRequest": {
+    "protocol_name": "WorldRaid_ReceiveReward",
+    "protocol_value": 40004,
+    "request_class": "WorldRaidReceiveRewardRequest"
+  },
+  "WorldRaidUpdateCarrierSkill": {
+    "protocol_name": "WorldRaid_UpdateCarrierSkill",
+    "protocol_value": 40005,
+    "request_class": "WorldRaidUpdateCarrierSkillRequest"
+  },
+  "WorldRaidUpdateCarrierSkillRequest": {
+    "protocol_name": "WorldRaid_UpdateCarrierSkill",
+    "protocol_value": 40005,
+    "request_class": "WorldRaidUpdateCarrierSkillRequest"
+  }
+}
