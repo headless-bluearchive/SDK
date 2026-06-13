@@ -1,4 +1,3 @@
-"""Crypto and transform primitives reconstructed from GameAssembly."""
 
 from __future__ import annotations
 
@@ -46,11 +45,6 @@ def _crc_table() -> tuple[int, ...]:
 
 
 def fast_crc(data: bytes | bytearray | memoryview, offset: int = 0, length: int | None = None) -> int:
-    """MX.Core.Crypto.FastCRC.GetCRC.
-
-    Parameters match the native method: initial CRC is 0, no reflection, no
-    final xor, table index is ``((crc >> 24) ^ byte) & 0xff``.
-    """
 
     view = memoryview(data)
     if offset < 0:
@@ -72,11 +66,6 @@ def fast_crc(data: bytes | bytearray | memoryview, offset: int = 0, length: int 
 
 
 def xor_crypt(data: bytes | bytearray | memoryview, key_byte: int = XOR_BYTE) -> bytes:
-    """XORCryptor.Encrypt equivalent.
-
-    The native scalar path xors each payload byte with the low byte of the
-    stored uint key. It does not cycle over the four uint bytes.
-    """
 
     key_byte &= 0xFF
     return bytes((b ^ key_byte) for b in bytes(data))
@@ -90,12 +79,6 @@ def xor_crypt_inplace(data: bytearray, key_byte: int = XOR_BYTE) -> bytearray:
 
 
 def gzip_bytes(data: bytes, *, compresslevel: int = 1, mtime: int | None = 0) -> bytes:
-    """BestHTTP Zlib GZipStream-compatible gzip bytes.
-
-    BestHTTP accepts normal gzip framing. The exact Unity header timestamp is
-    not important for replay because the packet CRC is computed after local
-    compression and written into the same packet.
-    """
 
     out = io.BytesIO()
     with gzip.GzipFile(fileobj=out, mode="wb", compresslevel=compresslevel, mtime=mtime) as gz:
@@ -104,7 +87,6 @@ def gzip_bytes(data: bytes, *, compresslevel: int = 1, mtime: int | None = 0) ->
 
 
 def gzip_length_prefixed(data: bytes, *, compresslevel: int = 1, mtime: int | None = 0) -> bytes:
-    """PacketCryptManager.Compress: ``int32le(original_len) + gzip(data)``."""
 
     if len(data) > 0x7FFFFFFF:
         raise ValueError("request body too large for signed int32 length prefix")
@@ -120,17 +102,12 @@ def _try_decompress_gzip_zlib_raw(payload: bytes) -> bytes:
     ):
         try:
             return func(payload)
-        except Exception as exc:  # pragma: no cover - diagnostic path
+        except Exception as exc:
             errors.append(exc)
     raise ValueError(f"unable to decompress payload; tried gzip, zlib, raw deflate: {errors!r}")
 
 
 def ungzip_length_prefixed(data: bytes) -> bytes:
-    """Reverse ``gzip_length_prefixed``.
-
-    The decompressor accepts gzip, zlib, or raw deflate after the 4-byte length
-    prefix so captured variants can be inspected without changing callers.
-    """
 
     if len(data) < 4:
         raise ValueError("compressed payload is shorter than the 4-byte length prefix")
@@ -164,7 +141,7 @@ def aes_cbc_pkcs7_decrypt(ciphertext: bytes, key: bytes, iv: bytes) -> bytes:
         raise ValueError("AES-CBC IV must be 16 bytes")
     try:
         from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
-    except Exception:  # pragma: no cover - fallback for lean Python envs
+    except Exception:
         from Crypto.Cipher import AES
 
         return _pkcs7_unpad(AES.new(key, AES.MODE_CBC, iv).decrypt(ciphertext))
@@ -179,7 +156,7 @@ def aes_cbc_pkcs7_encrypt(plaintext: bytes, key: bytes, iv: bytes) -> bytes:
     padded = _pkcs7_pad(plaintext)
     try:
         from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
-    except Exception:  # pragma: no cover - fallback for lean Python envs
+    except Exception:
         from Crypto.Cipher import AES
 
         return AES.new(key, AES.MODE_CBC, iv).encrypt(padded)
@@ -189,7 +166,6 @@ def aes_cbc_pkcs7_encrypt(plaintext: bytes, key: bytes, iv: bytes) -> bytes:
 
 
 def decrypt_response_base64(aes_key: bytes | None, aes_iv: bytes | None, encrypted_base64: str) -> str:
-    """HttpGameMessage.DecryptOrReturnOriginal / DecodeResponse helper."""
 
     if not aes_key or not aes_iv:
         return encrypted_base64
@@ -204,7 +180,6 @@ def encrypt_response_json(aes_key: bytes, aes_iv: bytes, plaintext_json: str | b
 
 
 def decode_bytes(value: bytes | bytearray | memoryview | str | None, *, encoding: str = "hex") -> bytes:
-    """Decode common key/iv representations for client configuration."""
 
     if value is None:
         return b""
@@ -226,7 +201,6 @@ def decode_bytes(value: bytes | bytearray | memoryview | str | None, *, encoding
 
 
 def generate_aes128_key_iv() -> tuple[bytes, bytes]:
-    """Equivalent material shape to the client helper that generates AES-128 key/IV."""
 
     return os.urandom(16), os.urandom(16)
 
@@ -235,7 +209,7 @@ def generate_aes128_key_iv() -> tuple[bytes, bytes]:
 def _account_check_nexon_rsa_public_key():
     try:
         from cryptography.hazmat.primitives import serialization
-    except Exception:  # pragma: no cover - fallback for lean Python envs
+    except Exception:
         from Crypto.PublicKey import RSA
 
         return RSA.import_key(ACCOUNT_CHECK_NEXON_RSA_PUBLIC_KEY_PEM)
@@ -248,14 +222,13 @@ def account_check_nexon_rsa_encrypt_base64(
     *,
     padding_mode: str = "oaep-sha1",
 ) -> str:
-    """RSA encrypt Account_CheckNexon AES material and base64 it."""
 
     raw = bytes(data)
     normalized_padding = padding_mode.strip().lower().replace("_", "-")
     try:
         from cryptography.hazmat.primitives.asymmetric import padding
         from cryptography.hazmat.primitives import hashes
-    except Exception:  # pragma: no cover - fallback for lean Python envs
+    except Exception:
         from Crypto.Cipher import PKCS1_v1_5
         from Crypto.Cipher import PKCS1_OAEP
         from Crypto.Hash import SHA1, SHA256
@@ -292,7 +265,6 @@ def account_check_nexon_rsa_encrypt_base64(
 
 
 def generated_key_iv_fields(key: bytes | None = None, iv: bytes | None = None) -> tuple[dict[str, str], bytes, bytes]:
-    """Return queue-stage ``ClientGeneratedKey/IV`` fields plus raw bytes."""
 
     if key is None or iv is None:
         generated_key, generated_iv = generate_aes128_key_iv()
@@ -313,11 +285,6 @@ def account_check_nexon_key_iv_fields(
     *,
     mode: str = "rsa-raw",
 ) -> tuple[dict[str, str], bytes, bytes]:
-    """Return Account_CheckNexon ``ClientGeneratedKey/IV`` fields.
-
-    ``rsa-oaep-sha1`` matches the reversed Android client path. The other modes
-    are diagnostic variants for narrowing server-side ErrorCode differences.
-    """
 
     if key is None or iv is None:
         generated_key, generated_iv = generate_aes128_key_iv()

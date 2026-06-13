@@ -1,4 +1,3 @@
-"""Request schema data access."""
 
 from __future__ import annotations
 
@@ -7,18 +6,15 @@ from functools import lru_cache
 from pathlib import Path
 from typing import Any
 
-from config.paths import PROJECT_ROOT
-
 
 PACKAGE_ROOT = Path(__file__).resolve().parent
-WORKSPACE_ROOT = PROJECT_ROOT
 DATA_DIR = PACKAGE_ROOT / "data"
 
 
 def _load_json(name: str) -> dict[str, Any]:
-    for path in (DATA_DIR / name, WORKSPACE_ROOT / "analysis_reports" / name):
-        if path.exists():
-            return json.loads(path.read_text(encoding="utf-8"))
+    path = DATA_DIR / name
+    if path.exists():
+        return json.loads(path.read_text(encoding="utf-8"))
     return {}
 
 

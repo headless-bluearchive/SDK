@@ -1,4 +1,5 @@
 requests>=2.32
+httpx>=0.27
 cryptography>=42
 pycryptodome>=3.20
 randomandroidphone==0.10

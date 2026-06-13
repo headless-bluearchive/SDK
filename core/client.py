@@ -1,4 +1,3 @@
-"""High-level request builder and HTTP replay client."""
 
 from __future__ import annotations
 
@@ -9,6 +8,7 @@ from dataclasses import dataclass
 from typing import Any, Mapping
 from urllib.parse import urljoin
 
+from config.game import DEFAULTS
 from core.crypto import decode_bytes, decrypt_response_base64
 from core.packet import PacketMeta, build_packet_detailed
 from core.protocol import protocol_value, request_protocol
@@ -24,12 +24,11 @@ class BuiltRequest:
     serialized_request_bytes: bytes = b""
 
 
-DEFAULT_BESTHTTP_USER_AGENT = "BestHTTP/2 v2.4.0"
-DEFAULT_BESTHTTP_MULTIPART_BOUNDARY_PREFIX = "BestHTTP_HTTPMultiPartForm_"
+DEFAULT_BESTHTTP_USER_AGENT = DEFAULTS.besthttp_user_agent
+DEFAULT_BESTHTTP_MULTIPART_BOUNDARY_PREFIX = DEFAULTS.besthttp_boundary_prefix
 
 
 class BAReplayClient:
-    """Replay client for the main game gateway packet path."""
 
     def __init__(
         self,
@@ -75,6 +74,7 @@ class BAReplayClient:
         self.proxy = normalize_proxy_url(proxy)
         self.proxies = dict(proxies) if proxies is not None else requests_proxy_map(self.proxy)
         self._http_session = None
+        self._async_http_client = None
         self.last_exchange: dict[str, Any] | None = None
 
     def set_crypto(
@@ -152,6 +152,28 @@ class BAReplayClient:
                 return response_text
         return response_text
 
+    async def post_async(
+        self,
+        protocol_or_request: int | str,
+        fields: Mapping[str, Any] | bytes | bytearray | str | None = None,
+        *,
+        url: str | None = None,
+        body_mode: str = DEFAULTS.body_mode,
+        decrypt: bool = True,
+        json_response: bool = True,
+        **build_kwargs: Any,
+    ) -> Any:
+        built = self.build(protocol_or_request, fields, **build_kwargs)
+        response_text = await self.post_packet_async(built.packet, url=url, body_mode=body_mode)
+        if decrypt:
+            response_text = self.decode_response(response_text)
+        if json_response:
+            try:
+                return json.loads(response_text)
+            except json.JSONDecodeError:
+                return response_text
+        return response_text
+
     def post_packet(self, packet: bytes, *, url: str | None = None, body_mode: str = "besthttp-multipart") -> str:
         import requests
 
@@ -198,6 +220,37 @@ class BAReplayClient:
             response.raise_for_status()
         return response.text
 
+    async def post_packet_async(
+        self,
+        packet: bytes,
+        *,
+        url: str | None = None,
+        body_mode: str = DEFAULTS.body_mode,
+    ) -> str:
+        import httpx
+
+        target_url = url or self.gateway_url
+        headers = self.default_headers()
+        client = self._get_async_http_client()
+        if body_mode == "multipart":
+            response = await client.post(
+                target_url,
+                headers=headers,
+                files={"mx": ("mx", packet, "application/octet-stream")},
+            )
+        elif body_mode == "besthttp-multipart":
+            body, content_type = build_besthttp_multipart("mx", packet)
+            headers["Content-Type"] = content_type
+            response = await client.post(target_url, headers=headers, content=body)
+        elif body_mode == "raw":
+            response = await client.post(target_url, headers=headers, content=packet)
+        else:
+            raise ValueError("body_mode must be 'multipart', 'besthttp-multipart', or 'raw'")
+        self.last_exchange = self._build_async_exchange_meta(response, body_mode=body_mode)
+        if response.status_code >= 400 and not response.text:
+            response.raise_for_status()
+        return response.text
+
     def decode_response(self, encrypted_base64_or_json: str) -> str:
         return decode_gateway_response(encrypted_base64_or_json, aes_key=self.aes_key, aes_iv=self.aes_iv).payload
 
@@ -219,6 +272,23 @@ class BAReplayClient:
         if self._http_session is None:
             self._http_session = requests.Session()
         return self._http_session
+
+    def _get_async_http_client(self):
+        import httpx
+
+        if self._async_http_client is None:
+            self._async_http_client = httpx.AsyncClient(
+                timeout=self.timeout,
+                proxy=self.proxy or None,
+                follow_redirects=True,
+            )
+        return self._async_http_client
+
+    async def aclose(self) -> None:
+        if self._async_http_client is None:
+            return
+        await self._async_http_client.aclose()
+        self._async_http_client = None
 
     def _build_exchange_meta(self, response: Any, *, body_mode: str) -> dict[str, Any]:
         import requests
@@ -245,6 +315,32 @@ class BAReplayClient:
             "response_headers": dict(getattr(response, "headers", {}) or {}),
             "response_cookies": requests.utils.dict_from_cookiejar(getattr(response, "cookies", {})),
             "session_cookies": requests.utils.dict_from_cookiejar(getattr(session, "cookies", {})),
+            "redirect_history": history,
+        }
+
+    def _build_async_exchange_meta(self, response: Any, *, body_mode: str) -> dict[str, Any]:
+        request = getattr(response, "request", None)
+        client = self._get_async_http_client()
+        history = []
+        for item in getattr(response, "history", ()) or ():
+            history.append(
+                {
+                    "status_code": getattr(item, "status_code", None),
+                    "url": str(getattr(item, "url", "")),
+                    "headers": dict(getattr(item, "headers", {}) or {}),
+                }
+            )
+        return {
+            "url": str(getattr(response, "url", "")),
+            "status_code": getattr(response, "status_code", None),
+            "reason": getattr(response, "reason_phrase", ""),
+            "body_mode": body_mode,
+            "request_method": getattr(request, "method", "POST"),
+            "request_url": str(getattr(request, "url", "")),
+            "request_headers": dict(getattr(request, "headers", {}) or {}),
+            "response_headers": dict(getattr(response, "headers", {}) or {}),
+            "response_cookies": dict(getattr(response, "cookies", {}) or {}),
+            "session_cookies": dict(getattr(client, "cookies", {}) or {}),
             "redirect_history": history,
         }
 
@@ -291,7 +387,6 @@ class GatewayResponse:
 
 
 def decode_gateway_response(response_text: str, *, aes_key: bytes | None, aes_iv: bytes | None) -> GatewayResponse:
-    """Parse NetworkService's ``protocol``/``packet`` wrapper and decrypt packet."""
 
     parsed = _parse_gateway_wrapper(response_text)
     if parsed is not None:
@@ -334,7 +429,6 @@ def build_besthttp_multipart(
     mime_type: str | None = None,
     boundary: str | None = None,
 ) -> tuple[bytes, str]:
-    """Build the single-file multipart body produced by BestHTTP AddBinaryData."""
 
     boundary = boundary or f"{DEFAULT_BESTHTTP_MULTIPART_BOUNDARY_PREFIX}{random.randint(0, 2**31 - 1)}"
     file_name = file_name or f"{field_name}.dat"

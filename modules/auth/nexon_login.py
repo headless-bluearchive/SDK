@@ -1,56 +1,52 @@
-"""Nexon web-token to main-game login replay orchestration."""
 
 from __future__ import annotations
 
 import base64
 import json
-import platform
+import re
 import socket
 import uuid
 from dataclasses import asdict, dataclass
-from pathlib import Path
-from typing import Any, Mapping
+from typing import Any, Callable, Mapping
 from urllib.request import Request, urlopen
 
-from config.paths import DEFAULT_REPORT_DIR, DEFAULT_TOOLS_DIR
+from config.game import DEFAULTS
 from core.client import BAReplayClient, BuiltRequest, decode_gateway_response
 from core.crypto import account_check_nexon_key_iv_fields, generated_key_iv_fields
+from core.error import AuthenticationError, ConfigurationError, GatewayError, ProofTokenError
 from modules.auth.login import LoginReplay
 from modules.auth.proof_token import proof_token_search_span, solve_proof_token
-from modules.auth.toysdk_models import NativeCallbackResult, ToySdkLoginResult, ToySdkTicketResult
+from modules.auth.toysdk_models import ToySdkCallbackResult, ToySdkLoginResult
 
-
-DEFAULT_OUTPUT_DIR = DEFAULT_REPORT_DIR
-
-NATIVE_LOGIN_SYNC_NO_PART_PROTOCOLS = [
-    20000,  # Cafe_Get
-    1003,  # Account_CurrencySync
-    2000,  # Character_List
-    3000,  # Equipment_List
-    5000,  # Echelon_List
-    12000,  # MemoryLobby_List
-    6000,  # Campaign_List
-    22001,  # Arena_Login
-    17018,  # Raid_Login
-    21000,  # Craft_List
-    28001,  # Clan_Login
-    33000,  # MomoTalk_OutLine
-    19000,  # Scenario_List
-    10006,  # Shop_GachaRecruitList
-    39006,  # TimeAttackDungeon_Login
-    44000,  # CharacterGear_List
-    29005,  # Billing_PurchaseListByNexon
-    30041,  # EventContent_PermanentList
-    45000,  # EliminateRaid_Login
-    46000,  # Attachment_Get
-    46001,  # Attachment_EmblemList
-    47000,  # Sticker_Login
-    49000,  # MultiFloorRaid_Sync
-    27002,  # ContentSweep_MultiSweepPresetList
-    49004,  # MultiFloorRaid_Login
+SESSION_LOGIN_SYNC_NO_PART_PROTOCOLS = [
+    20000,
+    1003,
+    2000,
+    3000,
+    5000,
+    12000,
+    6000,
+    22001,
+    17018,
+    21000,
+    28001,
+    33000,
+    19000,
+    10006,
+    39006,
+    44000,
+    29005,
+    30041,
+    45000,
+    46000,
+    46001,
+    47000,
+    49000,
+    27002,
+    49004,
 ]
 
-NATIVE_RELAY_QUEUE_CORE = [
+SESSION_BOOTSTRAP_QUEUE_CORE = [
     {
         "name": "network_time_sync",
         "task_name": "NetworkTimeSyncTask",
@@ -116,7 +112,6 @@ class NexonGameCredentials:
 
 
 def build_android_security_state(credentials: NexonGameCredentials) -> dict[str, Any]:
-    """Describe the Android NgsX state that the pure HTTP replay cannot perform."""
 
     ngsm_present = bool(credentials.ngsm_token)
     required_run_args = {
@@ -125,14 +120,14 @@ def build_android_security_state(credentials: NexonGameCredentials) -> dict[str,
     }
     return {
         "platform": "android",
-        "serviceId": "2079",
+        "serviceId": DEFAULTS.service_id,
         "security": "NgsX",
         "ngsmTokenPresent": ngsm_present,
         "pureHttpExecutedNgsX": False,
         "status": "ngsm-token-provided" if ngsm_present else "missing-ngsx-side-effect",
         "unitySetup": {
             "NPOptions.setNgsxEnabled": True,
-            "Toy.SetServiceKeyForEditor": "2079.MjcwOA.toy2079",
+            "Toy.SetServiceKeyForEditor": f"{DEFAULTS.service_id}.MjcwOA.{DEFAULTS.game_id}",
         },
         "observedAndroidFlow": [
             "NPAccount.initialize() initializes NgsX",
@@ -144,35 +139,14 @@ def build_android_security_state(credentials: NexonGameCredentials) -> dict[str,
             "nativeCall": "NgsX.Run(guid, npaCode)",
             "args": required_run_args,
         },
-        "optionalBridge": {
-            "tool": str((DEFAULT_TOOLS_DIR / "ngsx_android_bridge.py").resolve()),
-            "command": (
-                "python tools/ngsx_android_bridge.py "
-                "--package com.nexon.bluearchive "
-                "--toy-login-json <output_dir>/toy_login_summary.json"
-            ),
-            "notes": [
-                "Start the Android game process first.",
-                "The bridge only triggers NgsX.Init/Run; Python still performs TOYSDK and main-game HTTP replay.",
-            ],
-        },
-        "expectedImpact": (
-            "Queuing_GetTicket can accept an empty NgsmToken in the current replay, "
-            "but Account_Auth may return ErrorCode=500 until the NgsX registration side-effect is reproduced."
-        ),
+        "expectedImpact": "NgsmToken is treated as an input supplied by the headless client state.",
     }
 
 
 def build_credentials(
     toy_login: ToySdkLoginResult,
-    *,
-    ngsm_token: str = "",
-    allow_session_token_as_ngsm: bool = False,
-    allow_empty_ngsm_token: bool = False,
 ) -> NexonGameCredentials:
-    resolved_ngsm = ngsm_token or getattr(toy_login, "ngsm_token", "")
-    if not resolved_ngsm and allow_session_token_as_ngsm:
-        resolved_ngsm = toy_login.session_token
+    resolved_ngsm = getattr(toy_login, "ngsm_token", "")
     missing = []
     if toy_login.np_sn is None:
         missing.append("npSN")
@@ -180,24 +154,17 @@ def build_credentials(
         missing.append("npToken")
     if not toy_login.npa_code:
         missing.append("npaCode")
-    if not resolved_ngsm and not allow_empty_ngsm_token:
-        missing.append("NgsmToken")
     if missing:
         present = {
             "npSN": toy_login.np_sn,
             "npaCode": bool(toy_login.npa_code),
             "npToken": bool(toy_login.np_token),
             "sessionToken": bool(toy_login.session_token),
-            "gameToken": bool(toy_login.game_token),
             "NgsmToken": bool(resolved_ngsm),
         }
-        raise ValueError(
+        raise AuthenticationError(
             "TOYSDK login result is not enough for Queuing_GetTicket; "
-            f"missing {', '.join(missing)}; present={present}. "
-            "gameToken is an IAS game_token and is not proven to be the main-game NpToken. "
-            "Use --native-probe-web-ticket-by-game-token / --native-probe-web-ticket-with-version "
-            "to collect the next native callbacks, pass captured --np-token and --ngsm-token explicitly, "
-            "or pass --allow-empty-ngsm-token to let the gateway validate the Android ticket path."
+            f"missing {', '.join(missing)}; present={present}."
         )
     return NexonGameCredentials(
         np_sn=int(toy_login.np_sn or 0),
@@ -261,18 +228,18 @@ def build_account_check_nexon_fields(
             }
         )
         return fields
-    raise ValueError("account_check_field_mode must be 'android-minimal' or 'full'")
+    raise ConfigurationError("account_check_field_mode must be 'android-minimal' or 'full'")
 
 
 def build_account_auth_fields(
     *,
-    country: str = "TW",
-    locale: str = "zh-TW",
+    country: str = DEFAULTS.country,
+    locale: str = DEFAULTS.locale,
     device_id: str = "",
     os_type: str = "Android",
     os_version: str | None = None,
-    device_model: str = "Pixel 7",
-    market_id: str = "GooglePlay",
+    device_model: str = DEFAULTS.android_model,
+    market_id: str = DEFAULTS.market_id,
     user_type: str = "",
     access_ip: str = "",
     advertisement_id: str = "",
@@ -356,7 +323,6 @@ def build_queuing_process_waiting_queue_fields(
 
 
 def default_game_option_language(*, country: str = "", locale: str = "") -> str:
-    """Return the FlatData.Language enum name used by GameSetting.Language.ToString()."""
 
     normalized = (locale or "").strip().lower()
     country_code = (country or "").strip().upper()
@@ -372,33 +338,26 @@ def default_game_option_language(*, country: str = "", locale: str = "") -> str:
 
 
 def normalize_account_auth_os_type(os_type: str) -> str:
-    """Match AccountAuthNetworkTask's RuntimePlatform -> short OSType mapping."""
-
-    raw = (os_type or "").strip()
-    normalized = raw.lower().replace("_", "").replace("-", "").replace(" ", "")
-    aliases = {
-        "android": "A",
-        "a": "A",
-        "windowsplayer": "W",
-        "windowseditor": "W",
-        "windows": "W",
-        "win": "W",
-        "pc": "W",
-        "w": "W",
-        "iphoneplayer": "I",
-        "iphone": "I",
-        "ios": "I",
-        "i": "I",
-    }
-    return aliases.get(normalized, raw)
+    return "A"
 
 
 def normalize_account_auth_os_version(*, os_type: str, os_version: str | None) -> str:
-    if os_version and os_version.strip().lower() not in ("android 13", "android13"):
-        return os_version
-    if normalize_account_auth_os_type(os_type) == "A":
-        return "Android OS 13 / API-33"
-    return os_version or platform.version()
+    derived = android_account_auth_os_version(os_version or DEFAULTS.android_os_version)
+    return derived or DEFAULTS.android_account_auth_os_version
+
+
+def android_account_auth_os_version(value: str | None) -> str:
+    text = (value or "").strip()
+    if not text:
+        return ""
+    match = re.search(r"(\d+)", text)
+    if not match:
+        return text
+    major = int(match.group(1))
+    api = {12: 32, 13: 33, 14: 34, 15: 35, 16: 36}.get(major)
+    if api is None:
+        return text
+    return f"Android OS {major} / API-{api}"
 
 
 def local_ipv4_address() -> str:
@@ -414,7 +373,7 @@ def local_ipv4_address() -> str:
 
 
 def outbound_ipv4_address(timeout: float = 5.0) -> str:
-    request = Request("https://api.ipify.org", headers={"User-Agent": "BAReplay/1.0"})
+    request = Request(DEFAULTS.ip_lookup_url, headers={"User-Agent": DEFAULTS.replay_user_agent})
     try:
         with urlopen(request, timeout=timeout) as response:
             value = response.read(64).decode("ascii", errors="ignore").strip()
@@ -436,43 +395,27 @@ def build_account_login_sync_fields(
 def build_account_login_sync_no_part_fields(*, skill_cut_in_option: str = "All") -> dict[str, Any]:
     return build_account_login_sync_fields(
         skill_cut_in_option=skill_cut_in_option,
-        sync_protocols=NATIVE_LOGIN_SYNC_NO_PART_PROTOCOLS,
+        sync_protocols=SESSION_LOGIN_SYNC_NO_PART_PROTOCOLS,
     )
-
-
-def save_toy_results(
-    output_dir: str | Path,
-    *,
-    ticket_result: ToySdkTicketResult | None = None,
-    login_result: ToySdkLoginResult | None = None,
-) -> None:
-    out = Path(output_dir)
-    out.mkdir(parents=True, exist_ok=True)
-    if ticket_result is not None:
-        write_json(out / "toy_ticket_result.json", toy_ticket_to_dict(ticket_result))
-    if login_result is not None:
-        write_json(out / "toy_login_result.json", toy_login_to_dict(login_result))
 
 
 def run_main_game_login(
     client: BAReplayClient,
     credentials: NexonGameCredentials,
     *,
-    output_dir: str | Path = DEFAULT_OUTPUT_DIR,
-    post: bool = False,
     body_mode: str = "multipart",
     client_version: str = "",
     access_ip: str = "",
     advertisement_id: str = "",
     idfv: str = "",
-    country: str = "TW",
-    locale: str = "zh-TW",
+    country: str = DEFAULTS.country,
+    locale: str = DEFAULTS.locale,
     device_id: str = "",
     os_type: str = "Android",
     os_version: str | None = None,
-    device_model: str = "Pixel 7",
-    device_system_memory_size: int | None = 8192,
-    market_id: str = "GooglePlay",
+    device_model: str = DEFAULTS.android_model,
+    device_system_memory_size: int | None = None,
+    market_id: str = DEFAULTS.market_id,
     user_type: str = "",
     game_option_language: str = "",
     account_auth_version: int | None = None,
@@ -487,20 +430,18 @@ def run_main_game_login(
     queue_subchain: bool = False,
     queue_subchain_url_mode: str = "gateway",
     queue_carry_crypto_forward: bool = False,
-    native_relay_queue: bool = True,
-    native_relay_battle_pass_id: int | None = None,
-    native_relay_account_link_reward: bool = False,
-    native_relay_continue_on_error: bool = False,
+    session_bootstrap_queue: bool = True,
+    session_bootstrap_battle_pass_id: int | None = None,
+    session_bootstrap_account_link_reward: bool = False,
+    session_bootstrap_continue_on_error: bool = False,
     skip_proof_token: bool = False,
     proof_token_stage: str = "after-account-check",
     proof_token_url_mode: str = "api",
     proof_token_max_attempts: int | None = None,
+    debug_logger: Callable[[str], None] | None = None,
 ) -> dict[str, Any]:
-    out = Path(output_dir)
-    out.mkdir(parents=True, exist_ok=True)
     login = LoginReplay(client)
     flow: dict[str, Any] = {
-        "post": post,
         "host_url": client.host_url,
         "api_url": client.api_host_url,
         "session_api_url": client.session_api_host_url,
@@ -511,20 +452,20 @@ def run_main_game_login(
         "queue_subchain": queue_subchain,
         "queue_subchain_url_mode": queue_subchain_url_mode,
         "queue_carry_crypto_forward": queue_carry_crypto_forward,
-        "native_relay_queue": native_relay_queue,
-        "native_relay_battle_pass_id": native_relay_battle_pass_id,
-        "native_relay_account_link_reward": native_relay_account_link_reward,
-        "native_relay_continue_on_error": native_relay_continue_on_error,
+        "session_bootstrap_queue": session_bootstrap_queue,
+        "session_bootstrap_battle_pass_id": session_bootstrap_battle_pass_id,
+        "session_bootstrap_account_link_reward": session_bootstrap_account_link_reward,
+        "session_bootstrap_continue_on_error": session_bootstrap_continue_on_error,
         "skip_proof_token": skip_proof_token,
         "proof_token_stage": proof_token_stage,
         "proof_token_url_mode": proof_token_url_mode,
         "proof_token_max_attempts": proof_token_max_attempts,
-        "native_sequence_model": [
+        "session_sequence_model": [
             "Queuing_GetTicket(gateway)",
             "Account_CheckNexon(api)",
             "Account_CheckNexon response SessionKey is injected into later RequestPacket hashes",
             "ProofToken_RequestQuestion/Submit(session_api) when enabled",
-            "Native relay queue(session_api): NetworkTimeSync, AcademyGetInfo, AccountLoginSyncNoPart, ItemList, ContentSaveGet, ShopBeforehandGachaGet, optional BattlePassGetInfo/AccountLinkReward",
+            "Session bootstrap queue(session_api): NetworkTimeSync, AcademyGetInfo, AccountLoginSyncNoPart, ItemList, ContentSaveGet, ShopBeforehandGachaGet, optional BattlePassGetInfo/AccountLinkReward",
             "Account_Auth(session_api)",
             "Account_LoginSync(session_api)",
         ],
@@ -532,20 +473,11 @@ def run_main_game_login(
     }
     android_security_state = build_android_security_state(credentials)
     flow["android_security_state"] = android_security_state
-    flow["android_security_state_path"] = str((out / "android_security_state.json").resolve())
-    write_json(out / "android_security_state.json", android_security_state)
-    write_json(
-        out / "game_login_args.json",
-        {
-            "credentials": asdict(credentials),
-            "client_version": client_version,
-            "android_security_state_path": flow["android_security_state_path"],
-        },
-    )
+    _log(debug_logger, f"ngsx.state ngsmTokenPresent={android_security_state['ngsmTokenPresent']}")
 
     resolved_access_ip = access_ip or outbound_ipv4_address()
     flow["access_ip"] = resolved_access_ip
-    write_json(out / "access_ip.json", {"access_ip": resolved_access_ip, "source": "cli" if access_ip else "outbound"})
+    _log(debug_logger, f"access_ip.ready value={resolved_access_ip}")
 
     resolved_proof_token_stage = _normalize_proof_token_stage(proof_token_stage)
     flow["proof_token_stage"] = resolved_proof_token_stage
@@ -553,14 +485,13 @@ def run_main_game_login(
         run_proof_token_stage(
             client,
             login,
-            output_dir=out,
             flow=flow,
-            post=post,
             body_mode=body_mode,
             proof_token_url_mode=proof_token_url_mode,
             proof_token_max_attempts=proof_token_max_attempts,
             stage=resolved_proof_token_stage,
             name_prefix="00",
+            debug_logger=debug_logger,
         )
 
     queue_fields = build_queuing_get_ticket_fields(
@@ -570,14 +501,9 @@ def run_main_game_login(
         os_type=os_type,
     )
     queue_request = login.queuing_get_ticket(queue_fields)
-    queue_record = save_built_request(out, "01_queuing_get_ticket", queue_request)
+    queue_record = build_request_record("01_queuing_get_ticket", queue_request)
     flow["steps"].append(queue_record)
-
-    if not post:
-        flow["status"] = "built_queuing_get_ticket_only"
-        flow["next"] = "rerun with --post --host-url, or pass --enter-ticket to build Account_CheckNexon offline"
-        write_json(out / "main_login_flow.json", flow)
-        return flow
+    _log(debug_logger, "gateway.post Queuing_GetTicket")
 
     queue_response = post_built_request_to_url(
         client,
@@ -585,8 +511,6 @@ def run_main_game_login(
         url=client.gateway_url,
         body_mode=body_mode,
     )
-    write_json(out / "01_queuing_get_ticket.response.json", queue_response)
-    flow["steps"][-1]["response_path"] = str((out / "01_queuing_get_ticket.response.json").resolve())
 
     parsed_queue = queue_response.get("parsed")
     resolved_enter_ticket = enter_ticket or _as_str(_find_first(parsed_queue, "EnterTicket", "enterTicket"))
@@ -594,22 +518,21 @@ def run_main_game_login(
     if not resolved_enter_ticket:
         flow["status"] = "missing_enter_ticket"
         flow["queue_response"] = parsed_queue
-        write_json(out / "main_login_flow.json", flow)
-        raise RuntimeError("Queuing_GetTicket did not return EnterTicket; see 01_queuing_get_ticket.response.json")
+        raise GatewayError("Queuing_GetTicket did not return EnterTicket")
+    _log(debug_logger, f"gateway.ok Queuing_GetTicket enterTicket={bool(resolved_enter_ticket)} waitingTicket={bool(resolved_waiting_ticket)}")
 
     if queue_subchain:
         queue_stage = run_queue_subchain(
             client,
             login,
-            output_dir=out,
             flow=flow,
-            post=post,
             body_mode=body_mode,
             client_version=client_version,
             os_type=os_type,
             waiting_ticket=resolved_waiting_ticket,
             url_mode=queue_subchain_url_mode,
             carry_crypto_forward=queue_carry_crypto_forward,
+            debug_logger=debug_logger,
         )
         resolved_enter_ticket = queue_stage.get("enter_ticket") or resolved_enter_ticket
         resolved_waiting_ticket = queue_stage.get("waiting_ticket") or resolved_waiting_ticket
@@ -624,12 +547,13 @@ def run_main_game_login(
         mode=account_check_field_mode,
     )
     check_request = login.account_check_nexon(account_check_fields)
-    check_record = save_built_request(out, "02_account_check_nexon", check_request)
+    check_record = build_request_record("02_account_check_nexon", check_request)
     check_record["client_generated_key_mode"] = account_check_key_mode
     check_record["account_check_field_mode"] = account_check_field_mode
     check_record["client_generated_key_field"] = generated_fields["ClientGeneratedKey"]
     check_record["client_generated_iv_field"] = generated_fields["ClientGeneratedIV"]
     flow["steps"].append(check_record)
+    _log(debug_logger, "gateway.post Account_CheckNexon")
 
     check_response = post_built_request_to_url(
         client,
@@ -637,20 +561,13 @@ def run_main_game_login(
         url=_account_check_url(client, account_check_url_mode),
         body_mode=body_mode,
     )
-    write_json(out / "02_account_check_nexon.response.json", check_response)
-    flow["steps"][-1]["response_path"] = str((out / "02_account_check_nexon.response.json").resolve())
     if _is_error_response(check_response):
         flow["status"] = "account_check_nexon_error"
-        flow["error_response_path"] = flow["steps"][-1]["response_path"]
         flow["error_response"] = check_response.get("parsed")
-        write_json(out / "main_login_flow.json", flow)
-        raise RuntimeError("Account_CheckNexon returned Error; see 02_account_check_nexon.response.json")
+        raise GatewayError("Account_CheckNexon returned Error")
     account_check_state = _apply_account_check_state(client, check_response.get("parsed"))
-    account_check_state_path = out / "02_account_check_nexon.state.json"
-    write_json(account_check_state_path, account_check_state)
-    flow["account_check_state_path"] = str(account_check_state_path.resolve())
     flow["account_check_state"] = _account_check_state_summary(account_check_state)
-    flow["session_key_after_account_check"] = dict(client.session_key) if client.session_key else None
+    _log(debug_logger, f"gateway.ok Account_CheckNexon accountId={client.account_id} sessionKey={bool(client.session_key)}")
 
     if not account_check_state["o22_semantics"]["applied_to_client"]:
         flow["warning"] = "Account_CheckNexon did not expose EncryptedKey/EncryptedIV; later request headers stay empty"
@@ -659,28 +576,26 @@ def run_main_game_login(
         run_proof_token_stage(
             client,
             login,
-            output_dir=out,
             flow=flow,
-            post=post,
             body_mode=body_mode,
             proof_token_url_mode=proof_token_url_mode,
             proof_token_max_attempts=proof_token_max_attempts,
             stage=resolved_proof_token_stage,
             name_prefix="02a",
+            debug_logger=debug_logger,
         )
 
-    if native_relay_queue:
-        run_native_relay_queue(
+    if session_bootstrap_queue:
+        run_session_bootstrap_queue(
             client,
             login,
-            output_dir=out,
             flow=flow,
-            post=post,
             body_mode=body_mode,
             skill_cut_in_option="All",
-            battle_pass_id=native_relay_battle_pass_id,
-            include_account_link_reward=native_relay_account_link_reward,
-            continue_on_error=native_relay_continue_on_error,
+            battle_pass_id=session_bootstrap_battle_pass_id,
+            include_account_link_reward=session_bootstrap_account_link_reward,
+            continue_on_error=session_bootstrap_continue_on_error,
+            debug_logger=debug_logger,
         )
 
     auth_fields = build_account_auth_fields(
@@ -704,65 +619,59 @@ def run_main_game_login(
         omit_dev_id=omit_account_auth_dev_id,
     )
     auth_request = login.account_auth(auth_fields, include_base_defaults=True)
-    auth_record = save_built_request(out, "03_account_auth", auth_request)
+    auth_record = build_request_record("03_account_auth", auth_request)
     auth_record["account_check_state_present"] = client.account_check_state is not None
     auth_record["account_id"] = client.account_id
     auth_record["server_time_ticks"] = client.server_time_ticks
     auth_record["url"] = client.session_api_url
     flow["steps"].append(auth_record)
+    _log(debug_logger, "gateway.post Account_Auth")
     auth_response = post_built_request_to_url(
         client,
         auth_request,
         url=client.session_api_url,
         body_mode=body_mode,
     )
-    write_json(out / "03_account_auth.response.json", auth_response)
-    flow["steps"][-1]["response_path"] = str((out / "03_account_auth.response.json").resolve())
     if _is_error_response(auth_response):
         flow["status"] = "account_auth_error"
-        flow["error_response_path"] = flow["steps"][-1]["response_path"]
         flow["error_response"] = auth_response.get("parsed")
-        write_json(out / "main_login_flow.json", flow)
-        raise RuntimeError("Account_Auth returned Error; see 03_account_auth.response.json")
+        raise GatewayError("Account_Auth returned Error")
     _update_session_key(client, auth_response.get("parsed"))
+    flow["account_data"] = auth_response.get("parsed")
+    _log(debug_logger, "gateway.ok Account_Auth")
 
     sync_request = login.account_login_sync(build_account_login_sync_fields(), include_base_defaults=True)
-    sync_record = save_built_request(out, "04_account_login_sync", sync_request)
+    sync_record = build_request_record("04_account_login_sync", sync_request)
     flow["steps"].append(sync_record)
+    _log(debug_logger, "gateway.post Account_LoginSync")
     sync_response = post_built_request_to_url(
         client,
         sync_request,
         url=client.session_api_url,
         body_mode=body_mode,
     )
-    write_json(out / "04_account_login_sync.response.json", sync_response)
-    flow["steps"][-1]["response_path"] = str((out / "04_account_login_sync.response.json").resolve())
     if _is_error_response(sync_response):
         flow["status"] = "account_login_sync_error"
-        flow["error_response_path"] = flow["steps"][-1]["response_path"]
         flow["error_response"] = sync_response.get("parsed")
-        write_json(out / "main_login_flow.json", flow)
-        raise RuntimeError("Account_LoginSync returned Error; see 04_account_login_sync.response.json")
+        raise GatewayError("Account_LoginSync returned Error")
 
     flow["status"] = "posted_login_sync"
-    flow["player_data_path"] = str((out / "04_account_login_sync.response.json").resolve())
     flow["player_data"] = sync_response.get("parsed")
-    write_json(out / "main_login_flow.json", flow)
+    _log(debug_logger, "gateway.ok Account_LoginSync")
     return flow
 
 
-def run_native_relay_queue(
+def run_session_bootstrap_queue(
     client: BAReplayClient,
     login: LoginReplay,
     *,
-    output_dir: Path,
     flow: dict[str, Any],
-    post: bool,
     body_mode: str,
     skill_cut_in_option: str,
     battle_pass_id: int | None,
     include_account_link_reward: bool,
     continue_on_error: bool,
+    debug_logger: Callable[[str], None] | None = None,
 ) -> dict[str, Any]:
     relay_state: dict[str, Any] = {
         "url": client.session_api_url,
@@ -773,10 +682,9 @@ def run_native_relay_queue(
         "battle_pass_id": battle_pass_id,
         "include_account_link_reward": include_account_link_reward,
     }
-    write_json(output_dir / "02b_native_relay_queue.json", relay_state)
 
     tasks: list[dict[str, Any]] = []
-    for task in NATIVE_RELAY_QUEUE_CORE:
+    for task in SESSION_BOOTSTRAP_QUEUE_CORE:
         task_copy = dict(task)
         if task_copy["name"] == "account_login_sync_no_part":
             task_copy["fields"] = build_account_login_sync_no_part_fields(skill_cut_in_option=skill_cut_in_option)
@@ -793,7 +701,7 @@ def run_native_relay_queue(
                 "request_class": "BattlePassGetInfoRequest",
                 "slot": "0x18C6086E8",
                 "fields": {},
-                "skip_reason": "native task only posts when BattlePassTask.IsSeasonActive; pass --native-relay-battle-pass-id to force it",
+                "skip_reason": "BattlePass_GetInfo is only posted when BattlePassTask.IsSeasonActive; provide a battle_pass_id to force it",
             }
         )
     else:
@@ -822,7 +730,7 @@ def run_native_relay_queue(
         )
 
     for index, task in enumerate(tasks, start=1):
-        step_name = f"02b_native_relay_{index:02d}_{task['name']}"
+        step_name = f"02b_session_bootstrap_{index:02d}_{task['name']}"
         if task.get("skip_reason"):
             skipped = {
                 "name": step_name,
@@ -835,11 +743,10 @@ def run_native_relay_queue(
             }
             relay_state["tasks"].append(skipped)
             flow["steps"].append(skipped)
-            write_json(output_dir / "02b_native_relay_queue.json", relay_state)
             continue
 
-        built = login.native_relay_request(task["request_class"], task["fields"])
-        record = save_built_request(output_dir, step_name, built)
+        built = login.session_api_request(task["request_class"], task["fields"])
+        record = build_request_record(step_name, built)
         record.update(
             {
                 "task_name": task["task_name"],
@@ -855,33 +762,23 @@ def run_native_relay_queue(
             record["condition"] = task["condition"]
         flow["steps"].append(record)
         relay_state["tasks"].append(record)
+        _log(debug_logger, f"gateway.post {task['protocol_name']}")
 
-        if not post:
-            write_json(output_dir / "02b_native_relay_queue.json", relay_state)
-            continue
-
-        response_path = output_dir / f"{step_name}.response.json"
         response = post_built_request_to_url(
             client,
             built,
             url=client.session_api_url,
             body_mode=body_mode,
         )
-        write_json(response_path, response)
-        flow["steps"][-1]["response_path"] = str(response_path.resolve())
-        relay_state["tasks"][-1]["response_path"] = str(response_path.resolve())
         if _is_error_response(response):
-            flow["status"] = "native_relay_queue_error"
-            flow["error_response_path"] = flow["steps"][-1]["response_path"]
+            flow["status"] = "session_bootstrap_queue_error"
             flow["error_response"] = response.get("parsed")
-            write_json(output_dir / "02b_native_relay_queue.json", relay_state)
-            write_json(output_dir / "main_login_flow.json", flow)
             if not continue_on_error:
-                raise RuntimeError(f"{task['task_name']} returned Error; see {response_path.name}")
+                raise GatewayError(f"{task['task_name']} returned Error")
         _update_session_key(client, response.get("parsed"))
-        write_json(output_dir / "02b_native_relay_queue.json", relay_state)
+        _log(debug_logger, f"gateway.ok {task['protocol_name']}")
 
-    flow["native_relay_queue_result"] = relay_state
+    flow["session_bootstrap_queue_result"] = relay_state
     return relay_state
 
 
@@ -889,15 +786,14 @@ def run_queue_subchain(
     client: BAReplayClient,
     login: LoginReplay,
     *,
-    output_dir: Path,
     flow: dict[str, Any],
-    post: bool,
     body_mode: str,
     client_version: str,
     os_type: str,
     waiting_ticket: str,
     url_mode: str,
     carry_crypto_forward: bool,
+    debug_logger: Callable[[str], None] | None = None,
 ) -> dict[str, str]:
     saved_aes_key = bytes(client.aes_key)
     saved_aes_iv = bytes(client.aes_iv)
@@ -912,13 +808,13 @@ def run_queue_subchain(
         "enter_ticket": "",
         "auth_ticket": "",
     }
-    write_json(output_dir / "01a_queue_crypto_material.json", queue_state)
 
     try:
         crypto_request = login.queuing_get_crypto_keys(fields)
-        crypto_record = save_built_request(output_dir, "01a_queuing_get_crypto_keys", crypto_request)
+        crypto_record = build_request_record("01a_queuing_get_crypto_keys", crypto_request)
         crypto_record["url_mode"] = url_mode
         flow["steps"].append(crypto_record)
+        _log(debug_logger, "gateway.post Queuing_GetCryptoKeys")
         crypto_response = post_built_request_to_url(
             client,
             crypto_request,
@@ -927,15 +823,12 @@ def run_queue_subchain(
             response_aes_key=queue_raw_key,
             response_aes_iv=queue_raw_iv,
         )
-        write_json(output_dir / "01a_queuing_get_crypto_keys.response.json", crypto_response)
-        flow["steps"][-1]["response_path"] = str((output_dir / "01a_queuing_get_crypto_keys.response.json").resolve())
         if _is_error_response(crypto_response):
             flow["status"] = "queue_get_crypto_keys_error"
-            flow["error_response_path"] = flow["steps"][-1]["response_path"]
             flow["error_response"] = crypto_response.get("parsed") or crypto_response.get("payload")
-            write_json(output_dir / "main_login_flow.json", flow)
-            raise RuntimeError("Queuing_GetCryptoKeys returned Error; see 01a_queuing_get_crypto_keys.response.json")
+            raise GatewayError("Queuing_GetCryptoKeys returned Error")
         _apply_crypto_material_from_response(client, crypto_response.get("parsed"), aes_key=queue_raw_key, aes_iv=queue_raw_iv)
+        _log(debug_logger, "gateway.ok Queuing_GetCryptoKeys")
 
         auth_fields = build_queuing_get_auth_ticket_fields(
             client_generated_key=fields["ClientGeneratedKey"],
@@ -944,9 +837,10 @@ def run_queue_subchain(
             os_type=os_type,
         )
         auth_request = login.queuing_get_auth_ticket(auth_fields)
-        auth_record = save_built_request(output_dir, "01b_queuing_get_auth_ticket", auth_request)
+        auth_record = build_request_record("01b_queuing_get_auth_ticket", auth_request)
         auth_record["url_mode"] = url_mode
         flow["steps"].append(auth_record)
+        _log(debug_logger, "gateway.post Queuing_GetAuthTicket")
         auth_response = post_built_request_to_url(
             client,
             auth_request,
@@ -955,22 +849,18 @@ def run_queue_subchain(
             response_aes_key=queue_raw_key,
             response_aes_iv=queue_raw_iv,
         )
-        write_json(output_dir / "01b_queuing_get_auth_ticket.response.json", auth_response)
-        flow["steps"][-1]["response_path"] = str((output_dir / "01b_queuing_get_auth_ticket.response.json").resolve())
         if _is_error_response(auth_response):
             flow["status"] = "queue_get_auth_ticket_error"
-            flow["error_response_path"] = flow["steps"][-1]["response_path"]
             flow["error_response"] = auth_response.get("parsed") or auth_response.get("payload")
-            write_json(output_dir / "main_login_flow.json", flow)
-            raise RuntimeError("Queuing_GetAuthTicket returned Error; see 01b_queuing_get_auth_ticket.response.json")
+            raise GatewayError("Queuing_GetAuthTicket returned Error")
         _apply_crypto_material_from_response(client, auth_response.get("parsed"), aes_key=queue_raw_key, aes_iv=queue_raw_iv)
+        _log(debug_logger, "gateway.ok Queuing_GetAuthTicket")
 
         auth_ticket = _as_str(_find_first(auth_response.get("parsed"), "AuthTicket", "authTicket"))
         if not auth_ticket:
             flow["status"] = "queue_missing_auth_ticket"
             flow["queue_auth_ticket_response"] = auth_response.get("parsed") or auth_response.get("payload")
-            write_json(output_dir / "main_login_flow.json", flow)
-            raise RuntimeError("Queuing_GetAuthTicket did not return AuthTicket; see 01b_queuing_get_auth_ticket.response.json")
+            raise GatewayError("Queuing_GetAuthTicket did not return AuthTicket")
         queue_state["auth_ticket"] = auth_ticket
 
         process_fields = build_queuing_process_waiting_queue_fields(
@@ -980,9 +870,10 @@ def run_queue_subchain(
             os_type=os_type,
         )
         process_request = login.queuing_process_waiting_queue(process_fields)
-        process_record = save_built_request(output_dir, "01c_queuing_process_waiting_queue", process_request)
+        process_record = build_request_record("01c_queuing_process_waiting_queue", process_request)
         process_record["url_mode"] = url_mode
         flow["steps"].append(process_record)
+        _log(debug_logger, "gateway.post Queuing_ProcessWaitingQueue")
         process_response = post_built_request_to_url(
             client,
             process_request,
@@ -991,16 +882,11 @@ def run_queue_subchain(
             response_aes_key=queue_raw_key,
             response_aes_iv=queue_raw_iv,
         )
-        write_json(output_dir / "01c_queuing_process_waiting_queue.response.json", process_response)
-        flow["steps"][-1]["response_path"] = str((output_dir / "01c_queuing_process_waiting_queue.response.json").resolve())
         if _is_error_response(process_response):
             flow["status"] = "queue_process_waiting_queue_error"
-            flow["error_response_path"] = flow["steps"][-1]["response_path"]
             flow["error_response"] = process_response.get("parsed") or process_response.get("payload")
-            write_json(output_dir / "main_login_flow.json", flow)
-            raise RuntimeError(
-                "Queuing_ProcessWaitingQueue returned Error; see 01c_queuing_process_waiting_queue.response.json"
-            )
+            raise GatewayError("Queuing_ProcessWaitingQueue returned Error")
+        _log(debug_logger, "gateway.ok Queuing_ProcessWaitingQueue")
 
         queue_state["waiting_ticket"] = _as_str(
             _find_first(process_response.get("parsed"), "WaitingTicket", "waitingTicket")
@@ -1008,7 +894,6 @@ def run_queue_subchain(
         queue_state["enter_ticket"] = _as_str(
             _find_first(process_response.get("parsed"), "EnterTicket", "enterTicket")
         )
-        write_json(output_dir / "01a_queue_crypto_material.json", queue_state)
         flow["queue_subchain_result"] = queue_state
         return queue_state
     finally:
@@ -1025,18 +910,17 @@ def run_proof_token_stage(
     client: BAReplayClient,
     login: LoginReplay,
     *,
-    output_dir: Path,
     flow: dict[str, Any],
-    post: bool,
     body_mode: str,
     proof_token_url_mode: str,
     proof_token_max_attempts: int | None,
     stage: str,
     name_prefix: str,
+    debug_logger: Callable[[str], None] | None = None,
 ) -> None:
     question_name = f"{name_prefix}_proof_token_question"
     question_request = login.proof_token_question()
-    question_record = save_built_request(output_dir, question_name, question_request)
+    question_record = build_request_record(question_name, question_request)
     question_record["url_mode"] = proof_token_url_mode
     question_record["stage"] = stage
     question_record["session_key_present"] = bool(client.session_key)
@@ -1046,29 +930,22 @@ def run_proof_token_stage(
     question_record["aes_encrypted_key_len"] = len(client.aes_encrypted_key)
     question_record["aes_encrypted_iv_len"] = len(client.aes_encrypted_iv)
     flow["steps"].append(question_record)
+    _log(debug_logger, f"gateway.post ProofToken_RequestQuestion stage={stage}")
 
-    if not post:
-        return
-
-    question_response_path = output_dir / f"{question_name}.response.json"
     question_response = post_built_request_to_url(
         client,
         question_request,
         url=_proof_token_url(client, proof_token_url_mode),
         body_mode=body_mode,
     )
-    write_json(question_response_path, question_response)
-    flow["steps"][-1]["response_path"] = str(question_response_path.resolve())
     if _is_error_response(question_response):
         flow["status"] = "proof_token_question_error"
-        flow["error_response_path"] = flow["steps"][-1]["response_path"]
         flow["error_response"] = question_response.get("parsed")
-        write_json(output_dir / "main_login_flow.json", flow)
-        raise RuntimeError(f"ProofToken_RequestQuestion returned Error; see {question_response_path.name}")
+        raise ProofTokenError("ProofToken_RequestQuestion returned Error")
     if _is_empty_success_response(question_response):
         flow["steps"][-1]["status"] = "empty_success_no_question"
         flow["proof_token_status"] = "empty_success_no_question"
-        write_json(output_dir / "main_login_flow.json", flow)
+        _log(debug_logger, f"gateway.ok ProofToken_RequestQuestion stage={stage} empty=True")
         return
 
     parsed_question = question_response.get("parsed")
@@ -1077,10 +954,10 @@ def run_proof_token_stage(
     if not question or hint is None:
         flow["status"] = "proof_token_missing_question_or_hint"
         flow["proof_token_response"] = parsed_question
-        write_json(output_dir / "main_login_flow.json", flow)
-        raise RuntimeError(f"ProofToken_RequestQuestion did not return Question/Hint; see {question_response_path.name}")
+        raise ProofTokenError("ProofToken_RequestQuestion did not return Question/Hint")
 
     answer = solve_proof_token(question, hint, max_attempts=proof_token_max_attempts)
+    _log(debug_logger, f"proof_token.solved stage={stage}")
     solution_name = f"{name_prefix}_proof_token_solution"
     solver_record = {
         "question": question,
@@ -1089,13 +966,11 @@ def run_proof_token_stage(
         "answer": answer,
         "stage": stage,
     }
-    solution_path = output_dir / f"{solution_name}.json"
-    write_json(solution_path, solver_record)
-    flow["proof_token_solution_path"] = str(solution_path.resolve())
+    flow["proof_token_solution"] = solver_record
 
     submit_name = f"{name_prefix}_proof_token_submit"
     submit_request = login.proof_token_submit(answer)
-    submit_record = save_built_request(output_dir, submit_name, submit_request)
+    submit_record = build_request_record(submit_name, submit_request)
     submit_record["url_mode"] = proof_token_url_mode
     submit_record["stage"] = stage
     submit_record["session_key_present"] = bool(client.session_key)
@@ -1105,21 +980,18 @@ def run_proof_token_stage(
     submit_record["aes_encrypted_key_len"] = len(client.aes_encrypted_key)
     submit_record["aes_encrypted_iv_len"] = len(client.aes_encrypted_iv)
     flow["steps"].append(submit_record)
-    submit_response_path = output_dir / f"{submit_name}.response.json"
+    _log(debug_logger, f"gateway.post ProofToken_Submit stage={stage}")
     submit_response = post_built_request_to_url(
         client,
         submit_request,
         url=_proof_token_url(client, proof_token_url_mode),
         body_mode=body_mode,
     )
-    write_json(submit_response_path, submit_response)
-    flow["steps"][-1]["response_path"] = str(submit_response_path.resolve())
     if _is_error_response(submit_response):
         flow["status"] = "proof_token_submit_error"
-        flow["error_response_path"] = flow["steps"][-1]["response_path"]
         flow["error_response"] = submit_response.get("parsed")
-        write_json(output_dir / "main_login_flow.json", flow)
-        raise RuntimeError(f"ProofToken_Submit returned Error; see {submit_response_path.name}")
+        raise ProofTokenError("ProofToken_Submit returned Error")
+    _log(debug_logger, f"gateway.ok ProofToken_Submit stage={stage}")
 
 
 def post_built_request(client: BAReplayClient, built: BuiltRequest, *, body_mode: str) -> dict[str, Any]:
@@ -1152,7 +1024,7 @@ def _account_check_url(client: BAReplayClient, mode: str) -> str:
         return client.api_url
     if normalized == "gateway":
         return client.gateway_url
-    raise ValueError("account_check_url_mode must be 'api' or 'gateway'")
+    raise ConfigurationError("account_check_url_mode must be 'api' or 'gateway'")
 
 
 def _proof_token_url(client: BAReplayClient, mode: str) -> str:
@@ -1161,7 +1033,7 @@ def _proof_token_url(client: BAReplayClient, mode: str) -> str:
         return client.session_api_url
     if normalized == "gateway":
         return client.gateway_url
-    raise ValueError("proof_token_url_mode must be 'api' or 'gateway'")
+    raise ConfigurationError("proof_token_url_mode must be 'api' or 'gateway'")
 
 
 def _queue_subchain_url(client: BAReplayClient, mode: str) -> str:
@@ -1170,14 +1042,14 @@ def _queue_subchain_url(client: BAReplayClient, mode: str) -> str:
         return client.gateway_url
     if normalized == "api":
         return client.api_url
-    raise ValueError("queue_subchain_url_mode must be 'api' or 'gateway'")
+    raise ConfigurationError("queue_subchain_url_mode must be 'api' or 'gateway'")
 
 
 def _normalize_proof_token_stage(stage: str) -> str:
     normalized = (stage or "after-account-check").strip().lower().replace("_", "-")
     if normalized in ("before-queue", "after-account-check"):
         return normalized
-    raise ValueError("proof_token_stage must be 'before-queue' or 'after-account-check'")
+    raise ConfigurationError("proof_token_stage must be 'before-queue' or 'after-account-check'")
 
 
 def decode_posted_response(
@@ -1231,49 +1103,21 @@ def _is_empty_success_response(response: Mapping[str, Any]) -> bool:
     )
 
 
-def save_built_request(output_dir: Path, name: str, built: BuiltRequest) -> dict[str, Any]:
-    packet_path = output_dir / f"{name}.bin"
-    request_path = output_dir / f"{name}.request.json"
-    packet_path.write_bytes(built.packet)
-    serialized_request_bytes = built.serialized_request_bytes or built.request_bytes
-    request_text = serialized_request_bytes.decode("utf-8", errors="replace")
-    request_path.write_text(_pretty_json_text(request_text), encoding="utf-8")
-    request_payload_path: Path | None = None
-    if built.meta.request_payload_encrypted:
-        request_payload_path = output_dir / f"{name}.request_payload.bin"
-        request_payload_path.write_bytes(built.request_bytes)
+def build_request_record(name: str, built: BuiltRequest) -> dict[str, Any]:
     record = {
         "name": name,
         "protocol": built.protocol,
         "protocol_name": built.meta.protocol_name,
         "packet_len": len(built.packet),
-        "packet_base64": base64.b64encode(built.packet).decode("ascii"),
-        "packet_path": str(packet_path.resolve()),
-        "request_path": str(request_path.resolve()),
-        "request_json": _try_json(request_text),
         "meta": asdict(built.meta),
     }
-    if request_payload_path is not None:
-        record["request_payload_path"] = str(request_payload_path.resolve())
-        record["request_payload_base64"] = base64.b64encode(built.request_bytes).decode("ascii")
-    write_json(output_dir / f"{name}.built.json", record)
     return record
 
 
-def write_json(path: str | Path, obj: Any) -> None:
-    p = Path(path)
-    p.parent.mkdir(parents=True, exist_ok=True)
-    p.write_text(json.dumps(obj, ensure_ascii=False, indent=2, default=_json_default), encoding="utf-8")
-
-
-def toy_callback_to_dict(callback: NativeCallbackResult | None) -> dict[str, Any] | None:
+def toy_callback_to_dict(callback: ToySdkCallbackResult | None) -> dict[str, Any] | None:
     if callback is None:
         return None
     return asdict(callback)
-
-
-def toy_ticket_to_dict(result: ToySdkTicketResult) -> dict[str, Any]:
-    return {"ticket": result.ticket, "callback": toy_callback_to_dict(result.callback)}
 
 
 def toy_login_to_dict(result: ToySdkLoginResult) -> dict[str, Any]:
@@ -1286,14 +1130,12 @@ def toy_login_to_dict(result: ToySdkLoginResult) -> dict[str, Any]:
         "memberId": result.member_id,
         "memberType": result.member_type,
         "umKey": result.um_key,
-        "gameToken": result.game_token,
         "ngsmToken": result.ngsm_token,
         "callback": toy_callback_to_dict(result.callback),
     }
 
 
 def _apply_account_check_state(client: BAReplayClient, parsed: Any) -> dict[str, Any]:
-    """Apply the GameSessionManager.O22 state transition after 1014 succeeds."""
 
     _update_session_key(client, parsed)
     encrypted_key = _as_str(_find_first(parsed, "EncryptedKey", "encryptedKey"))
@@ -1337,15 +1179,14 @@ def _apply_account_check_state(client: BAReplayClient, parsed: Any) -> dict[str,
     return state
 
 
-def _account_check_state_summary(state: Mapping[str, Any]) -> dict[str, Any]:
+def _account_check_state_summary(state: Mapping[str, Any], *, include_session_key: bool = False) -> dict[str, Any]:
     encrypted_key = state.get("encrypted_key") if isinstance(state.get("encrypted_key"), Mapping) else {}
     encrypted_iv = state.get("encrypted_iv") if isinstance(state.get("encrypted_iv"), Mapping) else {}
     signed_key = state.get("signed_key") if isinstance(state.get("signed_key"), Mapping) else {}
     signed_iv = state.get("signed_iv") if isinstance(state.get("signed_iv"), Mapping) else {}
-    return {
+    summary = {
         "account_id": state.get("account_id"),
         "server_time_ticks": state.get("server_time_ticks"),
-        "session_key": state.get("session_key"),
         "encrypted_key_decoded_len": encrypted_key.get("decoded_len"),
         "encrypted_iv_decoded_len": encrypted_iv.get("decoded_len"),
         "signed_key_decoded_len": signed_key.get("decoded_len"),
@@ -1353,6 +1194,9 @@ def _account_check_state_summary(state: Mapping[str, Any]) -> dict[str, Any]:
         "local_crypto_lane": state.get("local_crypto_lane"),
         "o22_semantics": state.get("o22_semantics"),
     }
+    if include_session_key:
+        summary["session_key"] = state.get("session_key")
+    return summary
 
 
 def _base64_material_state(value: str, *, include_hex: bool = False) -> tuple[bytes, dict[str, Any]]:
@@ -1400,13 +1244,6 @@ def _apply_crypto_material_from_response(
     return True
 
 
-def _pretty_json_text(text: str) -> str:
-    parsed = _try_json(text)
-    if parsed is None:
-        return text
-    return json.dumps(parsed, ensure_ascii=False, indent=2)
-
-
 def _try_json(text: str) -> Any:
     try:
         return json.loads(text)
@@ -1444,9 +1281,6 @@ def _as_int(value: Any) -> int | None:
     return int(value)
 
 
-def _json_default(value: Any) -> Any:
-    if isinstance(value, (bytes, bytearray, memoryview)):
-        return base64.b64encode(bytes(value)).decode("ascii")
-    if isinstance(value, Path):
-        return str(value)
-    return str(value)
+def _log(logger: Callable[[str], None] | None, message: str) -> None:
+    if logger is not None:
+        logger(message)

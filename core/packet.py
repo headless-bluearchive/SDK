@@ -1,4 +1,3 @@
-"""Request JSON serialization and PacketCryptManager.EncryptRequest layout."""
 
 from __future__ import annotations
 
@@ -45,7 +44,6 @@ class ParsedPacket:
 
 
 def create_hash(protocol: int | str, counter: int | None = None) -> int:
-    """RequestPacket.CreateHash(protocol)."""
 
     proto = protocol_value(protocol) & 0xFFFFFFFF
     if counter is None:
@@ -64,11 +62,6 @@ def serialize_request(
     omit_none: bool = True,
     counter: int | None = None,
 ) -> tuple[bytes, int | None]:
-    """Serialize a request dict to UTF-8 JSON bytes.
-
-    ``bytes`` and ``str`` inputs are treated as already serialized request
-    bodies. Dict inputs can get Unity-like ``SessionKey`` and ``Hash`` fields.
-    """
 
     if isinstance(fields, bytes):
         return fields, None
@@ -133,12 +126,6 @@ def build_packet(
     request_aes_iv: bytes | None = None,
     encrypt_request: bool | None = None,
 ) -> tuple[bytes, PacketMeta, bytes]:
-    """Build the exact BinaryWriter packet envelope.
-
-    Layout:
-    ``crc:uint32le | convertedProtocol:int32le | keyLen:uint8 | ivLen:uint8 |
-    aesEncryptedKey | aesEncryptedIV | xor(gzip_len_prefixed(requestBytes))``.
-    """
 
     packet, meta, request_bytes, _serialized_request_bytes = build_packet_detailed(
         protocol,
@@ -178,12 +165,6 @@ def build_packet_detailed(
     request_aes_iv: bytes | None = None,
     encrypt_request: bool | None = None,
 ) -> tuple[bytes, PacketMeta, bytes, bytes]:
-    """Build the packet and keep both serialized and PacketCrypt request bytes.
-
-    The live client serializes the request object, then after
-    Account_CheckNexon applies its crypto state, AES-encrypts those serialized
-    bytes before passing them to PacketCryptManager.EncryptRequest.
-    """
 
     proto = protocol_value(protocol)
     serialized_request_bytes, request_hash = serialize_request(

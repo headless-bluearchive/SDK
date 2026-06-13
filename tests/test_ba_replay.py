@@ -7,11 +7,12 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 
-import main as cli_main
-
+from config.game import DEFAULTS
 from core.client import BAReplayClient, build_besthttp_multipart, decode_gateway_response
+from modules.auth import flows as login_flows
+from modules.auth import nexon_login as nexon_login_module
 from modules.auth.flows import IntegratedLoginOptions
-from modules.runtime.android_runtime_profile import AndroidRuntimeProfile, select_android_runtime_device_id
+from modules.runtime.android_mobile_profile import AndroidMobileProfile
 from core.crypto import (
     ACCOUNT_CHECK_NEXON_RSA_PUBLIC_KEY_PEM,
     account_check_nexon_key_iv_fields,
@@ -25,11 +26,13 @@ from core.packet import build_packet, create_hash, parse_packet
 from modules.auth.proof_token import proof_token_hash, proof_token_search_span, solve_proof_token
 from core.protocol import type_conversion
 from modules.auth.login import LoginReplay
-from utils.proxy import normalize_proxy_url, playwright_proxy_options, requests_proxy_map
-from modules.runtime.region_config import build_login_url, profile_for
-from modules.runtime.runtime_config import discover_connection_info, extract_urls_from_hosts, normalize_service_base
+from utils.proxy import normalize_proxy_url, requests_proxy_map
+from modules.runtime.region_config import profile_for
+from modules.runtime.runtime_config import discover_connection_info
 from modules.auth.toysdk_android import (
     AndroidDeviceProfile,
+    AndroidToySession,
+    AndroidToyConfig,
     AndroidToySdkClient,
     LOGIN_TYPE_NXARENA,
     LOGIN_TYPE_NXCOM,
@@ -40,19 +43,144 @@ from modules.auth.toysdk_android import (
     toy_encrypt,
 )
 from modules.auth.nexon_login import (
-    NATIVE_LOGIN_SYNC_NO_PART_PROTOCOLS,
+    SESSION_LOGIN_SYNC_NO_PART_PROTOCOLS,
     _apply_account_check_state,
     build_account_auth_fields,
     build_account_check_nexon_fields,
     build_android_security_state,
     build_account_login_sync_no_part_fields,
     build_credentials,
+    build_request_record,
     normalize_account_auth_os_type,
-    run_native_relay_queue,
+    run_session_bootstrap_queue,
     _is_empty_success_response,
 )
 from modules.auth.toysdk_models import ToySdkLoginResult
 from modules.runtime.runtime_config import RuntimeConnectionInfo
+
+
+def test_public_api_exports_only_user_facing_entries():
+    import HLBA
+
+    assert HLBA.__all__ == ["Client", "LoginResult"]
+
+
+def test_public_client_login_propagates_errors(monkeypatch):
+    import HLBA
+
+    async def failing_login(options=None, **kwargs):
+        raise RuntimeError("boom")
+
+    monkeypatch.setattr(HLBA, "_login", failing_login)
+    try:
+        import asyncio
+
+        asyncio.run(HLBA.Client().login("account", "password"))
+    except RuntimeError as exc:
+        assert str(exc) == "boom"
+    else:
+        raise AssertionError("RuntimeError was not propagated")
+
+
+def test_public_client_login_maps_account_password(monkeypatch):
+    import HLBA
+    import asyncio
+
+    captured = {}
+
+    async def fake_login(options=None, **kwargs):
+        captured.update(kwargs)
+        return type(
+            "Integrated",
+            (),
+            {
+                "credentials": "credentials",
+                "flow": {
+                    "account_data": {
+                        "AccountId": 17817937,
+                        "AccountDB": {
+                            "ServerId": 17817937,
+                            "Nickname": "fqka",
+                            "Level": 2,
+                            "Exp": 2,
+                            "PublisherAccountId": 20790000036661420,
+                        },
+                    },
+                    "player_data": {"FriendCode": "AKWWMTWQ"},
+                },
+            },
+        )()
+
+    monkeypatch.setattr(HLBA, "_login", fake_login)
+    result = asyncio.run(HLBA.Client(region="tw").login("account@example.com", "pw"))
+
+    assert str(result) == (
+        "[AccountId: 17817937, Nickname: fqka, Level: 2, Exp: 2, "
+        "FriendCode: AKWWMTWQ, PublisherAccountId: 20790000036661420]"
+    )
+    assert result.account_id == 17817937
+    assert result.nickname == "fqka"
+    assert result.level == 2
+    assert result.exp == 2
+    assert result.friend_code == "AKWWMTWQ"
+    assert result.publisher_account_id == 20790000036661420
+    assert result.to_dict()["AccountId"] == 17817937
+    assert captured["nx_id"] == "account@example.com"
+    assert captured["nx_password"] == "pw"
+    assert captured["region"] == "tw"
+    assert result.logs == ()
+
+
+def test_public_client_debug_prints_and_returns_logs(monkeypatch):
+    import HLBA
+    import asyncio
+    import contextlib
+    import io
+
+    captured = {}
+
+    async def fake_login(options=None, **kwargs):
+        captured.update(kwargs)
+        kwargs["debug_logger"]("login.start")
+        kwargs["debug_logger"]("login.done status=posted_login_sync")
+        return type(
+            "Integrated",
+            (),
+            {
+                "credentials": "credentials",
+                "flow": {
+                    "account_data": {
+                        "AccountId": 17817937,
+                        "AccountDB": {"Nickname": "fqka"},
+                    },
+                    "player_data": {},
+                },
+            },
+        )()
+
+    monkeypatch.setattr(HLBA, "_login", fake_login)
+    client = HLBA.Client(debug=True, region="tw")
+    stdout = io.StringIO()
+    with contextlib.redirect_stdout(stdout):
+        result = asyncio.run(client.login("account@example.com", "pw"))
+
+    assert callable(captured["debug_logger"])
+    assert result.logs == ("login.start", "login.done status=posted_login_sync")
+    assert client.logs == ["login.start", "login.done status=posted_login_sync"]
+    assert client.raw_result is not None
+    assert "[HLBA] login.start" in stdout.getvalue()
+
+
+def test_public_client_credentials_requires_login():
+    import HLBA
+    from core.error import LoginRequiredError
+
+    try:
+        HLBA.Client().credentials
+    except LoginRequiredError as exc:
+        assert str(exc) == "login has not completed"
+    else:
+        raise AssertionError("LoginRequiredError was not raised")
 
 
 def test_protocol_converter_sample():
@@ -60,7 +188,6 @@ def test_protocol_converter_sample():
 
 
 def test_fast_crc_check_value():
-    # MSB-first CRC-32, poly 0x04C11DB7, init 0, xorout 0.
     assert fast_crc(b"123456789") == 0x89A1897F
 
 
@@ -100,7 +227,7 @@ def test_packet_layout_and_roundtrip():
     assert ungzip_length_prefixed(xor_crypt(parsed.payload)) == request_bytes
 
 
-def test_packet_can_encrypt_request_payload_like_pc_session_lane():
+def test_packet_can_encrypt_request_payload_like_post_account_check_session_lane():
     packet, meta, request_bytes = build_packet(
         "NetworkTime_Sync",
         {},
@@ -123,7 +250,7 @@ def test_packet_can_encrypt_request_payload_like_pc_session_lane():
     assert decoded["Resendable"] is True
 
 
-def test_pc_post_account_check_request_lengths_match_dynamic_capture():
+def test_post_account_check_request_lengths_match_dynamic_capture():
     client = BAReplayClient()
     client.session_key = {
         "AccountServerId": 12345678,
@@ -138,7 +265,7 @@ def test_pc_post_account_check_request_lengths_match_dynamic_capture():
     login = LoginReplay(client)
 
     proof = login.proof_token_question()
-    network_time = login.native_relay_request("NetworkTimeSyncRequest", {}, include_base_defaults=True)
+    network_time = login.session_api_request("NetworkTimeSyncRequest", {}, include_base_defaults=True)
 
     assert proof.meta.serialized_request_len == 194
     assert len(proof.request_bytes) == 208
@@ -170,6 +297,17 @@ def test_account_check_nexon_stays_unencrypted_even_with_carried_crypto():
     assert json.loads(built.request_bytes.decode("utf-8"))["Protocol"] == 1014
 
 
+def test_build_request_record_keeps_artifacts_in_memory():
+    built = BAReplayClient().build("QueuingGetTicketRequest", {"NpSN": 1}, inject_hash=True)
+
+    record = build_request_record("queue", built)
+
+    assert record["name"] == "queue"
+    assert record["protocol_name"] == "Queuing_GetTicket"
+    assert "request_json" not in record
+    assert "packet_base64" not in record
+
+
 def test_besthttp_multipart_binary_body():
     body, content_type = build_besthttp_multipart("mx", b"\x00abc", boundary="fixed-boundary")
     assert content_type == "multipart/form-data; boundary=fixed-boundary"
@@ -184,46 +322,20 @@ def test_besthttp_multipart_binary_body():
     )
 
 
-def test_runtime_hosts_gateway_discovery(tmp_path):
-    local_config = tmp_path / "LocalConfig.json"
-    hosts = tmp_path / "Hosts"
-    local_config.write_text(
-        json.dumps({"StringTable": {"LastRegion": "tw", "LastServer": "live"}}),
-        encoding="utf-8",
-    )
-    hosts.write_bytes(
-        b"\x00https://nxm-eu-bagl.nexon.com:5100\x00"
-        b"https://nxm-tw-bagl.nexon.com:5100\x00"
-        b"https://nxm-tw-bagl.nexon.com:5000\x00"
-    )
-
-    assert extract_urls_from_hosts(hosts) == [
-        "https://nxm-eu-bagl.nexon.com:5100",
-        "https://nxm-tw-bagl.nexon.com:5100",
-        "https://nxm-tw-bagl.nexon.com:5000",
-    ]
-    assert normalize_service_base("https://nxm-tw-bagl.nexon.com:5100") == "https://nxm-tw-bagl.nexon.com:5100/api/"
-
-    info = discover_connection_info(local_low_dir=tmp_path)
+def test_static_gateway_discovery():
+    info = discover_connection_info(region="tw")
     assert info.region == "tw"
     assert info.gateway_url == "https://nxm-tw-bagl.nexon.com:5100/api/"
     assert info.gateway_endpoint == "https://nxm-tw-bagl.nexon.com:5100/api/gateway"
     assert info.api_url == "https://nxm-tw-bagl.nexon.com:5000/api/"
 
 
-def test_region_profiles_and_fallback(tmp_path):
-    (tmp_path / "LocalConfig.json").write_text(
-        json.dumps({"StringTable": {"LastRegion": "tw", "LastServer": "live"}}),
-        encoding="utf-8",
-    )
-    (tmp_path / "Hosts").write_bytes(b"https://nxm-tw-bagl.nexon.com:5100\x00")
-
+def test_region_profiles_and_fallback():
     na = profile_for("na")
     assert na.api_url == "https://nxm-or-bagl.nexon.com:5000/api/"
     assert na.gateway_endpoint == "https://nxm-or-bagl.nexon.com:5100/api/gateway"
-    assert "country=US" in build_login_url(na, hsid="00000000-0000-4000-8000-000000000000")
 
-    info = discover_connection_info(region="na", local_low_dir=tmp_path)
+    info = discover_connection_info(region="na")
     assert info.source == "static-server-profile"
     assert info.gateway_url == "https://nxm-or-bagl.nexon.com:5100/api/"
 
@@ -234,10 +346,6 @@ def test_proxy_normalization_and_maps():
     assert requests_proxy_map("socks5://127.0.0.1:60808") == {
         "http": "socks5://127.0.0.1:60808",
         "https": "socks5://127.0.0.1:60808",
-    }
-    assert playwright_proxy_options("http://127.0.0.1:60808") == {
-        "server": "http://127.0.0.1:60808",
-        "bypass": "localhost,127.0.0.1,::1",
     }
 
 
@@ -311,102 +419,78 @@ def test_empty_http_200_response_is_success_noop():
 
 
 def test_android_profile_is_the_only_main_game_profile():
-    parser = cli_main.build_arg_parser()
-    args = parser.parse_args(["--main-game-profile", "android"])
-
-    assert args.main_game_profile == "android"
-    try:
-        parser.parse_args(["--main-game-profile", "pc-steam"])
-    except SystemExit:
-        pass
-    else:
-        raise AssertionError("pc-steam should not be an active main-game profile")
+    assert DEFAULTS.main_game_profile == "android"
 
 
 def test_android_session_api_defaults_to_api_url(monkeypatch, tmp_path):
-    args = cli_main.build_arg_parser().parse_args([])
-    args.output_dir = tmp_path
+    options = IntegratedLoginOptions()
     info = RuntimeConnectionInfo(
-        local_low_dir=str(tmp_path),
-        local_config_path=str(tmp_path / "LocalConfig.json"),
-        hosts_path=str(tmp_path / "Hosts"),
         region="tw",
         server="live",
         api_url="https://nxm-tw-bagl.nexon.com:5000/api/",
         gateway_url="https://nxm-tw-bagl.nexon.com:5100/api/",
         gateway_endpoint="https://nxm-tw-bagl.nexon.com:5100/api/gateway",
         source="test",
-        discovered_urls=(),
     )
 
-    monkeypatch.setattr(cli_main, "discover_connection_info", lambda **kwargs: info)
+    monkeypatch.setattr(login_flows, "discover_connection_info", lambda **kwargs: info)
 
-    host_url, api_url = cli_main.resolve_service_urls(args)
-    session_api_url = cli_main.resolve_session_api_url(args, host_url, api_url)
+    host_url, api_url, _connection = login_flows.resolve_host_url(options)
+    client = BAReplayClient(host_url=host_url, api_url=api_url)
 
     assert host_url == "https://nxm-tw-bagl.nexon.com:5100/api/"
     assert api_url == "https://nxm-tw-bagl.nexon.com:5000/api/"
-    assert session_api_url == "https://nxm-tw-bagl.nexon.com:5000/api/"
+    assert client.session_api_url == "https://nxm-tw-bagl.nexon.com:5000/api/"
 
 
-def test_explicit_session_api_url_overrides_android_default(monkeypatch, tmp_path):
-    args = cli_main.build_arg_parser().parse_args(
-        ["--session-api-url", "https://example.invalid/api/"]
-    )
-    args.output_dir = tmp_path
-    info = RuntimeConnectionInfo(
-        local_low_dir=str(tmp_path),
-        local_config_path=str(tmp_path / "LocalConfig.json"),
-        hosts_path=str(tmp_path / "Hosts"),
-        region="tw",
-        server="live",
+def test_explicit_session_api_url_overrides_android_default():
+    client = BAReplayClient(
+        host_url="https://nxm-tw-bagl.nexon.com:5100/api/",
         api_url="https://nxm-tw-bagl.nexon.com:5000/api/",
-        gateway_url="https://nxm-tw-bagl.nexon.com:5100/api/",
-        gateway_endpoint="https://nxm-tw-bagl.nexon.com:5100/api/gateway",
-        source="test",
-        discovered_urls=(),
+        session_api_url="https://example.invalid/api/",
     )
 
-    monkeypatch.setattr(cli_main, "discover_connection_info", lambda **kwargs: info)
-
-    host_url, api_url = cli_main.resolve_service_urls(args)
-    session_api_url = cli_main.resolve_session_api_url(args, host_url, api_url)
-
-    assert host_url == "https://nxm-tw-bagl.nexon.com:5100/api/"
-    assert api_url == "https://nxm-tw-bagl.nexon.com:5000/api/"
-    assert session_api_url == "https://example.invalid/api/"
+    assert client.session_api_url == "https://example.invalid/api/"
 
 
-def test_pc_runtime_profile_json_override_loads_profile_and_cid(tmp_path):
-    profile_path = tmp_path / "steam_runtime_profile.json"
-    profile_path.write_text(
-        json.dumps(
-            {
-                "pcRuntimeProfile": {
-                    "computer_name": "DESKTOP-TEST",
-                    "device_model": "Test PC Model",
-                    "os_version": "Microsoft Windows 11 Pro (10.0.22631)",
-                    "system_memory_mb": 16384,
-                    "source": "test",
-                },
-                "launcherState": {
-                    "cid": "20790000000000001",
-                    "cid_pool": ["20790000000000001", "20790000000000002"],
-                    "token_infos": [],
-                },
-            }
-        ),
-        encoding="utf-8",
+def test_android_mobile_profile_supplies_device_defaults():
+    profile = AndroidMobileProfile(
+        country="TW",
+        locale="zh-TW",
+        package_name="com.nexon.bluearchivegalaxy",
+        store_type="galaxy",
+        client_version="1.90.429659",
+        app_version_code=429659,
+        device_model="SM-S918B",
+        os_version="Android 14",
+        system_memory_mb=12288,
+        device_unique_id="device-id",
+        advertisement_id="adid",
+        idfv="idfv",
+        uuid="uuid",
+        uuid2="uuid2",
+        mcc=466,
+        mnc=92,
+        carrier_name="Chunghwa Telecom",
+        app_set_scope=1,
+        app_set_id="app-set-id",
     )
 
-    pc_profile, launcher_state, _raw = cli_main.load_pc_runtime_profile_override(profile_path)
+    options = login_flows.apply_android_mobile_profile_defaults(IntegratedLoginOptions(), profile)
+    client = login_flows.build_android_toy_client(options)
 
-    assert pc_profile.device_model == "Test PC Model"
-    assert pc_profile.os_version == "Microsoft Windows 11 Pro (10.0.22631)"
-    assert pc_profile.system_memory_mb == 16384
-    assert launcher_state is not None
-    assert launcher_state.cid == "20790000000000001"
-    assert launcher_state.cid_pool == ("20790000000000001", "20790000000000002")
+    assert options.device_id == "device-id"
+    assert options.device_system_memory_size == 12288
+    assert options.account_auth_advertisement_id == "adid"
+    assert options.account_auth_idfv == "idfv"
+    assert client.config.app_version_code == 429659
+    assert client.config.package_name == "com.nexon.bluearchivegalaxy"
+    assert client.device.device_model == "SM-S918B"
+    assert client.device.os_version == "Android 14"
+    assert client.device.mcc == 466
+    assert client.device.mnc == 92
+    assert client.device.carrier_name == "Chunghwa Telecom"
+    assert client.device.app_set_id == "app-set-id"
 
 
 def test_integrated_login_options_expose_queue_subchain_controls():
@@ -414,26 +498,26 @@ def test_integrated_login_options_expose_queue_subchain_controls():
         queue_subchain=True,
         queue_subchain_url_mode="api",
         queue_carry_crypto_forward=True,
-        native_relay_queue=False,
-        native_relay_battle_pass_id=42,
-        native_relay_account_link_reward=True,
-        native_relay_continue_on_error=True,
+        session_bootstrap_queue=False,
+        session_bootstrap_battle_pass_id=42,
+        session_bootstrap_account_link_reward=True,
+        session_bootstrap_continue_on_error=True,
     )
 
     assert options.queue_subchain is True
     assert options.queue_subchain_url_mode == "api"
     assert options.queue_carry_crypto_forward is True
-    assert options.native_relay_queue is False
-    assert options.native_relay_battle_pass_id == 42
-    assert options.native_relay_account_link_reward is True
-    assert options.native_relay_continue_on_error is True
+    assert options.session_bootstrap_queue is False
+    assert options.session_bootstrap_battle_pass_id == 42
+    assert options.session_bootstrap_account_link_reward is True
+    assert options.session_bootstrap_continue_on_error is True
 
 
-def test_account_login_sync_no_part_protocols_match_native_list():
+def test_account_login_sync_no_part_protocols_match_session_bootstrap_list():
     fields = build_account_login_sync_no_part_fields()
 
     assert fields["SkillCutInOption"] == "All"
-    assert fields["SyncProtocols"] == NATIVE_LOGIN_SYNC_NO_PART_PROTOCOLS
+    assert fields["SyncProtocols"] == SESSION_LOGIN_SYNC_NO_PART_PROTOCOLS
     assert fields["SyncProtocols"] == [
         20000,
         1003,
@@ -463,7 +547,11 @@ def test_account_login_sync_no_part_protocols_match_native_list():
     ]
 
 
-def test_native_relay_queue_builds_offline_and_skips_inactive_battle_pass(tmp_path):
+def test_session_bootstrap_queue_builds_requests_and_skips_inactive_battle_pass(monkeypatch, tmp_path):
+    def fake_post_built_request_to_url(client, built, *, url, body_mode, response_aes_key=None, response_aes_iv=None):
+        return {"http": {"status_code": 200}, "raw": "{}", "payload": "{}", "parsed": {}}
+
+    monkeypatch.setattr(nexon_login_module, "post_built_request_to_url", fake_post_built_request_to_url)
     client = BAReplayClient(
         host_url="https://nxm-tw-bagl.nexon.com:5100/api/",
         api_url="https://nxm-tw-bagl.nexon.com:5000/api/",
@@ -477,12 +565,10 @@ def test_native_relay_queue_builds_offline_and_skips_inactive_battle_pass(tmp_pa
     )
     flow = {"steps": []}
 
-    state = run_native_relay_queue(
+    state = run_session_bootstrap_queue(
         client,
         LoginReplay(client),
-        output_dir=tmp_path,
         flow=flow,
-        post=False,
         body_mode="besthttp-multipart",
         skill_cut_in_option="All",
         battle_pass_id=None,
@@ -498,7 +584,7 @@ def test_native_relay_queue_builds_offline_and_skips_inactive_battle_pass(tmp_pa
         "ContentSaveGetRequest",
         "ShopBeforehandGachaGetRequest",
     ]
-    assert state["tasks"][2]["sync_protocols"] == NATIVE_LOGIN_SYNC_NO_PART_PROTOCOLS
+    assert state["tasks"][2]["sync_protocols"] == SESSION_LOGIN_SYNC_NO_PART_PROTOCOLS
     assert state["tasks"][-1]["status"] == "skipped"
     assert state["tasks"][-1]["request_class"] == "BattlePassGetInfoRequest"
 
@@ -628,10 +714,9 @@ def test_account_check_nexon_android_minimal_fields():
         member_id="abc",
         member_type="107",
         um_key="107:abc",
-        game_token="game-token",
         callback=None,
     )
-    credentials = build_credentials(toy_login, allow_empty_ngsm_token=True)
+    credentials = build_credentials(toy_login)
     minimal = build_account_check_nexon_fields(
         credentials,
         enter_ticket="ticket",
@@ -671,10 +756,9 @@ def test_account_auth_fields_include_runtime_adid_and_idfv():
 
 def test_account_auth_os_type_matches_runtime_platform_short_codes():
     assert normalize_account_auth_os_type("Android") == "A"
-    assert normalize_account_auth_os_type("WindowsPlayer") == "W"
-    assert normalize_account_auth_os_type("iPhonePlayer") == "I"
+    assert normalize_account_auth_os_type("") == "A"
 
-    fields = build_account_auth_fields(device_id="device-id", os_type="Android")
+    fields = build_account_auth_fields(device_id="device-id", os_type="Android", os_version="Android 13")
     assert fields["OSType"] == "A"
     assert fields["OSVersion"] == "Android OS 13 / API-33"
 
@@ -684,21 +768,6 @@ def test_account_auth_fields_include_explicit_dev_id_only():
 
     assert fields["DeviceUniqueId"] == "device-id"
     assert fields["DevId"] == "account-dev-id"
-
-
-def test_android_runtime_device_id_auto_prefers_uuid_over_uuid2():
-    profile = AndroidRuntimeProfile(
-        source_root="",
-        external_dir="",
-        shared_prefs_dir="",
-        uuid="2392fff8-65d8-4aff-b075-5214c8cfb56f",
-        uuid2="5f843fd4d0ac8615",
-        save_uid="17 817 937",
-        mid="2392fff8-65d8-4aff-b075-5214c8cfb56f",
-        idfv="f98ca9db-617c-3b21-7457-8488e3344881",
-    )
-
-    assert select_android_runtime_device_id(profile, "auto") == "2392fff8-65d8-4aff-b075-5214c8cfb56f"
 
 
 def test_android_security_state_records_missing_ngsx_side_effect():
@@ -711,10 +780,9 @@ def test_android_security_state_records_missing_ngsx_side_effect():
         member_id="abc",
         member_type="107",
         um_key="107:abc",
-        game_token="game-token",
         callback=None,
     )
-    credentials = build_credentials(toy_login, allow_empty_ngsm_token=True)
+    credentials = build_credentials(toy_login)
     state = build_android_security_state(credentials)
 
     assert state["security"] == "NgsX"
@@ -741,7 +809,7 @@ def test_android_toysdk_npparams_header_is_encrypted_json():
     assert headers["uuid"] == "uuid-a"
 
 
-def test_android_ticket_login_infers_npsn_from_guid():
+def test_android_login_infers_npsn_from_guid():
     client = AndroidToySdkClient()
     session = client._session_from_login(
         {"errorCode": 0, "result": {"guid": "123456789", "npaCode": "npa", "umKey": "107:abc"}},
@@ -753,17 +821,53 @@ def test_android_ticket_login_infers_npsn_from_guid():
     assert session.member_id == "abc"
 
 
-def test_android_web_token_ticket_issue_uses_ias_v2_http():
-    class CapturingClient(AndroidToySdkClient):
-        def _post_ias(self, path, body, *, headers=None):
-            assert path == "/v2/issue/ticket/by-web-token"
-            assert json.loads(body.decode("utf-8")) == {"gid": "2079"}
-            assert headers == {"Content-Type": "application/json", "x-ias-web-token": "web-token"}
-            return {"ticket": "ias:t:test"}
+def test_integrated_login_uses_nx_credentials(monkeypatch, tmp_path):
+    class FakeClient:
+        def __init__(self):
+            self.calls = []
+            self.device = AndroidDeviceProfile(uuid="uuid", uuid2="uuid2", advertising_id="adid")
+            self.config = AndroidToyConfig()
+            self.last_requests = []
 
-    result = CapturingClient().issue_ticket_by_web_token("web-token")
-    assert result.ticket == "ias:t:test"
-    assert result.callback.parsed == {"ticket": "ias:t:test"}
+        def login_with_nx_flow(self, user_id, password, **kwargs):
+            self.calls.append((user_id, password, kwargs))
+            return AndroidToySession(
+                np_sn=123456789,
+                guid="123456789",
+                np_token="np-token",
+                npa_code="npa-code",
+                member_id="abc",
+                member_type="107",
+                um_key="107:abc",
+                ngsm_token="ngsm-token",
+                raw_login={},
+            )
+
+    fake_client = FakeClient()
+    monkeypatch.setattr(login_flows, "build_android_toy_client", lambda options: fake_client)
+    options = IntegratedLoginOptions(
+        nx_id="user@example.com",
+        nx_password="pw",
+        nx_preflight_nexon_sn=False,
+        mobile_skip_enter_toy=True,
+        mobile_skip_user_info=True,
+    )
+
+    login = login_flows.resolve_toy_login(options)
+
+    assert login.np_sn == 123456789
+    assert fake_client.calls == [
+        (
+            "user@example.com",
+            "pw",
+            {
+                "enter_toy": False,
+                "get_user_info": False,
+                "preflight_nexon_sn": False,
+            },
+        )
+    ]
+    assert not (tmp_path / "toy_android_login_result.json").exists()
 
 
 def test_android_nx_login_uses_sdk_user_id_field():
@@ -935,63 +1039,7 @@ def test_android_get_user_info_does_not_send_np_token_as_mem_token():
     client.get_user_info()
 
 
-def test_android_ticket_flow_uses_game_token_as_initial_np_token():
-    class CapturingClient(AndroidToySdkClient):
-        def __init__(self):
-            super().__init__()
-            self.calls = []
-
-        def enter_toy(self, *, mnc=None, mcc=None):
-            self.calls.append("enter")
-            return {"errorCode": 0}
-
-        def sign_in_with_ticket(self, ticket):
-            self.calls.append("sign")
-            self.session = self._session_from_login(
-                {"errorCode": 0, "result": {"guid": "123456789", "npaCode": "npa", "umKey": "107:abc"}},
-                existing=self.session,
-            )
-            return self.session
-
-        def create_np_token(self):
-            self.calls.append("create")
-            self.session = self._session_from_login(
-                {"errorCode": 0, "result": {"guid": "123456789", "npToken": "np-token"}},
-                existing=self.session,
-            )
-            return {"errorCode": 0, "result": {"npToken": "np-token"}}
-
-        def issue_game_token_by_ticket(self, ticket):
-            self.calls.append("game")
-            self.session = type(self.session)(
-                np_sn=self.session.np_sn,
-                guid=self.session.guid,
-                np_token=self.session.np_token,
-                npa_code=self.session.npa_code,
-                session_token=self.session.session_token,
-                um_key=self.session.um_key,
-                member_id=self.session.member_id,
-                member_type=self.session.member_type,
-                game_token="game-token",
-                session_np_token="game-token",
-                raw_login=self.session.raw_login,
-                raw_game_token={"game_token": "game-token"},
-                raw_user_info=self.session.raw_user_info,
-            )
-            return "game-token"
-
-        def get_user_info(self, *, mem_token="", session_token=""):
-            self.calls.append("user")
-            return {"errorCode": 0}
-
-    client = CapturingClient()
-    client.login_with_ticket_flow("ticket")
-    assert client.calls == ["enter", "sign", "game", "user"]
-    assert client.session.session_np_token == "game-token"
-    assert client.session.to_toy_login_result().np_token == "game-token"
-
-
-def test_build_credentials_can_explicitly_allow_empty_ngsm_token():
+def test_build_credentials_defaults_to_empty_ngsm_token():
     toy_login = ToySdkLoginResult(
         np_sn=123456789,
         np_token="game-token",
@@ -1001,10 +1049,9 @@ def test_build_credentials_can_explicitly_allow_empty_ngsm_token():
         member_id="abc",
         member_type="107",
         um_key="107:abc",
-        game_token="game-token",
         callback=None,
     )
-    credentials = build_credentials(toy_login, allow_empty_ngsm_token=True)
+    credentials = build_credentials(toy_login)
     assert credentials.ngsm_token == ""
 
 
@@ -1018,213 +1065,8 @@ def test_build_credentials_uses_toy_login_ngsm_token():
         member_id="abc",
         member_type="107",
         um_key="107:abc",
-        game_token="game-token",
         ngsm_token="ngsm-token",
         callback=None,
     )
     credentials = build_credentials(toy_login)
     assert credentials.ngsm_token == "ngsm-token"
-
-
-def test_ngsm_token_from_bridge_result_prefers_top_level():
-    assert cli_main.ngsm_token_from_bridge_result(
-        {"ngsmToken": "bridge-token", "events": [{"event": "ngsm-token", "ngsmToken": "event-token"}]}
-    ) == "bridge-token"
-
-
-def test_toy_login_from_file_loads_adjacent_bridge_ngsm_token(tmp_path):
-    toy_login_path = tmp_path / "toy_login_summary.json"
-    bridge_path = tmp_path / "ngsx_bridge_result.json"
-    toy_login_path.write_text(
-        json.dumps(
-            {
-                "npSN": 123456789,
-                "npToken": "np-token",
-                "npaCode": "npa-code",
-                "guid": "123456789",
-                "memberId": "73529028",
-                "memberType": "107",
-                "umKey": "107:73529028",
-            }
-        ),
-        encoding="utf-8",
-    )
-    bridge_path.write_text(
-        json.dumps(
-            {
-                "status": "ngsm-token",
-                "events": [
-                    {"event": "run-callback", "isOK": True, "code": 0},
-                    {"event": "ngsm-token", "errorCode": 0, "ngsmToken": "bridge-ngsm-token"},
-                ],
-            }
-        ),
-        encoding="utf-8",
-    )
-
-    login = cli_main.toy_login_from_file(toy_login_path)
-    assert login.ngsm_token == "bridge-ngsm-token"
-
-
-def test_build_android_bridge_command_uses_explicit_device_settings(tmp_path):
-    args = cli_main.build_arg_parser().parse_args([])
-    args.gid = "2079"
-    args.bridge_package = "com.nexon.bluearchive"
-    args.bridge_device_id = "127.0.0.1:16448"
-    args.bridge_adb_path = "E:/adb-tool/adb.exe"
-    args.bridge_frida_address = ""
-    args.bridge_pid = 8777
-    args.bridge_timeout = 45.0
-    args.bridge_attach_timeout = 12.0
-    args.bridge_init_wait_ms = 7000
-    args.bridge_no_init = True
-    args.bridge_output = tmp_path / "ngsx_bridge_result.json"
-
-    login = ToySdkLoginResult(
-        np_sn=123456789,
-        np_token="np-token",
-        npa_code="0E50ZZZ10F02I",
-        session_token="",
-        guid="20790000000000000",
-        member_id="73529028",
-        member_type="107",
-        um_key="107:73529028",
-        callback=None,
-    )
-    command = cli_main.build_android_bridge_command(args, login, args.bridge_output)
-    assert command[:2] == [sys.executable, str(cli_main.DEFAULT_NGSX_BRIDGE)]
-    assert "--package" in command and "com.nexon.bluearchive" in command
-    assert "--device-id" in command and "127.0.0.1:16448" in command
-    assert "--adb-path" in command and "E:/adb-tool/adb.exe" in command
-    assert "--pid" in command and "8777" in command
-    assert "--guid" in command and "20790000000000000" in command
-    assert "--npa-code" in command and "0E50ZZZ10F02I" in command
-    assert "--no-init" in command
-
-
-def test_build_pc_ngsx_bridge_command_defaults_to_init_run(tmp_path):
-    args = cli_main.build_arg_parser().parse_args([])
-    args.gid = "2079"
-    args.pc_ngsx_dll = tmp_path / "grap64.dll"
-    args.pc_ngsx_timeout = 9.0
-    args.pc_ngsx_getversion_only = False
-    args.pc_ngsx_no_init = False
-    args.pc_ngsx_no_close = False
-
-    login = ToySdkLoginResult(
-        np_sn=123456789,
-        np_token="np-token",
-        npa_code="0E50ZZZ10F02I",
-        session_token="",
-        guid="20790000000000000",
-        member_id="73529028",
-        member_type="107",
-        um_key="107:73529028",
-        callback=None,
-    )
-    output = tmp_path / "ngsx_pc_bridge_result.json"
-    command = cli_main.build_pc_ngsx_bridge_command(args, login, output)
-    assert command[:2] == [sys.executable, str(cli_main.DEFAULT_NGSX_PC_PROBE)]
-    assert "--dll" in command and str(args.pc_ngsx_dll) in command
-    assert "--guid" in command and "20790000000000000" in command
-    assert "--npa-code" in command and "0E50ZZZ10F02I" in command
-    assert "--init" in command
-    assert "--run" in command
-    assert "--no-close" not in command
-
-
-def test_build_pc_ngsx_bridge_command_can_getversion_only(tmp_path):
-    args = cli_main.build_arg_parser().parse_args([])
-    args.gid = "2079"
-    args.pc_ngsx_dll = tmp_path / "grap64.dll"
-    args.pc_ngsx_timeout = 9.0
-    args.pc_ngsx_getversion_only = True
-    args.pc_ngsx_no_init = False
-    args.pc_ngsx_no_close = False
-
-    login = ToySdkLoginResult(
-        np_sn=123456789,
-        np_token="np-token",
-        npa_code="",
-        session_token="",
-        guid="",
-        member_id="73529028",
-        member_type="107",
-        um_key="107:73529028",
-        callback=None,
-    )
-    command = cli_main.build_pc_ngsx_bridge_command(args, login, tmp_path / "ngsx_pc_bridge_result.json")
-    assert "--run" not in command
-    assert "--init" not in command
-    assert "--guid" not in command
-    assert "--npa-code" not in command
-
-
-def test_toy_login_from_file_loads_adjacent_pc_bridge_ngsm_token(tmp_path):
-    toy_login_path = tmp_path / "toy_login_summary.json"
-    bridge_path = tmp_path / "ngsx_pc_bridge_result.json"
-    toy_login_path.write_text(
-        json.dumps(
-            {
-                "npSN": 123456789,
-                "npToken": "np-token",
-                "npaCode": "npa-code",
-                "guid": "123456789",
-                "memberId": "73529028",
-                "memberType": "107",
-                "umKey": "107:73529028",
-            }
-        ),
-        encoding="utf-8",
-    )
-    bridge_path.write_text(json.dumps({"ngsmToken": "pc-ngsm-token"}), encoding="utf-8")
-
-    login = cli_main.toy_login_from_file(toy_login_path)
-    assert login.ngsm_token == "pc-ngsm-token"
-
-
-if __name__ == "__main__":
-    test_protocol_converter_sample()
-    test_fast_crc_check_value()
-    test_create_hash_high_bits()
-    test_packet_layout_and_roundtrip()
-    test_packet_can_encrypt_request_payload_like_pc_session_lane()
-    test_pc_post_account_check_request_lengths_match_dynamic_capture()
-    test_account_check_nexon_stays_unencrypted_even_with_carried_crypto()
-    test_besthttp_multipart_binary_body()
-    from tempfile import TemporaryDirectory
-
-    with TemporaryDirectory() as d:
-        test_runtime_hosts_gateway_discovery(Path(d))
-    with TemporaryDirectory() as d:
-        test_region_profiles_and_fallback(Path(d))
-    test_proxy_normalization_and_maps()
-    test_client_splits_gateway_and_api_urls()
-    test_gateway_wrapper_plain_error_packet_is_not_aes_decrypted()
-    test_android_toysdk_common_and_npsn_crypto_roundtrip()
-    test_android_toysdk_headers_are_latin1_safe()
-    test_account_check_nexon_key_iv_fields_are_rsa_encrypted()
-    test_account_check_nexon_key_iv_diagnostic_modes()
-    test_account_check_nexon_android_minimal_fields()
-    test_account_auth_fields_include_runtime_adid_and_idfv()
-    test_account_auth_fields_include_explicit_dev_id_only()
-    test_android_toysdk_npparams_header_is_encrypted_json()
-    test_android_ticket_login_infers_npsn_from_guid()
-    test_android_web_token_ticket_issue_uses_ias_v2_http()
-    test_android_nx_login_uses_sdk_user_id_field()
-    test_android_get_user_info_does_not_send_np_token_as_mem_token()
-    test_android_ticket_flow_uses_game_token_as_initial_np_token()
-    test_build_credentials_can_explicitly_allow_empty_ngsm_token()
-    test_build_credentials_uses_toy_login_ngsm_token()
-    test_ngsm_token_from_bridge_result_prefers_top_level()
-    with TemporaryDirectory() as d:
-        test_toy_login_from_file_loads_adjacent_bridge_ngsm_token(Path(d))
-    with TemporaryDirectory() as d:
-        test_build_android_bridge_command_uses_explicit_device_settings(Path(d))
-    with TemporaryDirectory() as d:
-        test_build_pc_ngsx_bridge_command_defaults_to_init_run(Path(d))
-    with TemporaryDirectory() as d:
-        test_build_pc_ngsx_bridge_command_can_getversion_only(Path(d))
-    with TemporaryDirectory() as d:
-        test_toy_login_from_file_loads_adjacent_pc_bridge_ngsm_token(Path(d))
-    print("test_ba_replay ok")

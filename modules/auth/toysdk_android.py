@@ -1,11 +1,3 @@
-"""Direct Android TOYSDK HTTP replay helpers.
-
-This module mirrors the Java TOYSDK path used by the Android client:
-
-* ``NXToyBoltRequest``: raw AES-ECB body, encrypted ``npparams`` header.
-* ``NXToyGWBoltRequest``: plain JSON body for ticket sign-in.
-* ``NXToyIASRequest``: plain JSON body for IAS game-token issue.
-"""
 
 from __future__ import annotations
 
@@ -18,34 +10,34 @@ from dataclasses import asdict, dataclass
 from typing import Any, Mapping
 from urllib.parse import urljoin
 
+from config.game import DEFAULTS
+from core.error import LoginError
 from utils.proxy import normalize_proxy_url, requests_proxy_map
-from modules.auth.toysdk_models import NativeCallbackResult, ToySdkLoginResult, ToySdkTicketResult
+from modules.auth.toysdk_models import ToySdkCallbackResult, ToySdkLoginResult
 
 
 COMMON_AES_KEY = bytes.fromhex("dd4763541be100910b568ca6d48268e3")
 NXCOM_CRYPTO_KEY = "NexonUser"
-DEFAULT_BOLT_URL = "https://m-api.nexon.com"
-DEFAULT_GW_BOLT_URL = "https://public.api.nexon.com/toy"
-DEFAULT_IAS_URL = "https://public.api.nexon.com/ias/live/public"
-DEFAULT_SERVICE_ID = "2079"
-DEFAULT_CLIENT_ID = "2708"
-DEFAULT_GAME_ID = "toy2079"
-DEFAULT_PACKAGE_NAME = "com.nexon.bluearchive"
-DEFAULT_STORE_TYPE = "google"
-DEFAULT_SDK_VERSION = "1.3.132"
-DEFAULT_APP_VERSION_CODE = 429659
+DEFAULT_BOLT_URL = DEFAULTS.toy_bolt_url
+DEFAULT_GW_BOLT_URL = DEFAULTS.toy_gw_bolt_url
+DEFAULT_SERVICE_ID = DEFAULTS.service_id
+DEFAULT_CLIENT_ID = DEFAULTS.client_id
+DEFAULT_GAME_ID = DEFAULTS.game_id
+DEFAULT_PACKAGE_NAME = DEFAULTS.package_name
+DEFAULT_STORE_TYPE = DEFAULTS.store_type
+DEFAULT_SDK_VERSION = DEFAULTS.sdk_version
+DEFAULT_APP_VERSION_CODE = DEFAULTS.app_version_code
 EMAIL_RE = re.compile(r"^[^@\s]+@[^@\s]+\.[^@\s]+$")
 NXCOM_USER_ID_FIELD = "userID"
 LOGIN_TYPE_NXCOM = 1
 LOGIN_TYPE_NXARENA = 107
 
 
-class ToySdkAndroidError(RuntimeError):
+class ToySdkAndroidError(LoginError):
     pass
 
 
 class ToySdkAndroidTurnstileRequired(ToySdkAndroidError):
-    """Raised when TOYSDK asks for Cloudflare Turnstile verification."""
 
     def __init__(self, result: Mapping[str, Any]):
         self.result = dict(result)
@@ -62,7 +54,6 @@ class ToySdkAndroidTurnstileRequired(ToySdkAndroidError):
 
 
 class ToySdkAndroidApiError(ToySdkAndroidError):
-    """Raised when a TOYSDK business response has a non-success errorCode."""
 
     def __init__(self, result: Mapping[str, Any], *, stage: str = "TOYSDK"):
         self.result = dict(result)
@@ -78,15 +69,15 @@ class ToySdkAndroidApiError(ToySdkAndroidError):
 
 @dataclass(frozen=True)
 class AndroidDeviceProfile:
-    country: str = "TW"
-    locale: str = "zh-TW"
-    initial_country: str = "TW"
-    device_country: str = "TW"
+    country: str = DEFAULTS.country
+    locale: str = DEFAULTS.locale
+    initial_country: str = DEFAULTS.country
+    device_country: str = DEFAULTS.country
     uuid: str = ""
     uuid2: str = ""
-    os: str = "A"
-    os_version: str = "Android 13"
-    device_model: str = "Pixel 7"
+    os: str = DEFAULTS.android_os_code
+    os_version: str = DEFAULTS.android_os_version
+    device_model: str = DEFAULTS.android_model
     carrier_name: str = ""
     mnc: int = 0
     mcc: int = 0
@@ -125,7 +116,6 @@ class AndroidToyConfig:
     app_version_code: int = DEFAULT_APP_VERSION_CODE
     bolt_url: str = DEFAULT_BOLT_URL
     gw_bolt_url: str = DEFAULT_GW_BOLT_URL
-    ias_url: str = DEFAULT_IAS_URL
     game_server_code: str = ""
 
 
@@ -139,35 +129,29 @@ class AndroidToySession:
     um_key: str = ""
     member_id: str = ""
     member_type: str = ""
-    game_token: str = ""
-    session_np_token: str = ""
     ngsm_token: str = ""
     raw_login: dict[str, Any] | None = None
-    raw_game_token: dict[str, Any] | None = None
     raw_user_info: dict[str, Any] | None = None
 
     def to_toy_login_result(self) -> ToySdkLoginResult:
         raw_payload = json_compact(
             {
                 "login": self.raw_login,
-                "gameToken": self.raw_game_token,
                 "userInfo": self.raw_user_info,
-                "sessionNpToken": self.session_np_token,
                 "ngsmToken": self.ngsm_token,
             }
         )
         return ToySdkLoginResult(
             np_sn=self.np_sn,
-            np_token=self.np_token or self.session_np_token,
+            np_token=self.np_token,
             npa_code=self.npa_code,
             session_token=self.session_token,
             guid=self.guid,
             member_id=self.member_id,
             member_type=self.member_type,
             um_key=self.um_key,
-            game_token=self.game_token,
             ngsm_token=self.ngsm_token,
-            callback=NativeCallbackResult(payload=raw_payload, parsed=json.loads(raw_payload)),
+            callback=ToySdkCallbackResult(payload=raw_payload, parsed=json.loads(raw_payload)),
         )
 
 
@@ -197,7 +181,7 @@ def aes_ecb_pkcs7_encrypt(key: bytes | str, data: bytes) -> bytes:
     padded = pkcs7_pad(data)
     try:
         from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
-    except Exception:  # pragma: no cover
+    except Exception:
         from Crypto.Cipher import AES
 
         return AES.new(key_bytes, AES.MODE_ECB).encrypt(padded)
@@ -210,7 +194,7 @@ def aes_ecb_pkcs7_decrypt(key: bytes | str, data: bytes) -> bytes:
     key_bytes = key_bytes[:16].ljust(16, b"\x00")
     try:
         from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
-    except Exception:  # pragma: no cover
+    except Exception:
         from Crypto.Cipher import AES
 
         return pkcs7_unpad(AES.new(key_bytes, AES.MODE_ECB).decrypt(data))
@@ -319,7 +303,6 @@ def result_is_success(result: Mapping[str, Any]) -> bool:
 
 
 class AndroidToySdkClient:
-    """Small direct HTTP client for Android TOYSDK auth requests."""
 
     def __init__(
         self,
@@ -462,65 +445,6 @@ class AndroidToySdkClient:
         self.session = self._session_from_login(result, existing=self.session)
         return self.session
 
-    def sign_in_with_ticket(self, ticket: str) -> AndroidToySession:
-        body = {
-            "os": self.device.os,
-            "locale": self.device.locale,
-            "uuid": self.device.uuid,
-            "termsApiVer": self.terms_api_ver,
-            "mk": self.config.store_type,
-        }
-        if self.config.package_name:
-            body["appId"] = self.config.package_name
-        result = self._post_gw_bolt(
-            "/sdk/signInWithTicket.nx",
-            body,
-            headers={"ias-ticket": ticket},
-        )
-        self.session = self._session_from_login(result, existing=self.session)
-        return self.session
-
-    def issue_game_token_by_ticket(self, ticket: str) -> str:
-        result = self._post_ias(
-            f"/v1/issue/game-token/by-ticket?locale={self.device.locale}",
-            b"",
-            headers={"x-ias-ticket": ticket},
-        )
-        game_token = str(find_first(result, "game_token", "gameToken") or "")
-        if not game_token:
-            raise ToySdkAndroidError(f"IAS game-token response missing game_token: {result}")
-        self.session = AndroidToySession(
-            np_sn=self.session.np_sn,
-            guid=self.session.guid,
-            np_token=self.session.np_token,
-            npa_code=self.session.npa_code,
-            session_token=self.session.session_token,
-            um_key=self.session.um_key,
-            member_id=self.session.member_id,
-            member_type=self.session.member_type,
-            game_token=game_token,
-            session_np_token=game_token,
-            ngsm_token=self.session.ngsm_token,
-            raw_login=self.session.raw_login,
-            raw_game_token=result,
-            raw_user_info=self.session.raw_user_info,
-        )
-        return game_token
-
-    def issue_ticket_by_web_token(self, web_token: str) -> ToySdkTicketResult:
-        if not web_token:
-            raise ToySdkAndroidError("web_token is required for IAS ticket issue")
-        result = self._post_ias(
-            "/v2/issue/ticket/by-web-token",
-            json_compact({"gid": self.config.service_id}).encode("utf-8"),
-            headers={"Content-Type": "application/json", "x-ias-web-token": web_token},
-        )
-        ticket = str(find_first(result, "ticket", "insignTicket", "linkTicket") or "")
-        if not ticket:
-            raise ToySdkAndroidError(f"IAS ticket response missing ticket: {result}")
-        payload = json_compact(result)
-        return ToySdkTicketResult(ticket=ticket, callback=NativeCallbackResult(payload=payload, parsed=result))
-
     def create_np_token(self) -> dict[str, Any]:
         result = self._post_bolt_bytes(
             "/sdk/createNPToken.nx",
@@ -540,11 +464,8 @@ class AndroidToySdkClient:
                 um_key=self.session.um_key,
                 member_id=self.session.member_id,
                 member_type=self.session.member_type,
-                game_token=self.session.game_token,
-                session_np_token=self.session.session_np_token,
                 ngsm_token=self.session.ngsm_token,
                 raw_login=self.session.raw_login,
-                raw_game_token=self.session.raw_game_token,
                 raw_user_info=self.session.raw_user_info,
             )
         return result
@@ -566,26 +487,6 @@ class AndroidToySdkClient:
         )
         self.session = self._session_from_user_info(result, existing=self.session)
         return result
-
-    def login_with_ticket_flow(
-        self,
-        ticket: str,
-        *,
-        enter_toy: bool = True,
-        create_np_token: bool = False,
-        get_user_info: bool = True,
-    ) -> AndroidToySession:
-        if enter_toy:
-            self.enter_toy()
-        self.sign_in_with_ticket(ticket)
-        if not self._has_credential():
-            return self.session
-        self.issue_game_token_by_ticket(ticket)
-        if create_np_token:
-            self.create_np_token()
-        if get_user_info and self._has_credential():
-            self.get_user_info()
-        return self.session
 
     def login_with_nx_flow(
         self,
@@ -669,17 +570,6 @@ class AndroidToySdkClient:
         return self._post_raw(
             urljoin(self.config.gw_bolt_url.rstrip("/") + "/", path.lstrip("/")),
             json_compact(dict(body)).encode("utf-8"),
-            merged,
-            "NONE",
-            None,
-        )
-
-    def _post_ias(self, path: str, body: bytes, *, headers: Mapping[str, str] | None = None) -> dict[str, Any]:
-        merged = {"Accept": "application/json"}
-        merged.update(headers or {})
-        return self._post_raw(
-            urljoin(self.config.ias_url.rstrip("/") + "/", path.lstrip("/")),
-            body,
             merged,
             "NONE",
             None,
@@ -792,7 +682,7 @@ class AndroidToySdkClient:
 
     def _credential(self, *, require: bool = False) -> tuple[str, str, int | None]:
         guid = self.session.guid or (str(self.session.np_sn) if self.session.np_sn is not None else "")
-        np_token = self.session.np_token or self.session.session_np_token
+        np_token = self.session.np_token
         np_sn = self.session.np_sn
         if require and (not guid or np_sn is None):
             raise ToySdkAndroidError("TOYSDK authenticated credential is required")
@@ -867,11 +757,8 @@ class AndroidToySdkClient:
             um_key=um_key,
             member_id=member_id,
             member_type=member_type,
-            game_token=existing.game_token,
-            session_np_token=existing.session_np_token,
             ngsm_token=str(find_first(body, "ngsmToken", "ngsm_token") or existing.ngsm_token or ""),
             raw_login=dict(result),
-            raw_game_token=existing.raw_game_token,
             raw_user_info=existing.raw_user_info,
         )
 
@@ -889,11 +776,8 @@ class AndroidToySdkClient:
             um_key=existing.um_key,
             member_id=existing.member_id,
             member_type=existing.member_type,
-            game_token=existing.game_token,
-            session_np_token=existing.session_np_token,
             ngsm_token=str(find_first(body, "ngsmToken", "ngsm_token") or existing.ngsm_token or ""),
             raw_login=existing.raw_login,
-            raw_game_token=existing.raw_game_token,
             raw_user_info=dict(result),
         )
 
@@ -903,7 +787,6 @@ def is_email(value: str) -> bool:
 
 
 def _latin1_headers(headers: Mapping[str, Any]) -> dict[str, str]:
-    """Normalize requests headers to values accepted by http.client."""
 
     normalized: dict[str, str] = {}
     for key, value in headers.items():

@@ -1,4 +1,3 @@
-"""Protocol enum and ProtocolConverter.TypeConversion helpers."""
 
 from __future__ import annotations
 
@@ -7,11 +6,8 @@ from functools import lru_cache
 from pathlib import Path
 from typing import Any
 
-from config.paths import PROJECT_ROOT
-
 
 PACKAGE_ROOT = Path(__file__).resolve().parent
-WORKSPACE_ROOT = PROJECT_ROOT
 DATA_DIR = PACKAGE_ROOT / "data"
 
 
@@ -25,10 +21,7 @@ def _read_json_from_candidates(*candidates: Path) -> Any:
 
 @lru_cache(maxsize=1)
 def protocol_converter_data() -> dict[str, Any]:
-    return _read_json_from_candidates(
-        DATA_DIR / "protocol_converter_bucket_map.json",
-        WORKSPACE_ROOT / "analysis_reports" / "protocol_converter_bucket_map.json",
-    )
+    return _read_json_from_candidates(DATA_DIR / "protocol_converter_bucket_map.json")
 
 
 @lru_cache(maxsize=1)
@@ -49,33 +42,9 @@ def protocol_names_by_value() -> dict[int, str]:
 @lru_cache(maxsize=1)
 def request_protocols() -> dict[str, dict[str, Any]]:
     try:
-        return _read_json_from_candidates(
-            DATA_DIR / "request_protocols.json",
-            WORKSPACE_ROOT / "analysis_reports" / "request_protocols.json",
-        )
+        return _read_json_from_candidates(DATA_DIR / "request_protocols.json")
     except FileNotFoundError:
-        # Fall back to the CSV generated during analysis.
-        import csv
-
-        path = WORKSPACE_ROOT / "analysis_reports" / "bluearchive_request_protocol_map.csv"
-        rows: dict[str, dict[str, Any]] = {}
-        if not path.exists():
-            return rows
-        with path.open("r", encoding="utf-8-sig", newline="") as f:
-            for row in csv.DictReader(f):
-                cls = row["RequestClass"]
-                proto_value = int(row["ProtocolValue"])
-                proto_name = row["ProtocolName"]
-                rows[cls] = {
-                    "request_class": cls,
-                    "short_name": cls.removesuffix("Request"),
-                    "protocol_name": proto_name,
-                    "protocol_value": proto_value,
-                    "source": row.get("Source", ""),
-                }
-                rows[cls.removesuffix("Request")] = rows[cls]
-                rows[proto_name] = rows[cls]
-        return rows
+        return {}
 
 
 def protocol_value(protocol: int | str) -> int:
@@ -119,7 +88,6 @@ def _to_signed_int32(value: int) -> int:
 
 
 def type_conversion(crc: int, protocol: int | str) -> int:
-    """ProtocolConverter.TypeConversion(crc, protocol)."""
 
     bucket = int(crc) % 99
     proto = protocol_value(protocol)

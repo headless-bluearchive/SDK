@@ -1,9 +1,3 @@
-"""Persistent synthetic Android device profile for mobile replay.
-
-The replay only needs a small subset of Android runtime identity fields.  This
-module keeps those fields stable across runs while still allowing the game
-client version to refresh from Galaxy Store metadata.
-"""
 
 from __future__ import annotations
 
@@ -16,11 +10,14 @@ from typing import Any
 from urllib.error import URLError
 from urllib.request import Request, urlopen
 
+from config.game import DEFAULTS
+from config.paths import DEFAULT_REPORT_DIR
+from core.error import NetworkError, RuntimeProfileError
 
 DEFAULT_ANDROID_MOBILE_PROFILE_PATH = (
-    Path(__file__).resolve().parents[1] / "analysis_reports" / "nexon_webview_login" / "android_mobile_profile.json"
+    DEFAULT_REPORT_DIR.parent / "runtime_profiles" / "android_mobile_profile.json"
 )
-DEFAULT_GALAXY_STORE_APP_ID = "com.nexon.bluearchivegalaxy"
+DEFAULT_GALAXY_STORE_APP_ID = DEFAULTS.galaxy_store_package_name
 GALAXY_STORE_DETAIL_URL = "https://galaxystore.samsung.com/api/detail/{app_id}"
 
 FALLBACK_DEVICES = [
@@ -56,12 +53,12 @@ class AndroidMobileProfile:
     profile_kind: str = "android-mobile-synthetic"
     seed: str = ""
     source: str = "fallback"
-    country: str = "TW"
-    locale: str = "zh-TW"
-    initial_country: str = "TW"
-    device_country: str = "TW"
-    package_name: str = "com.nexon.bluearchive"
-    store_type: str = "google"
+    country: str = DEFAULTS.country
+    locale: str = DEFAULTS.locale
+    initial_country: str = DEFAULTS.country
+    device_country: str = DEFAULTS.country
+    package_name: str = DEFAULTS.package_name
+    store_type: str = DEFAULTS.store_type
     client_version: str = ""
     app_version_code: int | None = None
     device_model: str = "SM-S918B"
@@ -107,7 +104,7 @@ def load_android_mobile_profile(path: str | Path) -> AndroidMobileProfile:
     profile_path = Path(path).expanduser()
     data = json.loads(profile_path.read_text(encoding="utf-8"))
     if not isinstance(data, dict):
-        raise ValueError(f"Android mobile profile must be a JSON object: {profile_path}")
+        raise RuntimeProfileError(f"Android mobile profile must be a JSON object: {profile_path}")
     allowed = AndroidMobileProfile.__dataclass_fields__
     values = {key: data.get(key) for key in allowed if key in data}
     return AndroidMobileProfile(**values)
@@ -119,7 +116,12 @@ def save_android_mobile_profile(path: str | Path, profile: AndroidMobileProfile)
     profile_path.write_text(json.dumps(profile.to_dict(), ensure_ascii=False, indent=2), encoding="utf-8")
 
 
-def generate_android_mobile_profile(*, country: str = "TW", locale: str = "zh-TW", seed: str = "") -> AndroidMobileProfile:
+def generate_android_mobile_profile(
+    *,
+    country: str = DEFAULTS.country,
+    locale: str = DEFAULTS.locale,
+    seed: str = "",
+) -> AndroidMobileProfile:
     rng, resolved_seed = _rng(seed)
     generated = _generate_with_randomandroidphone(country=country, rng=rng)
     if generated is None:
@@ -172,14 +174,14 @@ def fetch_galaxy_store_client_version(
         with urlopen(request, timeout=timeout) as response:
             raw = response.read()
     except URLError as exc:
-        raise RuntimeError(f"GalaxyStore client version fetch failed: {exc}") from exc
+        raise NetworkError(f"GalaxyStore client version fetch failed: {exc}") from exc
     data = json.loads(raw.decode("utf-8"))
     detail = data.get("DetailMain") if isinstance(data, dict) else None
     version = ""
     if isinstance(detail, dict):
         version = str(detail.get("contentBinaryVersion") or "").strip()
     if not version:
-        raise RuntimeError("GalaxyStore response did not contain DetailMain.contentBinaryVersion")
+        raise RuntimeProfileError("GalaxyStore response did not contain DetailMain.contentBinaryVersion")
     return version, data
 
 
@@ -289,10 +291,10 @@ def _normalize_memory_mb(value: Any) -> int:
     if raw is None:
         return 8192
     if raw < 64:
-        return raw * 1024
+        return max(raw * 1024, 4096)
     if raw < 2048:
         return 4096
-    return raw
+    return max(raw, 4096)
 
 
 def _to_int(value: Any) -> int | None:

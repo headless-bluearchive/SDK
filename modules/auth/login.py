@@ -1,4 +1,3 @@
-"""Convenience wrappers for login, proof-token, and queue-stage requests."""
 
 from __future__ import annotations
 
@@ -9,11 +8,6 @@ from core.crypto import generated_key_iv_fields
 
 
 class LoginReplay:
-    """Build login-chain requests with the same packet path as normal APIs.
-
-    ProofToken solving is challenge/server-specific. This helper exposes the
-    request/submit steps and lets callers plug in a solver result.
-    """
 
     def __init__(self, client: BAReplayClient) -> None:
         self.client = client
@@ -63,7 +57,7 @@ class LoginReplay:
             include_base_defaults=include_base_defaults,
         )
 
-    def native_relay_request(
+    def session_api_request(
         self,
         request_class: str,
         fields: Mapping[str, Any] | None = None,

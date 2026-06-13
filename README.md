@@ -1,80 +1,88 @@
-# headless-bluearchive
 
-`headless-bluearchive` 是一个面向生产环境的 Blue Archive 自动化/服务端基础项目。它从原先偏调试用途的 `ba_replay` 迁移而来，目标是把登录链、主网关发包、运行态 profile、后续游戏内 API 自动化统一到一个高内聚、低耦合、可测试、可扩展的工程结构里。
+<p align="center">
+  <img src="logo.png" alt="deobf" width="500">
+</p>
 
-当前版本优先保留并模块化已有能力：
+<p align="center">
+  <a href="./LICENSE">
+    <img src="https://img.shields.io/badge/License-MIT-blue.svg" alt="License: MIT">
+  </a>
+  <a href="https://www.python.org/">
+    <img src="https://img.shields.io/badge/python-3.10%2B-blue.svg" alt="Python Version">
+  </a>
+</p>
 
-- Android/mobile Nexon ID 直登 TOYSDK 链路
-- Web token / Playwright 登录入口
-- 主游戏网关构包、加密、解包、ProofToken、Account_CheckNexon、Account_Auth、Account_LoginSync
-- Android runtime/profile 生成与持久化
-- NGS-X/NgsmToken Android bridge 辅助脚本
-- 登录链 artifact 对比与轻量测试
+## 前提概要
 
+Headless Bluearchive Backend 是 `headless-bluearchive` 的 backend 包。在**不影响游戏公平性**的前提将 bluearchive 的登录和主网关发包封装成一个 Python 库，供 CLI、API 服务、GUI 或其他自动化程序复用。
+
+调用方只需要引用库入口，不需要再处理协议构包和会话加密这些底层细节，项目中**不包含**战斗、提交成绩、竞技场等影响游戏公平性的发包。
+
+> ⚠️ 本仓库**仅供学习与研究目的发布** —— 基于BlueArchive的底层架构，一份由互联网爱好者学习研究而产生的产物，您应该遵守其官方使用协定，如产生任何法律后果责任自负⚠️
+
+## 快速了解
+- 文档：[架构](docs/architecture.md) | [开发规范](docs/development.md) | [调用教程](docs/api)
+
+## 许可
+原始字节码未授予任何许可。本仓库中的所有逆向结果仅供研究与学习使用。如果你是内裤松并希望本仓库下架或重新授权，请提 Issues。虽然提了也不会搭理你。DMCA我就使用高雅荷兰抗投诉服务器自己搭建一个git
+
+## 开挂死妈
+本项目的初衷只是为了更好的服务ba玩家，而不是被拿去利用拿去翻牌透视和竞技场透视，除非你是本心先生。
+
+## 细节
+
+经过 claude fable 5 配合 x64dbg、IDA 和 Recaf 长达 5 秒的分析，claude 认为 BA 的主网关请求并不是补几个字段就能跑通的简单 HTTP replay。除了基础协议字段和请求体外，还叠加了 PacketCryptManager 外层封包、CRC、压缩、异或、1014 后 O22 会话语义、SessionKey 注入和请求体 AES 加密的组合流程。
+
+此外，部分关键返回值还依赖经过 Themida 虚拟化保护的 NGS-X 服务组件 grap-communicator64.aes。被 Themida 保护后的 blob 确实已经烂到不适合人类直接复用，因此我们顺手还原了游戏本体源码和调用链逻辑，并在完成 Themida 脱壳与 devirtualization 后接入 Codex，以较低的 Tokens 成本完成了这一份负责加密、封包、解包和发送请求的客户端封装。
 ## 目录结构
 
 ```text
-headless-bluearchive/
-  core/              # 协议、schema、packet、crypto、gateway client、API registry
+backend/
+  HLBA.py            # SDK 对外入口
+  core/              # 协议、schema、packet、crypto、gateway client、异常定义
   modules/
-    auth/            # 登录、TOYSDK、ProofToken、Nexon web token、登录链编排
-    runtime/         # Android profile、区域配置、runtime 发现、profile generator
-  game/
-    player/
-      cafe/          # 后续 Cafe API 模块扩展点
-  utils/             # 横向工具，例如代理配置
-  config/            # 项目路径和设置
-  log/               # 标准 logger 配置
-  database/          # 后续任务/账号/执行历史持久化入口
-  tools/               # 可独立运行的采集/验证工具
-  tests/               # 无 pytest 依赖也可直接 python 执行的轻量测试
-  docs/architecture/   # 架构约束和开发规范
+    auth/            # 登录服务
+    runtime/         # Android profile、区域配置、运行态配置
+    game/
+      player/
+        cafe/        
+        ....         # 游戏发包
+  config/            # 项目默认配置
+  utils/             # 通用工具
+  tests/             # 轻量测试
+  docs/              # 架构、开发规范和调用文档
 ```
 
-## 快速开始
+## 基础使用
+- 我认为任何一个python开发者且脑子正常的人都知道你需要 `pip install -r requirements.txt` 下载依赖后这样子在你的项目中belike:
 
-```powershell
-cd D:\gaimo\headless-bluearchive
-python -m pip install -r requirements.txt
-python main.py --help
+```python
+from HLBA import Client
+
+client = Client(region="tw", debug=True)
+result = client.login("email@example.com", "password")
+
+print(result.account_id)
+print(result.nickname)
+print(result.friend_code)
 ```
 
-Android Nexon ID 直登示例：
+## 更多支持
+- 本项目还在早期开发阶段，百分之90的项目整理工作由claude+codex协助开发，如果你认为你是**残疾人**有任何问题不带任何日志和细节，那我批准你开issue了。
 
-```powershell
-python main.py --mobile-nx-login --nx-id "<email>" --nx-password "<password>" --region tw --turnstile-no-browser --post --timeout 120 --output-dir analysis_reports\nexon_webview_login\android_mobile_nx
-```
+## 致谢
 
-成功后 CLI 会输出玩家摘要：
+- 原始项目：**[BlueArchive](https://bluearchive.nexon.com/)**。
+- 反混淆、符号还原与工程脚手架：**Claude** 在人工监督下完成。
+- 重命名函数，恢复可读性：**Claude Sonnet**自主完成
+- 仓库源代码分析，敏感信息审计：**ChatGPT**自主完成
+- 仓库素材来源于网络，感谢特异人士，**这位面善又友善的朋友**
 
-```text
-[*] Player info: AccountId=... Nickname=... Level=... Exp=... FriendCode=... PublisherAccountId=...
-```
-
-## 开发约束
-
-- 新增游戏内 API 必须放入明确业务模块，例如 `game/player/cafe`、`game/player/mail`、`modules/battle`。
-- 通用构包、加密、协议表、网关客户端只能放在 `core`。
-- 代理、JSON、时间、文件等横向工具放在 `utils`，不要反向依赖业务模块。
-- RESTful API、GUI、任务队列以后应作为独立入口调用 `modules` 服务，不直接复制发包逻辑。
-- token、密码、session key、设备唯一 ID、运行日志和 `analysis_reports` 不进入 git。
-
-## 测试
-
-当前测试保持“无 pytest 也能运行”的形式：
-
-```powershell
-python -m py_compile main.py cli.py
-python tests\test_ba_replay.py
-python tests\test_login_equivalence.py
-python tests\test_android_runtime_profile.py
-```
-
-## Git 代理
-
-如果需要通过本地代理推送：
-
-```powershell
-git config http.proxy http://127.0.0.1:60808
-git config https.proxy http://127.0.0.1:60808
-```
+## 奇异搞笑
+<p align="center">
+    <img src="funny/claude2.gif" alt="claude" width="180">
+    <img src="funny/deobf.jpg" alt="deobf" width="180">
+    <img src="funny/protection.png" alt="protection" width="180">
+    <img src="funny/hacker.jpg" alt="hacker" width="180">
+    <img src="funny/claude.gif" alt="claude" width="180">
+</p>

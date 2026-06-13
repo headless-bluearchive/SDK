@@ -1,9 +1,10 @@
-"""Proxy configuration helpers shared by CLI, requests, and browser launchers."""
 
 from __future__ import annotations
 
 import os
 from urllib.parse import urlparse, urlunparse
+
+from core.error import ConfigurationError
 
 
 SUPPORTED_PROXY_SCHEMES = {"http", "https", "socks4", "socks4a", "socks5", "socks5h"}
@@ -11,11 +12,6 @@ LOOPBACK_BYPASS = ("localhost", "127.0.0.1", "::1")
 
 
 def normalize_proxy_url(proxy: str | None) -> str:
-    """Return a scheme-qualified proxy URL.
-
-    Bare host:port values default to HTTP because both requests and Chromium
-    require an explicit scheme. Use socks5://host:port for V2Ray SOCKS.
-    """
 
     text = (proxy or "").strip()
     if not text:
@@ -27,12 +23,12 @@ def normalize_proxy_url(proxy: str | None) -> str:
     if scheme == "socks":
         scheme = "socks5"
     if scheme not in SUPPORTED_PROXY_SCHEMES:
-        raise ValueError(
+        raise ConfigurationError(
             f"unsupported proxy scheme {parsed.scheme!r}; "
             f"use one of: {', '.join(sorted(SUPPORTED_PROXY_SCHEMES | {'socks'}))}"
         )
     if not parsed.netloc:
-        raise ValueError(f"invalid proxy URL: {proxy!r}")
+        raise ConfigurationError(f"invalid proxy URL: {proxy!r}")
     return urlunparse(parsed._replace(scheme=scheme))
 
 
@@ -43,18 +39,7 @@ def requests_proxy_map(proxy: str | None) -> dict[str, str]:
     return {"http": normalized, "https": normalized}
 
 
-def playwright_proxy_options(proxy: str | None) -> dict[str, str] | None:
-    normalized = normalize_proxy_url(proxy)
-    if not normalized:
-        return None
-    return {
-        "server": normalized,
-        "bypass": ",".join(LOOPBACK_BYPASS),
-    }
-
-
 def apply_proxy_env(proxy: str | None) -> str:
-    """Set common proxy environment variables for subprocesses/native libraries."""
 
     normalized = normalize_proxy_url(proxy)
     if not normalized:

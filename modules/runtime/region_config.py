@@ -1,14 +1,13 @@
-"""Static region profiles for the Nexon global Blue Archive client."""
 
 from __future__ import annotations
 
-import uuid
 from dataclasses import asdict, dataclass, replace
-from urllib.parse import quote, urljoin
+from urllib.parse import urljoin
 
+from config.game import DEFAULTS
+from core.error import ConfigurationError
 
-DEFAULT_SIGNIN_BASE_URL = "https://signin.nexon.com/signin?type=ingame"
-DEFAULT_GID = "2079"
+DEFAULT_GID = DEFAULTS.service_id
 
 
 @dataclass(frozen=True)
@@ -21,14 +20,10 @@ class ServerProfile:
     default_country: str
     default_locale: str
     gid: str = DEFAULT_GID
-    signin_base_url: str = DEFAULT_SIGNIN_BASE_URL
 
     @property
     def gateway_endpoint(self) -> str:
         return urljoin(self.gateway_url.rstrip("/") + "/", "gateway")
-
-    def login_url(self, *, port: int = 12121, hsid: str = "") -> str:
-        return build_login_url(self, port=port, hsid=hsid)
 
     def to_dict(self) -> dict[str, str]:
         data = asdict(self)
@@ -162,7 +157,7 @@ def profile_for(region: str = "", *, country: str = "", locale: str = "", gid: s
     try:
         profile = SERVER_PROFILES[resolved_region]
     except KeyError as exc:
-        raise KeyError(f"unknown server region {region!r}; expected one of {', '.join(SERVER_PROFILES)}") from exc
+        raise ConfigurationError(f"unknown server region {region!r}; expected one of {', '.join(SERVER_PROFILES)}") from exc
 
     return replace(
         profile,
@@ -170,19 +165,6 @@ def profile_for(region: str = "", *, country: str = "", locale: str = "", gid: s
         default_locale=locale or default_locale or profile.default_locale,
         gid=str(gid or DEFAULT_GID),
     )
-
-
-def build_login_url(profile: ServerProfile, *, port: int = 12121, hsid: str = "") -> str:
-    resolved_hsid = hsid or str(uuid.uuid4())
-    parts = [
-        profile.signin_base_url,
-        f"&port={int(port)}",
-        f"&hsid={quote(resolved_hsid, safe='')}",
-        f"&gid={quote(str(profile.gid), safe='')}",
-        f"&locale={quote(profile.default_locale, safe='')}",
-        f"&country={quote(profile.default_country, safe='')}",
-    ]
-    return "".join(parts)
 
 
 def list_profiles() -> list[ServerProfile]:

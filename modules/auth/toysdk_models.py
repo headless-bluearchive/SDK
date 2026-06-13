@@ -1,4 +1,3 @@
-"""Shared TOYSDK result models without native DLL dependencies."""
 
 from __future__ import annotations
 
@@ -8,17 +7,11 @@ from typing import Any
 
 
 @dataclass(frozen=True)
-class NativeCallbackResult:
+class ToySdkCallbackResult:
     payload: str
     parsed: Any
     handle: int | None = None
     callback_id: int | None = None
-
-
-@dataclass(frozen=True)
-class ToySdkTicketResult:
-    ticket: str
-    callback: NativeCallbackResult
 
 
 @dataclass(frozen=True)
@@ -31,9 +24,8 @@ class ToySdkLoginResult:
     member_id: str = ""
     member_type: str = ""
     um_key: str = ""
-    game_token: str = ""
     ngsm_token: str = ""
-    callback: NativeCallbackResult | None = None
+    callback: ToySdkCallbackResult | None = None
 
     def require_game_login_fields(self) -> "ToySdkLoginResult":
         missing = []

@@ -1,8 +1,3 @@
-"""Registry for game API request builders.
-
-Future game modules should register descriptors here instead of scattering
-protocol names and request class strings across unrelated files.
-"""
 
 from __future__ import annotations
 
