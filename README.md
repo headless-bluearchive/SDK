@@ -56,11 +56,11 @@ backend/
 
 ## 基础使用
 - 我认为任何一个python开发者且脑子正常的人都知道你需要 `pip install -r requirements.txt` 下载依赖后这样子在你的项目中belike:
+- region 可填：tw、asia、na、global、kr 默认 tw 如果你是傻逼连自己的号是什么区都不知道可以去死了。 
 
 ```python
 from HLBA import Client
 
-# region 可填：tw、asia、na、global、kr 默认 tw 如果你是傻逼连自己的号是什么区都不知道可以去死。 
 client = Client(region="tw", debug=True)
 result = client.login("email@example.com", "password")
 
