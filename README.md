@@ -15,11 +15,12 @@
 
 ```text
 headlessBA/
-  src/headlessba/
+  headlessba/
     core/              # 协议、schema、packet、crypto、gateway client、API registry
     modules/
       auth/            # 登录、TOYSDK、ProofToken、Nexon web token、登录链编排
       runtime/         # Android profile、区域配置、runtime 发现、profile generator
+    game/
       player/
         cafe/          # 后续 Cafe API 模块扩展点
     utils/             # 横向工具，例如代理配置
@@ -53,7 +54,7 @@ python main.py --mobile-nx-login --nx-id "<email>" --nx-password "<password>" --
 
 ## 开发约束
 
-- 新增游戏内 API 必须放入明确业务模块，例如 `modules/player/cafe`、`modules/player/mail`、`modules/battle`。
+- 新增游戏内 API 必须放入明确业务模块，例如 `game/player/cafe`、`game/player/mail`、`modules/battle`。
 - 通用构包、加密、协议表、网关客户端只能放在 `core`。
 - 代理、JSON、时间、文件等横向工具放在 `utils`，不要反向依赖业务模块。
 - RESTful API、GUI、任务队列以后应作为独立入口调用 `modules` 服务，不直接复制发包逻辑。
@@ -64,7 +65,7 @@ python main.py --mobile-nx-login --nx-id "<email>" --nx-password "<password>" --
 当前测试保持“无 pytest 也能运行”的形式：
 
 ```powershell
-python -m py_compile main.py src\headlessba\cli.py
+python -m py_compile main.py headlessba\cli.py
 python tests\test_ba_replay.py
 python tests\test_login_equivalence.py
 python tests\test_android_runtime_profile.py

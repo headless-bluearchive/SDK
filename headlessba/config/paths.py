@@ -12,7 +12,7 @@ from pathlib import Path
 
 
 PACKAGE_ROOT = Path(__file__).resolve().parents[1]
-PROJECT_ROOT = Path(os.environ.get("HEADLESSBA_PROJECT_ROOT", PACKAGE_ROOT.parents[1])).resolve()
+PROJECT_ROOT = Path(os.environ.get("HEADLESSBA_PROJECT_ROOT", PACKAGE_ROOT.parent)).resolve()
 WORKSPACE_ROOT = Path(os.environ.get("HEADLESSBA_WORKSPACE", PROJECT_ROOT)).resolve()
 
 DEFAULT_REPORT_DIR = Path(

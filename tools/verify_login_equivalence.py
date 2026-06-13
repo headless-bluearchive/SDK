@@ -9,7 +9,7 @@ from pathlib import Path
 
 
 ROOT = Path(__file__).resolve().parents[1]
-sys.path.insert(0, str(ROOT / "src"))
+sys.path.insert(0, str(ROOT))
 
 from headlessba.modules.auth.equivalence import compare_login_artifact_sources, load_login_artifact_source, write_report
 

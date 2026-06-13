@@ -6,7 +6,7 @@ from pathlib import Path
 
 
 ROOT = Path(__file__).resolve().parents[1]
-sys.path.insert(0, str(ROOT / "src"))
+sys.path.insert(0, str(ROOT))
 
 from headlessba import BAReplayClient, decode_gateway_response, generated_key_iv_fields, parse_packet, type_conversion
 from headlessba.core.crypto import decrypt_response_base64, encrypt_response_json, fast_crc

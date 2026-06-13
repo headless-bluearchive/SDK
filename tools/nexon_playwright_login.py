@@ -20,9 +20,8 @@ from typing import Any
 from urllib.parse import parse_qs, parse_qsl, urlencode, urlparse, urlunparse
 
 ROOT = Path(__file__).resolve().parents[1]
-SRC_ROOT = ROOT / "src"
-if str(SRC_ROOT) not in sys.path:
-    sys.path.insert(0, str(SRC_ROOT))
+if str(ROOT) not in sys.path:
+    sys.path.insert(0, str(ROOT))
 
 from headlessba.utils.proxy import normalize_proxy_url, playwright_proxy_options, redact_proxy_url
 
