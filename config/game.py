@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
+from typing import ClassVar
 
 
 @dataclass(frozen=True)
@@ -31,6 +32,31 @@ class GameDefaults:
     besthttp_user_agent: str = "BestHTTP/2 v2.4.0"
     besthttp_boundary_prefix: str = "BestHTTP_HTTPMultiPartForm_"
     main_game_profile: str = "android"
+    student_data_url: str = "https://blue-archive.io/config/json/students.json"
+    student_data_fallback_url: str = "https://schaledb.com/data/cn/students.min.json"
+    student_data_user_agent: str = (
+        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
+        "(KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+    )
+    student_data_cache_ttl_seconds: int = 86400
+    official_resource_user_agent: str = "Mozilla/5.0 headless-bluearchive SDK"
+    official_global_patch_url: str = "https://api-pub.nexon.com/patch/v1.1/version-check"
+    official_global_market_game_id: str = "com.nexon.bluearchive"
+    official_global_market_code: str = "playstore"
+    official_global_table_targets: ClassVar[tuple[str, ...]] = (
+        "Preload/TableBundles/ExcelDB.db",
+        "Preload/TableBundles/Excel.zip",
+    )
+    official_download_workers: int = 8
+    official_download_chunk_size: int = 8 * 1024 * 1024
+    daily_reset_region: str = "global"
+    daily_reset_utc_hour: int = 19
+    daily_reset_utc_minute: int = 0
+    daily_reset_local_timezone: str = "Asia/Shanghai"
+    daily_reset_local_hour: int = 3
+    daily_reset_local_minute: int = 0
+    session_daily_reset_guard_enabled: bool = True
+    session_lifecycle_key: str = "session_lifecycle"
 
 
 DEFAULTS = GameDefaults()

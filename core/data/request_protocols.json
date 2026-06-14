@@ -99,16 +99,6 @@
     "protocol_value": 1003,
     "request_class": "AccountCurrencySyncRequest"
   },
-  "AccountDetachNexon": {
-    "protocol_name": "Account_DetachNexon",
-    "protocol_value": 1015,
-    "request_class": "AccountDetachNexonRequest"
-  },
-  "AccountDetachNexonRequest": {
-    "protocol_name": "Account_DetachNexon",
-    "protocol_value": 1015,
-    "request_class": "AccountDetachNexonRequest"
-  },
   "AccountDismissRepurchasablePopup": {
     "protocol_name": "Account_DismissRepurchasablePopup",
     "protocol_value": 1017,
@@ -128,16 +118,6 @@
     "protocol_name": "Account_GetTutorial",
     "protocol_value": 1005,
     "request_class": "AccountGetTutorialRequest"
-  },
-  "AccountInvalidateToken": {
-    "protocol_name": "Account_InvalidateToken",
-    "protocol_value": 1018,
-    "request_class": "AccountInvalidateTokenRequest"
-  },
-  "AccountInvalidateTokenRequest": {
-    "protocol_name": "Account_InvalidateToken",
-    "protocol_value": 1018,
-    "request_class": "AccountInvalidateTokenRequest"
   },
   "AccountLinkReward": {
     "protocol_name": "Account_LinkReward",
@@ -179,16 +159,6 @@
     "protocol_value": 1007,
     "request_class": "AccountPassCheckRequest"
   },
-  "AccountReportXignCodeCheater": {
-    "protocol_name": "Account_ReportXignCodeCheater",
-    "protocol_value": 1016,
-    "request_class": "AccountReportXignCodeCheaterRequest"
-  },
-  "AccountReportXignCodeCheaterRequest": {
-    "protocol_name": "Account_ReportXignCodeCheater",
-    "protocol_value": 1016,
-    "request_class": "AccountReportXignCodeCheaterRequest"
-  },
   "AccountRequestBirthdayMail": {
     "protocol_name": "Account_RequestBirthdayMail",
     "protocol_value": 1023,
@@ -198,16 +168,6 @@
     "protocol_name": "Account_RequestBirthdayMail",
     "protocol_value": 1023,
     "request_class": "AccountRequestBirthdayMailRequest"
-  },
-  "AccountReset": {
-    "protocol_name": "Account_Reset",
-    "protocol_value": 1022,
-    "request_class": "AccountResetRequest"
-  },
-  "AccountResetRequest": {
-    "protocol_name": "Account_Reset",
-    "protocol_value": 1022,
-    "request_class": "AccountResetRequest"
   },
   "AccountSetAdultCheck": {
     "protocol_name": "Account_SetCheckAdultAgree",
@@ -248,156 +208,6 @@
     "protocol_name": "Account_VerifyCheckAdultAgree",
     "protocol_value": 1020,
     "request_class": "AccountVerifyAdultCheckRequest"
-  },
-  "ArenaBattleResult": {
-    "protocol_name": "Arena_BattleResult",
-    "protocol_value": 22007,
-    "request_class": "ArenaBattleResultRequest"
-  },
-  "ArenaBattleResultRequest": {
-    "protocol_name": "Arena_BattleResult",
-    "protocol_value": 22007,
-    "request_class": "ArenaBattleResultRequest"
-  },
-  "ArenaCheckSeasonCloseReward": {
-    "protocol_name": "Arena_CheckSeasonCloseReward",
-    "protocol_value": 22015,
-    "request_class": "ArenaCheckSeasonCloseRewardRequest"
-  },
-  "ArenaCheckSeasonCloseRewardRequest": {
-    "protocol_name": "Arena_CheckSeasonCloseReward",
-    "protocol_value": 22015,
-    "request_class": "ArenaCheckSeasonCloseRewardRequest"
-  },
-  "ArenaCumulativeTimeReward": {
-    "protocol_name": "Arena_CumulativeTimeReward",
-    "protocol_value": 22008,
-    "request_class": "ArenaCumulativeTimeRewardRequest"
-  },
-  "ArenaCumulativeTimeRewardRequest": {
-    "protocol_name": "Arena_CumulativeTimeReward",
-    "protocol_value": 22008,
-    "request_class": "ArenaCumulativeTimeRewardRequest"
-  },
-  "ArenaDailyReward": {
-    "protocol_name": "Arena_DailyReward",
-    "protocol_value": 22009,
-    "request_class": "ArenaDailyRewardRequest"
-  },
-  "ArenaDailyRewardRequest": {
-    "protocol_name": "Arena_DailyReward",
-    "protocol_value": 22009,
-    "request_class": "ArenaDailyRewardRequest"
-  },
-  "ArenaEnterBattle": {
-    "protocol_name": "Arena_EnterBattle",
-    "protocol_value": 22004,
-    "request_class": "ArenaEnterBattleRequest"
-  },
-  "ArenaEnterBattlePart1": {
-    "protocol_name": "Arena_EnterBattlePart1",
-    "protocol_value": 22005,
-    "request_class": "ArenaEnterBattlePart1Request"
-  },
-  "ArenaEnterBattlePart1Request": {
-    "protocol_name": "Arena_EnterBattlePart1",
-    "protocol_value": 22005,
-    "request_class": "ArenaEnterBattlePart1Request"
-  },
-  "ArenaEnterBattlePart2": {
-    "protocol_name": "Arena_EnterBattlePart2",
-    "protocol_value": 22006,
-    "request_class": "ArenaEnterBattlePart2Request"
-  },
-  "ArenaEnterBattlePart2Request": {
-    "protocol_name": "Arena_EnterBattlePart2",
-    "protocol_value": 22006,
-    "request_class": "ArenaEnterBattlePart2Request"
-  },
-  "ArenaEnterBattleRequest": {
-    "protocol_name": "Arena_EnterBattle",
-    "protocol_value": 22004,
-    "request_class": "ArenaEnterBattleRequest"
-  },
-  "ArenaEnterLobby": {
-    "protocol_name": "Arena_EnterLobby",
-    "protocol_value": 22000,
-    "request_class": "ArenaEnterLobbyRequest"
-  },
-  "ArenaEnterLobbyRequest": {
-    "protocol_name": "Arena_EnterLobby",
-    "protocol_value": 22000,
-    "request_class": "ArenaEnterLobbyRequest"
-  },
-  "ArenaHistory": {
-    "protocol_name": "Arena_History",
-    "protocol_value": 22011,
-    "request_class": "ArenaHistoryRequest"
-  },
-  "ArenaHistoryRequest": {
-    "protocol_name": "Arena_History",
-    "protocol_value": 22011,
-    "request_class": "ArenaHistoryRequest"
-  },
-  "ArenaLogin": {
-    "protocol_name": "Arena_Login",
-    "protocol_value": 22001,
-    "request_class": "ArenaLoginRequest"
-  },
-  "ArenaLoginRequest": {
-    "protocol_name": "Arena_Login",
-    "protocol_value": 22001,
-    "request_class": "ArenaLoginRequest"
-  },
-  "ArenaOpponentList": {
-    "protocol_name": "Arena_OpponentList",
-    "protocol_value": 22003,
-    "request_class": "ArenaOpponentListRequest"
-  },
-  "ArenaOpponentListRequest": {
-    "protocol_name": "Arena_OpponentList",
-    "protocol_value": 22003,
-    "request_class": "ArenaOpponentListRequest"
-  },
-  "ArenaRankList": {
-    "protocol_name": "Arena_RankList",
-    "protocol_value": 22010,
-    "request_class": "ArenaRankListRequest"
-  },
-  "ArenaRankListRequest": {
-    "protocol_name": "Arena_RankList",
-    "protocol_value": 22010,
-    "request_class": "ArenaRankListRequest"
-  },
-  "ArenaSettingAnonymous": {
-    "protocol_name": "Arena_SettingAnonymous",
-    "protocol_value": 22017,
-    "request_class": "ArenaSettingAnonymousRequest"
-  },
-  "ArenaSettingAnonymousRequest": {
-    "protocol_name": "Arena_SettingAnonymous",
-    "protocol_value": 22017,
-    "request_class": "ArenaSettingAnonymousRequest"
-  },
-  "ArenaSettingChange": {
-    "protocol_name": "Arena_SettingChange",
-    "protocol_value": 22002,
-    "request_class": "ArenaSettingChangeRequest"
-  },
-  "ArenaSettingChangeRequest": {
-    "protocol_name": "Arena_SettingChange",
-    "protocol_value": 22002,
-    "request_class": "ArenaSettingChangeRequest"
-  },
-  "ArenaSyncEchelonSettingTime": {
-    "protocol_name": "Arena_SyncEchelonSettingTime",
-    "protocol_value": 22016,
-    "request_class": "ArenaSyncEchelonSettingTimeRequest"
-  },
-  "ArenaSyncEchelonSettingTimeRequest": {
-    "protocol_name": "Arena_SyncEchelonSettingTime",
-    "protocol_value": 22016,
-    "request_class": "ArenaSyncEchelonSettingTimeRequest"
   },
   "AttachmentEmblemAcquire": {
     "protocol_name": "Attachment_EmblemAcquire",
@@ -448,16 +258,6 @@
     "protocol_name": "Attendance_Reward",
     "protocol_value": 9002,
     "request_class": "AttendanceRewardRequest"
-  },
-  "AuditGachaStatistics": {
-    "protocol_name": "Audit_GachaStatistics",
-    "protocol_value": 5,
-    "request_class": "AuditGachaStatisticsRequest"
-  },
-  "AuditGachaStatisticsRequest": {
-    "protocol_name": "Audit_GachaStatistics",
-    "protocol_value": 5,
-    "request_class": "AuditGachaStatisticsRequest"
   },
   "BattlePassBuyLevel": {
     "protocol_name": "BattlePass_BuyLevel",
@@ -528,76 +328,6 @@
     "protocol_name": "BattlePass_ReceiveReward",
     "protocol_value": 51002,
     "request_class": "BattlePassReceiveRewardRequest"
-  },
-  "BillingCheckConditionCashGoods": {
-    "protocol_name": "Billing_CheckConditionCashShopGoods",
-    "protocol_value": 29004,
-    "request_class": "BillingCheckConditionCashGoodsRequest"
-  },
-  "BillingCheckConditionCashGoodsRequest": {
-    "protocol_name": "Billing_CheckConditionCashShopGoods",
-    "protocol_value": 29004,
-    "request_class": "BillingCheckConditionCashGoodsRequest"
-  },
-  "BillingPurchaseCashShopVerifyByNexon": {
-    "protocol_name": "Billing_PurchaseCashShopVerifyByNexon",
-    "protocol_value": 29003,
-    "request_class": "BillingPurchaseCashShopVerifyByNexonRequest"
-  },
-  "BillingPurchaseCashShopVerifyByNexonRequest": {
-    "protocol_name": "Billing_PurchaseCashShopVerifyByNexon",
-    "protocol_value": 29003,
-    "request_class": "BillingPurchaseCashShopVerifyByNexonRequest"
-  },
-  "BillingPurchaseFreeProduct": {
-    "protocol_name": "Billing_PurchaseFreeProduct",
-    "protocol_value": 29008,
-    "request_class": "BillingPurchaseFreeProductRequest"
-  },
-  "BillingPurchaseFreeProductRequest": {
-    "protocol_name": "Billing_PurchaseFreeProduct",
-    "protocol_value": 29008,
-    "request_class": "BillingPurchaseFreeProductRequest"
-  },
-  "BillingPurchaseListByNexon": {
-    "protocol_name": "Billing_PurchaseListByNexon",
-    "protocol_value": 29005,
-    "request_class": "BillingPurchaseListByNexonRequest"
-  },
-  "BillingPurchaseListByNexonRequest": {
-    "protocol_name": "Billing_PurchaseListByNexon",
-    "protocol_value": 29005,
-    "request_class": "BillingPurchaseListByNexonRequest"
-  },
-  "BillingPurchaseListByYostar": {
-    "protocol_name": "Billing_PurchaseListByYostar",
-    "protocol_value": 29002,
-    "request_class": "BillingPurchaseListByYostarRequest"
-  },
-  "BillingPurchaseListByYostarRequest": {
-    "protocol_name": "Billing_PurchaseListByYostar",
-    "protocol_value": 29002,
-    "request_class": "BillingPurchaseListByYostarRequest"
-  },
-  "BillingTransactionEndByYostar": {
-    "protocol_name": "Billing_TransactionEndByYostar",
-    "protocol_value": 29001,
-    "request_class": "BillingTransactionEndByYostarRequest"
-  },
-  "BillingTransactionEndByYostarRequest": {
-    "protocol_name": "Billing_TransactionEndByYostar",
-    "protocol_value": 29001,
-    "request_class": "BillingTransactionEndByYostarRequest"
-  },
-  "BillingTransactionStartByYostar": {
-    "protocol_name": "Billing_TransactionStartByYostar",
-    "protocol_value": 29000,
-    "request_class": "BillingTransactionStartByYostarRequest"
-  },
-  "BillingTransactionStartByYostarRequest": {
-    "protocol_name": "Billing_TransactionStartByYostar",
-    "protocol_value": 29000,
-    "request_class": "BillingTransactionStartByYostarRequest"
   },
   "CafeAck": {
     "protocol_name": "Cafe_Ack",
@@ -909,16 +639,6 @@
     "protocol_value": 6012,
     "request_class": "CampaignEnterSubStageRequest"
   },
-  "CampaignEnterTactic": {
-    "protocol_name": "Campaign_EnterTactic",
-    "protocol_value": 6007,
-    "request_class": "CampaignEnterTacticRequest"
-  },
-  "CampaignEnterTacticRequest": {
-    "protocol_name": "Campaign_EnterTactic",
-    "protocol_value": 6007,
-    "request_class": "CampaignEnterTacticRequest"
-  },
   "CampaignEnterTutorialStage": {
     "protocol_name": "Campaign_EnterTutorialStage",
     "protocol_value": 6017,
@@ -948,16 +668,6 @@
     "protocol_name": "Campaign_List",
     "protocol_value": 6000,
     "request_class": "CampaignListRequest"
-  },
-  "CampaignMainStageStrategySkipResult": {
-    "protocol_name": "Campaign_MainStageStrategySkipResult",
-    "protocol_value": 6021,
-    "request_class": "CampaignMainStageStrategySkipResultRequest"
-  },
-  "CampaignMainStageStrategySkipResultRequest": {
-    "protocol_name": "Campaign_MainStageStrategySkipResult",
-    "protocol_value": 6021,
-    "request_class": "CampaignMainStageStrategySkipResultRequest"
   },
   "CampaignMapMove": {
     "protocol_name": "Campaign_MapMove",
@@ -998,46 +708,6 @@
     "protocol_name": "Campaign_RestartMainStage",
     "protocol_value": 6019,
     "request_class": "CampaignRestartMainStageRequest"
-  },
-  "CampaignRetreat": {
-    "protocol_name": "Campaign_Retreat",
-    "protocol_value": 6009,
-    "request_class": "CampaignRetreatRequest"
-  },
-  "CampaignRetreatRequest": {
-    "protocol_name": "Campaign_Retreat",
-    "protocol_value": 6009,
-    "request_class": "CampaignRetreatRequest"
-  },
-  "CampaignSubStageResult": {
-    "protocol_name": "Campaign_SubStageResult",
-    "protocol_value": 6013,
-    "request_class": "CampaignSubStageResultRequest"
-  },
-  "CampaignSubStageResultRequest": {
-    "protocol_name": "Campaign_SubStageResult",
-    "protocol_value": 6013,
-    "request_class": "CampaignSubStageResultRequest"
-  },
-  "CampaignTacticResult": {
-    "protocol_name": "Campaign_TacticResult",
-    "protocol_value": 6008,
-    "request_class": "CampaignTacticResultRequest"
-  },
-  "CampaignTacticResultRequest": {
-    "protocol_name": "Campaign_TacticResult",
-    "protocol_value": 6008,
-    "request_class": "CampaignTacticResultRequest"
-  },
-  "CampaignTutorialStageResult": {
-    "protocol_name": "Campaign_TutorialStageResult",
-    "protocol_value": 6018,
-    "request_class": "CampaignTutorialStageResultRequest"
-  },
-  "CampaignTutorialStageResultRequest": {
-    "protocol_name": "Campaign_TutorialStageResult",
-    "protocol_value": 6018,
-    "request_class": "CampaignTutorialStageResultRequest"
   },
   "CampaignWithdrawEchelon": {
     "protocol_name": "Campaign_WithdrawEchelon",
@@ -1439,16 +1109,6 @@
     "protocol_value": 34000,
     "request_class": "ClearDeckListRequest"
   },
-  "CommonCheat": {
-    "protocol_name": "Common_Cheat",
-    "protocol_value": -9999,
-    "request_class": "CommonCheatRequest"
-  },
-  "CommonCheatRequest": {
-    "protocol_name": "Common_Cheat",
-    "protocol_value": -9999,
-    "request_class": "CommonCheatRequest"
-  },
   "ConquestCheck": {
     "protocol_name": "Conquest_Check",
     "protocol_value": 42012,
@@ -1479,66 +1139,6 @@
     "protocol_value": 42001,
     "request_class": "ConquestConquerRequest"
   },
-  "ConquestConquerWithBattleResult": {
-    "protocol_name": "Conquest_ConquerWithBattleResult",
-    "protocol_value": 42003,
-    "request_class": "ConquestConquerWithBattleResultRequest"
-  },
-  "ConquestConquerWithBattleResultRequest": {
-    "protocol_name": "Conquest_ConquerWithBattleResult",
-    "protocol_value": 42003,
-    "request_class": "ConquestConquerWithBattleResultRequest"
-  },
-  "ConquestConquerWithBattleStart": {
-    "protocol_name": "Conquest_ConquerWithBattleStart",
-    "protocol_value": 42002,
-    "request_class": "ConquestConquerWithBattleStartRequest"
-  },
-  "ConquestConquerWithBattleStartRequest": {
-    "protocol_name": "Conquest_ConquerWithBattleStart",
-    "protocol_value": 42002,
-    "request_class": "ConquestConquerWithBattleStartRequest"
-  },
-  "ConquestErosionBattleResult": {
-    "protocol_name": "Conquest_ErosionBattleResult",
-    "protocol_value": 42014,
-    "request_class": "ConquestErosionBattleResultRequest"
-  },
-  "ConquestErosionBattleResultRequest": {
-    "protocol_name": "Conquest_ErosionBattleResult",
-    "protocol_value": 42014,
-    "request_class": "ConquestErosionBattleResultRequest"
-  },
-  "ConquestErosionBattleStart": {
-    "protocol_name": "Conquest_ErosionBattleStart",
-    "protocol_value": 42013,
-    "request_class": "ConquestErosionBattleStartRequest"
-  },
-  "ConquestErosionBattleStartRequest": {
-    "protocol_name": "Conquest_ErosionBattleStart",
-    "protocol_value": 42013,
-    "request_class": "ConquestErosionBattleStartRequest"
-  },
-  "ConquestEventObjectBattleResult": {
-    "protocol_name": "Conquest_EventObjectBattleResult",
-    "protocol_value": 42009,
-    "request_class": "ConquestEventObjectBattleResultRequest"
-  },
-  "ConquestEventObjectBattleResultRequest": {
-    "protocol_name": "Conquest_EventObjectBattleResult",
-    "protocol_value": 42009,
-    "request_class": "ConquestEventObjectBattleResultRequest"
-  },
-  "ConquestEventObjectBattleStart": {
-    "protocol_name": "Conquest_EventObjectBattleStart",
-    "protocol_value": 42008,
-    "request_class": "ConquestEventObjectBattleStartRequest"
-  },
-  "ConquestEventObjectBattleStartRequest": {
-    "protocol_name": "Conquest_EventObjectBattleStart",
-    "protocol_value": 42008,
-    "request_class": "ConquestEventObjectBattleStartRequest"
-  },
   "ConquestGetInfo": {
     "protocol_name": "Conquest_GetInfo",
     "protocol_value": 42000,
@@ -1568,26 +1168,6 @@
     "protocol_name": "Conquest_MainStoryConquer",
     "protocol_value": 42016,
     "request_class": "ConquestMainStoryConquerRequest"
-  },
-  "ConquestMainStoryConquerWithBattleResult": {
-    "protocol_name": "Conquest_MainStoryConquerWithBattleResult",
-    "protocol_value": 42018,
-    "request_class": "ConquestMainStoryConquerWithBattleResultRequest"
-  },
-  "ConquestMainStoryConquerWithBattleResultRequest": {
-    "protocol_name": "Conquest_MainStoryConquerWithBattleResult",
-    "protocol_value": 42018,
-    "request_class": "ConquestMainStoryConquerWithBattleResultRequest"
-  },
-  "ConquestMainStoryConquerWithBattleStart": {
-    "protocol_name": "Conquest_MainStoryConquerWithBattleStart",
-    "protocol_value": 42017,
-    "request_class": "ConquestMainStoryConquerWithBattleStartRequest"
-  },
-  "ConquestMainStoryConquerWithBattleStartRequest": {
-    "protocol_name": "Conquest_MainStoryConquerWithBattleStart",
-    "protocol_value": 42017,
-    "request_class": "ConquestMainStoryConquerWithBattleStartRequest"
   },
   "ConquestMainStoryGetInfo": {
     "protocol_name": "Conquest_MainStoryGetInfo",
@@ -1939,36 +1519,6 @@
     "protocol_value": 5001,
     "request_class": "EchelonSaveRequest"
   },
-  "EliminateRaidCreateBattle": {
-    "protocol_name": "EliminateRaid_CreateBattle",
-    "protocol_value": 45004,
-    "request_class": "EliminateRaidCreateBattleRequest"
-  },
-  "EliminateRaidCreateBattleRequest": {
-    "protocol_name": "EliminateRaid_CreateBattle",
-    "protocol_value": 45004,
-    "request_class": "EliminateRaidCreateBattleRequest"
-  },
-  "EliminateRaidEndBattle": {
-    "protocol_name": "EliminateRaid_EndBattle",
-    "protocol_value": 45006,
-    "request_class": "EliminateRaidEndBattleRequest"
-  },
-  "EliminateRaidEndBattleRequest": {
-    "protocol_name": "EliminateRaid_EndBattle",
-    "protocol_value": 45006,
-    "request_class": "EliminateRaidEndBattleRequest"
-  },
-  "EliminateRaidEnterBattle": {
-    "protocol_name": "EliminateRaid_EnterBattle",
-    "protocol_value": 45005,
-    "request_class": "EliminateRaidEnterBattleRequest"
-  },
-  "EliminateRaidEnterBattleRequest": {
-    "protocol_name": "EliminateRaid_EnterBattle",
-    "protocol_value": 45005,
-    "request_class": "EliminateRaidEnterBattleRequest"
-  },
   "EliminateRaidGetBestTeam": {
     "protocol_name": "EliminateRaid_GetBestTeam",
     "protocol_value": 45003,
@@ -1978,16 +1528,6 @@
     "protocol_name": "EliminateRaid_GetBestTeam",
     "protocol_value": 45003,
     "request_class": "EliminateRaidGetBestTeamRequest"
-  },
-  "EliminateRaidGiveUp": {
-    "protocol_name": "EliminateRaid_GiveUp",
-    "protocol_value": 45007,
-    "request_class": "EliminateRaidGiveUpRequest"
-  },
-  "EliminateRaidGiveUpRequest": {
-    "protocol_name": "EliminateRaid_GiveUp",
-    "protocol_value": 45007,
-    "request_class": "EliminateRaidGiveUpRequest"
   },
   "EliminateRaidLimitedReward": {
     "protocol_name": "EliminateRaid_LimitedReward",
@@ -2159,66 +1699,6 @@
     "protocol_value": 30022,
     "request_class": "EventContentBoxGachaShopListRequest"
   },
-  "EventContentBoxGachaShopPurchase": {
-    "protocol_name": "EventContent_BoxGachaShopPurchase",
-    "protocol_value": 30023,
-    "request_class": "EventContentBoxGachaShopPurchaseRequest"
-  },
-  "EventContentBoxGachaShopPurchaseRequest": {
-    "protocol_name": "EventContent_BoxGachaShopPurchase",
-    "protocol_value": 30023,
-    "request_class": "EventContentBoxGachaShopPurchaseRequest"
-  },
-  "EventContentBoxGachaShopRefresh": {
-    "protocol_name": "EventContent_BoxGachaShopRefresh",
-    "protocol_value": 30024,
-    "request_class": "EventContentBoxGachaShopRefreshRequest"
-  },
-  "EventContentBoxGachaShopRefreshRequest": {
-    "protocol_name": "EventContent_BoxGachaShopRefresh",
-    "protocol_value": 30024,
-    "request_class": "EventContentBoxGachaShopRefreshRequest"
-  },
-  "EventContentCardShopList": {
-    "protocol_name": "EventContent_CardShopList",
-    "protocol_value": 30028,
-    "request_class": "EventContentCardShopListRequest"
-  },
-  "EventContentCardShopListRequest": {
-    "protocol_name": "EventContent_CardShopList",
-    "protocol_value": 30028,
-    "request_class": "EventContentCardShopListRequest"
-  },
-  "EventContentCardShopPurchase": {
-    "protocol_name": "EventContent_CardShopPurchase",
-    "protocol_value": 30030,
-    "request_class": "EventContentCardShopPurchaseRequest"
-  },
-  "EventContentCardShopPurchaseAll": {
-    "protocol_name": "EventContent_CardShopPurchaseAll",
-    "protocol_value": 30043,
-    "request_class": "EventContentCardShopPurchaseAllRequest"
-  },
-  "EventContentCardShopPurchaseAllRequest": {
-    "protocol_name": "EventContent_CardShopPurchaseAll",
-    "protocol_value": 30043,
-    "request_class": "EventContentCardShopPurchaseAllRequest"
-  },
-  "EventContentCardShopPurchaseRequest": {
-    "protocol_name": "EventContent_CardShopPurchase",
-    "protocol_value": 30030,
-    "request_class": "EventContentCardShopPurchaseRequest"
-  },
-  "EventContentCardShopShuffle": {
-    "protocol_name": "EventContent_CardShopShuffle",
-    "protocol_value": 30029,
-    "request_class": "EventContentCardShopShuffleRequest"
-  },
-  "EventContentCardShopShuffleRequest": {
-    "protocol_name": "EventContent_CardShopShuffle",
-    "protocol_value": 30029,
-    "request_class": "EventContentCardShopShuffleRequest"
-  },
   "EventContentClueSearchGetInfo": {
     "protocol_name": "EventContent_ClueSearchGetInfo",
     "protocol_value": 30051,
@@ -2268,46 +1748,6 @@
     "protocol_name": "EventContent_CollectionList",
     "protocol_value": 30025,
     "request_class": "EventContentCollectionListRequest"
-  },
-  "EventContentConcentrationFlipCard": {
-    "protocol_name": "EventContent_ConcentrationFlipCard",
-    "protocol_value": 30048,
-    "request_class": "EventContentConcentrationFlipCardRequest"
-  },
-  "EventContentConcentrationFlipCardRequest": {
-    "protocol_name": "EventContent_ConcentrationFlipCard",
-    "protocol_value": 30048,
-    "request_class": "EventContentConcentrationFlipCardRequest"
-  },
-  "EventContentConcentrationGetInfo": {
-    "protocol_name": "EventContent_ConcentrationGetInfo",
-    "protocol_value": 30047,
-    "request_class": "EventContentConcentrationGetInfoRequest"
-  },
-  "EventContentConcentrationGetInfoRequest": {
-    "protocol_name": "EventContent_ConcentrationGetInfo",
-    "protocol_value": 30047,
-    "request_class": "EventContentConcentrationGetInfoRequest"
-  },
-  "EventContentConcentrationRoundComplete": {
-    "protocol_name": "EventContent_ConcentrationRoundComplete",
-    "protocol_value": 30049,
-    "request_class": "EventContentConcentrationRoundCompleteRequest"
-  },
-  "EventContentConcentrationRoundCompleteRequest": {
-    "protocol_name": "EventContent_ConcentrationRoundComplete",
-    "protocol_value": 30049,
-    "request_class": "EventContentConcentrationRoundCompleteRequest"
-  },
-  "EventContentConcentrationRoundSkip": {
-    "protocol_name": "EventContent_ConcentrationRoundSkip",
-    "protocol_value": 30050,
-    "request_class": "EventContentConcentrationRoundSkipRequest"
-  },
-  "EventContentConcentrationRoundSkipRequest": {
-    "protocol_name": "EventContent_ConcentrationRoundSkip",
-    "protocol_value": 30050,
-    "request_class": "EventContentConcentrationRoundSkipRequest"
   },
   "EventContentConfirmMainStage": {
     "protocol_name": "EventContent_ConfirmMainStage",
@@ -2419,26 +1859,6 @@
     "protocol_value": 30005,
     "request_class": "EventContentEnterSubStageRequest"
   },
-  "EventContentEnterTactic": {
-    "protocol_name": "EventContent_EnterTactic",
-    "protocol_value": 30003,
-    "request_class": "EventContentEnterTacticRequest"
-  },
-  "EventContentEnterTacticRequest": {
-    "protocol_name": "EventContent_EnterTactic",
-    "protocol_value": 30003,
-    "request_class": "EventContentEnterTacticRequest"
-  },
-  "EventContentFortuneGachaPurchase": {
-    "protocol_name": "EventContent_FortuneGachaPurchase",
-    "protocol_value": 30034,
-    "request_class": "EventContentFortuneGachaPurchaseRequest"
-  },
-  "EventContentFortuneGachaPurchaseRequest": {
-    "protocol_name": "EventContent_FortuneGachaPurchase",
-    "protocol_value": 30034,
-    "request_class": "EventContentFortuneGachaPurchaseRequest"
-  },
   "EventContentLocationAttendSchedule": {
     "protocol_name": "EventContent_LocationAttendSchedule",
     "protocol_value": 30033,
@@ -2458,16 +1878,6 @@
     "protocol_name": "EventContent_LocationGetInfo",
     "protocol_value": 30032,
     "request_class": "EventContentLocationGetInfoRequest"
-  },
-  "EventContentMainGroundStageResult": {
-    "protocol_name": "EventContent_MainGroundStageResult",
-    "protocol_value": 30018,
-    "request_class": "EventContentMainGroundStageResultRequest"
-  },
-  "EventContentMainGroundStageResultRequest": {
-    "protocol_name": "EventContent_MainGroundStageResult",
-    "protocol_value": 30018,
-    "request_class": "EventContentMainGroundStageResultRequest"
   },
   "EventContentMapMove": {
     "protocol_name": "EventContent_MapMove",
@@ -2529,16 +1939,6 @@
     "protocol_value": 30031,
     "request_class": "EventContentRestartMainStageRequest"
   },
-  "EventContentRetreat": {
-    "protocol_name": "EventContent_Retreat",
-    "protocol_value": 30011,
-    "request_class": "EventContentRetreatRequest"
-  },
-  "EventContentRetreatRequest": {
-    "protocol_name": "EventContent_Retreat",
-    "protocol_value": 30011,
-    "request_class": "EventContentRetreatRequest"
-  },
   "EventContentScenarioGroupHistoryUpdate": {
     "protocol_name": "EventContent_ScenarioGroupHistoryUpdate",
     "protocol_value": 30027,
@@ -2599,16 +1999,6 @@
     "protocol_value": 30015,
     "request_class": "EventContentShopRefreshRequest"
   },
-  "EventContentStoryStageResult": {
-    "protocol_name": "EventContent_StoryStageResult",
-    "protocol_value": 30037,
-    "request_class": "EventContentStoryStageResultRequest"
-  },
-  "EventContentStoryStageResultRequest": {
-    "protocol_name": "EventContent_StoryStageResult",
-    "protocol_value": 30037,
-    "request_class": "EventContentStoryStageResultRequest"
-  },
   "EventContentSubEventLobby": {
     "protocol_name": "EventContent_SubEventLobby",
     "protocol_value": 30035,
@@ -2618,36 +2008,6 @@
     "protocol_name": "EventContent_SubEventLobby",
     "protocol_value": 30035,
     "request_class": "EventContentSubEventLobbyRequest"
-  },
-  "EventContentSubStageResult": {
-    "protocol_name": "EventContent_SubStageResult",
-    "protocol_value": 30006,
-    "request_class": "EventContentSubStageResultRequest"
-  },
-  "EventContentSubStageResultRequest": {
-    "protocol_name": "EventContent_SubStageResult",
-    "protocol_value": 30006,
-    "request_class": "EventContentSubStageResultRequest"
-  },
-  "EventContentTacticResult": {
-    "protocol_name": "EventContent_TacticResult",
-    "protocol_value": 30004,
-    "request_class": "EventContentTacticResultRequest"
-  },
-  "EventContentTacticResultRequest": {
-    "protocol_name": "EventContent_TacticResult",
-    "protocol_value": 30004,
-    "request_class": "EventContentTacticResultRequest"
-  },
-  "EventContentTreasureFlip": {
-    "protocol_name": "EventContent_TreasureFlip",
-    "protocol_value": 30045,
-    "request_class": "EventContentTreasureFlipRequest"
-  },
-  "EventContentTreasureFlipRequest": {
-    "protocol_name": "EventContent_TreasureFlip",
-    "protocol_value": 30045,
-    "request_class": "EventContentTreasureFlipRequest"
   },
   "EventContentTreasureLobby": {
     "protocol_name": "EventContent_TreasureLobby",
@@ -2758,16 +2118,6 @@
     "protocol_name": "Field_SceneChanged",
     "protocol_value": 48003,
     "request_class": "FieldSceneChangedRequest"
-  },
-  "FieldStageResult": {
-    "protocol_name": "Field_StageResult",
-    "protocol_value": 48006,
-    "request_class": "FieldStageResultRequest"
-  },
-  "FieldStageResultRequest": {
-    "protocol_name": "Field_StageResult",
-    "protocol_value": 48006,
-    "request_class": "FieldStageResultRequest"
   },
   "FieldSync": {
     "protocol_name": "Field_Sync",
@@ -3109,26 +2459,6 @@
     "protocol_value": 12002,
     "request_class": "MemoryLobbyUpdateLobbyModeRequest"
   },
-  "MiniGameCCGBuyPerk": {
-    "protocol_name": "MiniGame_CCGBuyPerk",
-    "protocol_value": 35045,
-    "request_class": "MiniGameCCGBuyPerkRequest"
-  },
-  "MiniGameCCGBuyPerkRequest": {
-    "protocol_name": "MiniGame_CCGBuyPerk",
-    "protocol_value": 35045,
-    "request_class": "MiniGameCCGBuyPerkRequest"
-  },
-  "MiniGameCCGCompleteGame": {
-    "protocol_name": "MiniGame_CCGCompleteGame",
-    "protocol_value": 35042,
-    "request_class": "MiniGameCCGCompleteGameRequest"
-  },
-  "MiniGameCCGCompleteGameRequest": {
-    "protocol_name": "MiniGame_CCGCompleteGame",
-    "protocol_value": 35042,
-    "request_class": "MiniGameCCGCompleteGameRequest"
-  },
   "MiniGameCCGCreateGame": {
     "protocol_name": "MiniGame_CCGCreateGame",
     "protocol_value": 35034,
@@ -3138,26 +2468,6 @@
     "protocol_name": "MiniGame_CCGCreateGame",
     "protocol_value": 35034,
     "request_class": "MiniGameCCGCreateGameRequest"
-  },
-  "MiniGameCCGEndStageDual": {
-    "protocol_name": "MiniGame_CCGEndStageDual",
-    "protocol_value": 35037,
-    "request_class": "MiniGameCCGEndStageDualRequest"
-  },
-  "MiniGameCCGEndStageDualRequest": {
-    "protocol_name": "MiniGame_CCGEndStageDual",
-    "protocol_value": 35037,
-    "request_class": "MiniGameCCGEndStageDualRequest"
-  },
-  "MiniGameCCGEndStageEvent": {
-    "protocol_name": "MiniGame_CCGEndStageEvent",
-    "protocol_value": 35038,
-    "request_class": "MiniGameCCGEndStageEventRequest"
-  },
-  "MiniGameCCGEndStageEventRequest": {
-    "protocol_name": "MiniGame_CCGEndStageEvent",
-    "protocol_value": 35038,
-    "request_class": "MiniGameCCGEndStageEventRequest"
   },
   "MiniGameCCGEnterStage": {
     "protocol_name": "MiniGame_CCGEnterStage",
@@ -3199,16 +2509,6 @@
     "protocol_value": 35040,
     "request_class": "MiniGameCCGReplaceCharacterRequest"
   },
-  "MiniGameCCGRerollReward": {
-    "protocol_name": "MiniGame_CCGRerollReward",
-    "protocol_value": 35044,
-    "request_class": "MiniGameCCGRerollRewardRequest"
-  },
-  "MiniGameCCGRerollRewardRequest": {
-    "protocol_name": "MiniGame_CCGRerollReward",
-    "protocol_value": 35044,
-    "request_class": "MiniGameCCGRerollRewardRequest"
-  },
   "MiniGameCCGSelectCampAction": {
     "protocol_name": "MiniGame_CCGSelectCampAction",
     "protocol_value": 35041,
@@ -3219,16 +2519,6 @@
     "protocol_value": 35041,
     "request_class": "MiniGameCCGSelectCampActionRequest"
   },
-  "MiniGameCCGSelectRewardCard": {
-    "protocol_name": "MiniGame_CCGSelectRewardCard",
-    "protocol_value": 35039,
-    "request_class": "MiniGameCCGSelectRewardCardRequest"
-  },
-  "MiniGameCCGSelectRewardCardRequest": {
-    "protocol_name": "MiniGame_CCGSelectRewardCard",
-    "protocol_value": 35039,
-    "request_class": "MiniGameCCGSelectRewardCardRequest"
-  },
   "MiniGameCCGSweep": {
     "protocol_name": "MiniGame_CCGSweep",
     "protocol_value": 35035,
@@ -3238,26 +2528,6 @@
     "protocol_name": "MiniGame_CCGSweep",
     "protocol_value": 35035,
     "request_class": "MiniGameCCGSweepRequest"
-  },
-  "MiniGameDefenseBattleResult": {
-    "protocol_name": "MiniGame_DefenseBattleResult",
-    "protocol_value": 35028,
-    "request_class": "MiniGameDefenseBattleResultRequest"
-  },
-  "MiniGameDefenseBattleResultRequest": {
-    "protocol_name": "MiniGame_DefenseBattleResult",
-    "protocol_value": 35028,
-    "request_class": "MiniGameDefenseBattleResultRequest"
-  },
-  "MiniGameDefenseEnterBattle": {
-    "protocol_name": "MiniGame_DefenseEnterBattle",
-    "protocol_value": 35027,
-    "request_class": "MiniGameDefenseEnterBattleRequest"
-  },
-  "MiniGameDefenseEnterBattleRequest": {
-    "protocol_name": "MiniGame_DefenseEnterBattle",
-    "protocol_value": 35027,
-    "request_class": "MiniGameDefenseEnterBattleRequest"
   },
   "MiniGameDefenseGetInfo": {
     "protocol_name": "MiniGame_DefenseGetInfo",
@@ -3369,16 +2639,6 @@
     "protocol_value": 35004,
     "request_class": "MiniGameMissionRewardRequest"
   },
-  "MiniGameResult": {
-    "protocol_name": "MiniGame_Result",
-    "protocol_value": 35002,
-    "request_class": "MiniGameResultRequest"
-  },
-  "MiniGameResultRequest": {
-    "protocol_name": "MiniGame_Result",
-    "protocol_value": 35002,
-    "request_class": "MiniGameResultRequest"
-  },
   "MiniGameRoadPuzzleClearStage": {
     "protocol_name": "MiniGame_RoadPuzzleClearStage",
     "protocol_value": 35032,
@@ -3418,26 +2678,6 @@
     "protocol_name": "MiniGame_RoadPuzzleTilePlace",
     "protocol_value": 35030,
     "request_class": "MiniGameRoadPuzzleTilePlaceRequest"
-  },
-  "MiniGameShootingBattleEnter": {
-    "protocol_name": "MiniGame_ShootingBattleEnter",
-    "protocol_value": 35007,
-    "request_class": "MiniGameShootingBattleEnterRequest"
-  },
-  "MiniGameShootingBattleEnterRequest": {
-    "protocol_name": "MiniGame_ShootingBattleEnter",
-    "protocol_value": 35007,
-    "request_class": "MiniGameShootingBattleEnterRequest"
-  },
-  "MiniGameShootingBattleResult": {
-    "protocol_name": "MiniGame_ShootingBattleResult",
-    "protocol_value": 35008,
-    "request_class": "MiniGameShootingBattleResultRequest"
-  },
-  "MiniGameShootingBattleResultRequest": {
-    "protocol_name": "MiniGame_ShootingBattleResult",
-    "protocol_value": 35008,
-    "request_class": "MiniGameShootingBattleResultRequest"
   },
   "MiniGameShootingLobby": {
     "protocol_name": "MiniGame_ShootingLobby",
@@ -3629,26 +2869,6 @@
     "protocol_value": 33002,
     "request_class": "MomoTalkReadRequest"
   },
-  "MultiFloorRaidEndBattle": {
-    "protocol_name": "MultiFloorRaid_EndBattle",
-    "protocol_value": 49002,
-    "request_class": "MultiFloorRaidEndBattleRequest"
-  },
-  "MultiFloorRaidEndBattleRequest": {
-    "protocol_name": "MultiFloorRaid_EndBattle",
-    "protocol_value": 49002,
-    "request_class": "MultiFloorRaidEndBattleRequest"
-  },
-  "MultiFloorRaidEnterBattle": {
-    "protocol_name": "MultiFloorRaid_EnterBattle",
-    "protocol_value": 49001,
-    "request_class": "MultiFloorRaidEnterBattleRequest"
-  },
-  "MultiFloorRaidEnterBattleRequest": {
-    "protocol_name": "MultiFloorRaid_EnterBattle",
-    "protocol_value": 49001,
-    "request_class": "MultiFloorRaidEnterBattleRequest"
-  },
   "MultiFloorRaidLogin": {
     "protocol_name": "MultiFloorRaid_Login",
     "protocol_value": 49004,
@@ -3749,36 +2969,6 @@
     "protocol_value": 53000,
     "request_class": "OptionSaveRequest"
   },
-  "PermanentRaidEndBattle": {
-    "protocol_name": "PermanentRaid_EndBattle",
-    "protocol_value": 54002,
-    "request_class": "PermanentRaidEndBattleRequest"
-  },
-  "PermanentRaidEndBattleRequest": {
-    "protocol_name": "PermanentRaid_EndBattle",
-    "protocol_value": 54002,
-    "request_class": "PermanentRaidEndBattleRequest"
-  },
-  "PermanentRaidEnterBattle": {
-    "protocol_name": "PermanentRaid_EnterBattle",
-    "protocol_value": 54001,
-    "request_class": "PermanentRaidEnterBattleRequest"
-  },
-  "PermanentRaidEnterBattleRequest": {
-    "protocol_name": "PermanentRaid_EnterBattle",
-    "protocol_value": 54001,
-    "request_class": "PermanentRaidEnterBattleRequest"
-  },
-  "PermanentRaidGiveUp": {
-    "protocol_name": "PermanentRaid_GiveUp",
-    "protocol_value": 54003,
-    "request_class": "PermanentRaidGiveUpRequest"
-  },
-  "PermanentRaidGiveUpRequest": {
-    "protocol_name": "PermanentRaid_GiveUp",
-    "protocol_value": 54003,
-    "request_class": "PermanentRaidGiveUpRequest"
-  },
   "PermanentRaidLobby": {
     "protocol_name": "PermanentRaid_Lobby",
     "protocol_value": 54000,
@@ -3869,16 +3059,6 @@
     "protocol_value": 17001,
     "request_class": "RaidCompleteListRequest"
   },
-  "RaidCreateBattle": {
-    "protocol_name": "Raid_CreateBattle",
-    "protocol_value": 17004,
-    "request_class": "RaidCreateBattleRequest"
-  },
-  "RaidCreateBattleRequest": {
-    "protocol_name": "Raid_CreateBattle",
-    "protocol_value": 17004,
-    "request_class": "RaidCreateBattleRequest"
-  },
   "RaidDetail": {
     "protocol_name": "Raid_Detail",
     "protocol_value": 17002,
@@ -3889,26 +3069,6 @@
     "protocol_value": 17002,
     "request_class": "RaidDetailRequest"
   },
-  "RaidEndBattle": {
-    "protocol_name": "Raid_EndBattle",
-    "protocol_value": 17007,
-    "request_class": "RaidEndBattleRequest"
-  },
-  "RaidEndBattleRequest": {
-    "protocol_name": "Raid_EndBattle",
-    "protocol_value": 17007,
-    "request_class": "RaidEndBattleRequest"
-  },
-  "RaidEnterBattle": {
-    "protocol_name": "Raid_EnterBattle",
-    "protocol_value": 17005,
-    "request_class": "RaidEnterBattleRequest"
-  },
-  "RaidEnterBattleRequest": {
-    "protocol_name": "Raid_EnterBattle",
-    "protocol_value": 17005,
-    "request_class": "RaidEnterBattleRequest"
-  },
   "RaidGetBestTeam": {
     "protocol_name": "Raid_GetBestTeam",
     "protocol_value": 17020,
@@ -3918,16 +3078,6 @@
     "protocol_name": "Raid_GetBestTeam",
     "protocol_value": 17020,
     "request_class": "RaidGetBestTeamRequest"
-  },
-  "RaidGiveUp": {
-    "protocol_name": "Raid_GiveUp",
-    "protocol_value": 17015,
-    "request_class": "RaidGiveUpRequest"
-  },
-  "RaidGiveUpRequest": {
-    "protocol_name": "Raid_GiveUp",
-    "protocol_value": 17015,
-    "request_class": "RaidGiveUpRequest"
   },
   "RaidList": {
     "protocol_name": "Raid_List",
@@ -4089,16 +3239,6 @@
     "protocol_value": 19005,
     "request_class": "ScenarioAccountStudentChangeRequest"
   },
-  "ScenarioClear": {
-    "protocol_name": "Scenario_Clear",
-    "protocol_value": 19001,
-    "request_class": "ScenarioClearRequest"
-  },
-  "ScenarioClearRequest": {
-    "protocol_name": "Scenario_Clear",
-    "protocol_value": 19001,
-    "request_class": "ScenarioClearRequest"
-  },
   "ScenarioConfirmMainStage": {
     "protocol_name": "Scenario_ConfirmMainStage",
     "protocol_value": 19010,
@@ -4148,16 +3288,6 @@
     "protocol_name": "Scenario_Enter",
     "protocol_value": 19008,
     "request_class": "ScenarioEnterRequest"
-  },
-  "ScenarioEnterTactic": {
-    "protocol_name": "Scenario_EnterTactic",
-    "protocol_value": 19015,
-    "request_class": "ScenarioEnterTacticRequest"
-  },
-  "ScenarioEnterTacticRequest": {
-    "protocol_name": "Scenario_EnterTactic",
-    "protocol_value": 19015,
-    "request_class": "ScenarioEnterTacticRequest"
   },
   "ScenarioGroupHistoryUpdate": {
     "protocol_name": "Scenario_GroupHistoryUpdate",
@@ -4219,16 +3349,6 @@
     "protocol_value": 19019,
     "request_class": "ScenarioRestartMainStageRequest"
   },
-  "ScenarioRetreat": {
-    "protocol_name": "Scenario_Retreat",
-    "protocol_value": 19017,
-    "request_class": "ScenarioRetreatRequest"
-  },
-  "ScenarioRetreatRequest": {
-    "protocol_name": "Scenario_Retreat",
-    "protocol_value": 19017,
-    "request_class": "ScenarioRetreatRequest"
-  },
   "ScenarioSelect": {
     "protocol_name": "Scenario_Select",
     "protocol_value": 19004,
@@ -4269,16 +3389,6 @@
     "protocol_value": 19007,
     "request_class": "ScenarioSpecialLobbyChangeRequest"
   },
-  "ScenarioTacticResult": {
-    "protocol_name": "Scenario_TacticResult",
-    "protocol_value": 19016,
-    "request_class": "ScenarioTacticResultRequest"
-  },
-  "ScenarioTacticResultRequest": {
-    "protocol_name": "Scenario_TacticResult",
-    "protocol_value": 19016,
-    "request_class": "ScenarioTacticResultRequest"
-  },
   "ScenarioWithdrawEchelon": {
     "protocol_name": "Scenario_WithdrawEchelon",
     "protocol_value": 19012,
@@ -4288,26 +3398,6 @@
     "protocol_name": "Scenario_WithdrawEchelon",
     "protocol_value": 19012,
     "request_class": "ScenarioWithdrawEchelonRequest"
-  },
-  "SchoolDungeonBattleResult": {
-    "protocol_name": "SchoolDungeon_BattleResult",
-    "protocol_value": 38002,
-    "request_class": "SchoolDungeonBattleResultRequest"
-  },
-  "SchoolDungeonBattleResultRequest": {
-    "protocol_name": "SchoolDungeon_BattleResult",
-    "protocol_value": 38002,
-    "request_class": "SchoolDungeonBattleResultRequest"
-  },
-  "SchoolDungeonEnterBattle": {
-    "protocol_name": "SchoolDungeon_EnterBattle",
-    "protocol_value": 38001,
-    "request_class": "SchoolDungeonEnterBattleRequest"
-  },
-  "SchoolDungeonEnterBattleRequest": {
-    "protocol_name": "SchoolDungeon_EnterBattle",
-    "protocol_value": 38001,
-    "request_class": "SchoolDungeonEnterBattleRequest"
   },
   "SchoolDungeonList": {
     "protocol_name": "SchoolDungeon_List",
@@ -4319,16 +3409,6 @@
     "protocol_value": 38000,
     "request_class": "SchoolDungeonListRequest"
   },
-  "SchoolDungeonRetreat": {
-    "protocol_name": "SchoolDungeon_Retreat",
-    "protocol_value": 38003,
-    "request_class": "SchoolDungeonRetreatRequest"
-  },
-  "SchoolDungeonRetreatRequest": {
-    "protocol_name": "SchoolDungeon_Retreat",
-    "protocol_value": 38003,
-    "request_class": "SchoolDungeonRetreatRequest"
-  },
   "ShopBeforehandGachaGet": {
     "protocol_name": "Shop_BeforehandGachaGet",
     "protocol_value": 10010,
@@ -4338,36 +3418,6 @@
     "protocol_name": "Shop_BeforehandGachaGet",
     "protocol_value": 10010,
     "request_class": "ShopBeforehandGachaGetRequest"
-  },
-  "ShopBeforehandGachaPick": {
-    "protocol_name": "Shop_BeforehandGachaPick",
-    "protocol_value": 10013,
-    "request_class": "ShopBeforehandGachaPickRequest"
-  },
-  "ShopBeforehandGachaPickRequest": {
-    "protocol_name": "Shop_BeforehandGachaPick",
-    "protocol_value": 10013,
-    "request_class": "ShopBeforehandGachaPickRequest"
-  },
-  "ShopBeforehandGachaRun": {
-    "protocol_name": "Shop_BeforehandGachaRun",
-    "protocol_value": 10011,
-    "request_class": "ShopBeforehandGachaRunRequest"
-  },
-  "ShopBeforehandGachaRunRequest": {
-    "protocol_name": "Shop_BeforehandGachaRun",
-    "protocol_value": 10011,
-    "request_class": "ShopBeforehandGachaRunRequest"
-  },
-  "ShopBeforehandGachaSave": {
-    "protocol_name": "Shop_BeforehandGachaSave",
-    "protocol_value": 10012,
-    "request_class": "ShopBeforehandGachaSaveRequest"
-  },
-  "ShopBeforehandGachaSaveRequest": {
-    "protocol_name": "Shop_BeforehandGachaSave",
-    "protocol_value": 10012,
-    "request_class": "ShopBeforehandGachaSaveRequest"
   },
   "ShopBuyAP": {
     "protocol_name": "Shop_BuyAP",
@@ -4388,36 +3438,6 @@
     "protocol_name": "Shop_BuyEligma",
     "protocol_value": 10004,
     "request_class": "ShopBuyEligmaRequest"
-  },
-  "ShopBuyGacha": {
-    "protocol_name": "Shop_BuyGacha",
-    "protocol_value": 10001,
-    "request_class": "ShopBuyGachaRequest"
-  },
-  "ShopBuyGacha2": {
-    "protocol_name": "Shop_BuyGacha2",
-    "protocol_value": 10005,
-    "request_class": "ShopBuyGacha2Request"
-  },
-  "ShopBuyGacha2Request": {
-    "protocol_name": "Shop_BuyGacha2",
-    "protocol_value": 10005,
-    "request_class": "ShopBuyGacha2Request"
-  },
-  "ShopBuyGacha3": {
-    "protocol_name": "Shop_BuyGacha3",
-    "protocol_value": 10008,
-    "request_class": "ShopBuyGacha3Request"
-  },
-  "ShopBuyGacha3Request": {
-    "protocol_name": "Shop_BuyGacha3",
-    "protocol_value": 10008,
-    "request_class": "ShopBuyGacha3Request"
-  },
-  "ShopBuyGachaRequest": {
-    "protocol_name": "Shop_BuyGacha",
-    "protocol_value": 10001,
-    "request_class": "ShopBuyGachaRequest"
   },
   "ShopBuyMerchandise": {
     "protocol_name": "Shop_BuyMerchandise",
@@ -4459,16 +3479,6 @@
     "protocol_value": 10002,
     "request_class": "ShopListRequest"
   },
-  "ShopPickupSelectionGachaBuy": {
-    "protocol_name": "Shop_PickupSelectionGachaBuy",
-    "protocol_value": 10016,
-    "request_class": "ShopPickupSelectionGachaBuyRequest"
-  },
-  "ShopPickupSelectionGachaBuyRequest": {
-    "protocol_name": "Shop_PickupSelectionGachaBuy",
-    "protocol_value": 10016,
-    "request_class": "ShopPickupSelectionGachaBuyRequest"
-  },
   "ShopPickupSelectionGachaGet": {
     "protocol_name": "Shop_PickupSelectionGachaGet",
     "protocol_value": 10014,
@@ -4478,16 +3488,6 @@
     "protocol_name": "Shop_PickupSelectionGachaGet",
     "protocol_value": 10014,
     "request_class": "ShopPickupSelectionGachaGetRequest"
-  },
-  "ShopPickupSelectionGachaSet": {
-    "protocol_name": "Shop_PickupSelectionGachaSet",
-    "protocol_value": 10015,
-    "request_class": "ShopPickupSelectionGachaSetRequest"
-  },
-  "ShopPickupSelectionGachaSetRequest": {
-    "protocol_name": "Shop_PickupSelectionGachaSet",
-    "protocol_value": 10015,
-    "request_class": "ShopPickupSelectionGachaSetRequest"
   },
   "ShopRefresh": {
     "protocol_name": "Shop_Refresh",
@@ -4579,46 +3579,6 @@
     "protocol_value": 31001,
     "request_class": "TTSGetKanaRequest"
   },
-  "TimeAttackDungeonCreateBattle": {
-    "protocol_name": "TimeAttackDungeon_CreateBattle",
-    "protocol_value": 39001,
-    "request_class": "TimeAttackDungeonCreateBattleRequest"
-  },
-  "TimeAttackDungeonCreateBattleRequest": {
-    "protocol_name": "TimeAttackDungeon_CreateBattle",
-    "protocol_value": 39001,
-    "request_class": "TimeAttackDungeonCreateBattleRequest"
-  },
-  "TimeAttackDungeonEndBattle": {
-    "protocol_name": "TimeAttackDungeon_EndBattle",
-    "protocol_value": 39003,
-    "request_class": "TimeAttackDungeonEndBattleRequest"
-  },
-  "TimeAttackDungeonEndBattleRequest": {
-    "protocol_name": "TimeAttackDungeon_EndBattle",
-    "protocol_value": 39003,
-    "request_class": "TimeAttackDungeonEndBattleRequest"
-  },
-  "TimeAttackDungeonEnterBattle": {
-    "protocol_name": "TimeAttackDungeon_EnterBattle",
-    "protocol_value": 39002,
-    "request_class": "TimeAttackDungeonEnterBattleRequest"
-  },
-  "TimeAttackDungeonEnterBattleRequest": {
-    "protocol_name": "TimeAttackDungeon_EnterBattle",
-    "protocol_value": 39002,
-    "request_class": "TimeAttackDungeonEnterBattleRequest"
-  },
-  "TimeAttackDungeonGiveUp": {
-    "protocol_name": "TimeAttackDungeon_GiveUp",
-    "protocol_value": 39005,
-    "request_class": "TimeAttackDungeonGiveUpRequest"
-  },
-  "TimeAttackDungeonGiveUpRequest": {
-    "protocol_name": "TimeAttackDungeon_GiveUp",
-    "protocol_value": 39005,
-    "request_class": "TimeAttackDungeonGiveUpRequest"
-  },
   "TimeAttackDungeonLobby": {
     "protocol_name": "TimeAttackDungeon_Lobby",
     "protocol_value": 39000,
@@ -4669,26 +3629,6 @@
     "protocol_value": 25002,
     "request_class": "UseCouponRequest"
   },
-  "WeekDungeonBattleResult": {
-    "protocol_name": "WeekDungeon_BattleResult",
-    "protocol_value": 23002,
-    "request_class": "WeekDungeonBattleResultRequest"
-  },
-  "WeekDungeonBattleResultRequest": {
-    "protocol_name": "WeekDungeon_BattleResult",
-    "protocol_value": 23002,
-    "request_class": "WeekDungeonBattleResultRequest"
-  },
-  "WeekDungeonEnterBattle": {
-    "protocol_name": "WeekDungeon_EnterBattle",
-    "protocol_value": 23001,
-    "request_class": "WeekDungeonEnterBattleRequest"
-  },
-  "WeekDungeonEnterBattleRequest": {
-    "protocol_name": "WeekDungeon_EnterBattle",
-    "protocol_value": 23001,
-    "request_class": "WeekDungeonEnterBattleRequest"
-  },
   "WeekDungeonList": {
     "protocol_name": "WeekDungeon_List",
     "protocol_value": 23000,
@@ -4699,26 +3639,6 @@
     "protocol_value": 23000,
     "request_class": "WeekDungeonListRequest"
   },
-  "WeekDungeonRetreat": {
-    "protocol_name": "WeekDungeon_Retreat",
-    "protocol_value": 23003,
-    "request_class": "WeekDungeonRetreatRequest"
-  },
-  "WeekDungeonRetreatRequest": {
-    "protocol_name": "WeekDungeon_Retreat",
-    "protocol_value": 23003,
-    "request_class": "WeekDungeonRetreatRequest"
-  },
-  "WorldRaidBattleResult": {
-    "protocol_name": "WorldRaid_BattleResult",
-    "protocol_value": 40003,
-    "request_class": "WorldRaidBattleResultRequest"
-  },
-  "WorldRaidBattleResultRequest": {
-    "protocol_name": "WorldRaid_BattleResult",
-    "protocol_value": 40003,
-    "request_class": "WorldRaidBattleResultRequest"
-  },
   "WorldRaidBossList": {
     "protocol_name": "WorldRaid_BossList",
     "protocol_value": 40001,
@@ -4728,16 +3648,6 @@
     "protocol_name": "WorldRaid_BossList",
     "protocol_value": 40001,
     "request_class": "WorldRaidBossListRequest"
-  },
-  "WorldRaidEnterBattle": {
-    "protocol_name": "WorldRaid_EnterBattle",
-    "protocol_value": 40002,
-    "request_class": "WorldRaidEnterBattleRequest"
-  },
-  "WorldRaidEnterBattleRequest": {
-    "protocol_name": "WorldRaid_EnterBattle",
-    "protocol_value": 40002,
-    "request_class": "WorldRaidEnterBattleRequest"
   },
   "WorldRaidLobby": {
     "protocol_name": "WorldRaid_Lobby",

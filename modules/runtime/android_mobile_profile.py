@@ -84,22 +84,6 @@ class AndroidMobileProfile:
         return asdict(self)
 
 
-def load_or_create_android_mobile_profile(
-    path: str | Path = DEFAULT_ANDROID_MOBILE_PROFILE_PATH,
-    *,
-    reset: bool = False,
-    country: str = "TW",
-    locale: str = "zh-TW",
-    seed: str = "",
-) -> AndroidMobileProfile:
-    profile_path = Path(path).expanduser().resolve()
-    if profile_path.exists() and not reset:
-        return load_android_mobile_profile(profile_path)
-    profile = generate_android_mobile_profile(country=country, locale=locale, seed=seed)
-    save_android_mobile_profile(profile_path, profile)
-    return profile
-
-
 def load_android_mobile_profile(path: str | Path) -> AndroidMobileProfile:
     profile_path = Path(path).expanduser()
     data = json.loads(profile_path.read_text(encoding="utf-8"))
@@ -108,12 +92,6 @@ def load_android_mobile_profile(path: str | Path) -> AndroidMobileProfile:
     allowed = AndroidMobileProfile.__dataclass_fields__
     values = {key: data.get(key) for key in allowed if key in data}
     return AndroidMobileProfile(**values)
-
-
-def save_android_mobile_profile(path: str | Path, profile: AndroidMobileProfile) -> None:
-    profile_path = Path(path).expanduser().resolve()
-    profile_path.parent.mkdir(parents=True, exist_ok=True)
-    profile_path.write_text(json.dumps(profile.to_dict(), ensure_ascii=False, indent=2), encoding="utf-8")
 
 
 def generate_android_mobile_profile(

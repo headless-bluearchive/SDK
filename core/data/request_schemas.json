@@ -344,9 +344,6 @@
   "AccountCurrencySyncRequest": {
     "fields": []
   },
-  "AccountDetachNexonRequest": {
-    "fields": []
-  },
   "AccountDismissRepurchasablePopupRequest": {
     "fields": [
       {
@@ -359,9 +356,6 @@
     ]
   },
   "AccountGetTutorialRequest": {
-    "fields": []
-  },
-  "AccountInvalidateTokenRequest": {
     "fields": []
   },
   "AccountLinkRewardRequest": {
@@ -428,17 +422,6 @@
       }
     ]
   },
-  "AccountReportXignCodeCheaterRequest": {
-    "fields": [
-      {
-        "csharp_type": "string",
-        "default": null,
-        "member_kind": "property",
-        "name": "ErrorCode",
-        "required": false
-      }
-    ]
-  },
   "AccountRequestBirthdayMailRequest": {
     "fields": [
       {
@@ -446,17 +429,6 @@
         "default": null,
         "member_kind": "property",
         "name": "Birthday",
-        "required": false
-      }
-    ]
-  },
-  "AccountResetRequest": {
-    "fields": [
-      {
-        "csharp_type": "string",
-        "default": null,
-        "member_kind": "property",
-        "name": "DevId",
         "required": false
       }
     ]
@@ -502,150 +474,6 @@
     ]
   },
   "AccountVerifyAdultCheckRequest": {
-    "fields": []
-  },
-  "ArenaBattleResultRequest": {
-    "fields": [
-      {
-        "csharp_type": "ArenaBattleDB",
-        "default": null,
-        "member_kind": "property",
-        "name": "ArenaBattleDB",
-        "required": false
-      }
-    ]
-  },
-  "ArenaCheckSeasonCloseRewardRequest": {
-    "fields": []
-  },
-  "ArenaCumulativeTimeRewardRequest": {
-    "fields": []
-  },
-  "ArenaDailyRewardRequest": {
-    "fields": []
-  },
-  "ArenaEnterBattlePart1Request": {
-    "fields": [
-      {
-        "csharp_type": "long",
-        "default": null,
-        "member_kind": "property",
-        "name": "OpponentAccountServerId",
-        "required": false
-      },
-      {
-        "csharp_type": "int",
-        "default": null,
-        "member_kind": "property",
-        "name": "OpponentIndex",
-        "required": false
-      },
-      {
-        "csharp_type": "long",
-        "default": null,
-        "member_kind": "property",
-        "name": "OpponentRank",
-        "required": false
-      }
-    ]
-  },
-  "ArenaEnterBattlePart2Request": {
-    "fields": [
-      {
-        "csharp_type": "ArenaBattleDB",
-        "default": null,
-        "member_kind": "property",
-        "name": "ArenaBattleDB",
-        "required": false
-      }
-    ]
-  },
-  "ArenaEnterBattleRequest": {
-    "fields": [
-      {
-        "csharp_type": "long",
-        "default": null,
-        "member_kind": "property",
-        "name": "OpponentAccountServerId",
-        "required": false
-      },
-      {
-        "csharp_type": "long",
-        "default": null,
-        "member_kind": "property",
-        "name": "OpponentIndex",
-        "required": false
-      }
-    ]
-  },
-  "ArenaEnterLobbyRequest": {
-    "fields": []
-  },
-  "ArenaHistoryRequest": {
-    "fields": [
-      {
-        "csharp_type": "int",
-        "default": null,
-        "member_kind": "property",
-        "name": "Count",
-        "required": false
-      },
-      {
-        "csharp_type": "DateTime",
-        "default": null,
-        "member_kind": "property",
-        "name": "SearchStartDate",
-        "required": false
-      }
-    ]
-  },
-  "ArenaLoginRequest": {
-    "fields": []
-  },
-  "ArenaOpponentListRequest": {
-    "fields": []
-  },
-  "ArenaRankListRequest": {
-    "fields": [
-      {
-        "csharp_type": "int",
-        "default": null,
-        "member_kind": "property",
-        "name": "Count",
-        "required": false
-      },
-      {
-        "csharp_type": "int",
-        "default": null,
-        "member_kind": "property",
-        "name": "StartIndex",
-        "required": false
-      }
-    ]
-  },
-  "ArenaSettingAnonymousRequest": {
-    "fields": [
-      {
-        "csharp_type": "bool",
-        "default": null,
-        "member_kind": "property",
-        "name": "IsAnonymous",
-        "required": false
-      }
-    ]
-  },
-  "ArenaSettingChangeRequest": {
-    "fields": [
-      {
-        "csharp_type": "long",
-        "default": null,
-        "member_kind": "property",
-        "name": "MapId",
-        "required": false
-      }
-    ]
-  },
-  "ArenaSyncEchelonSettingTimeRequest": {
     "fields": []
   },
   "AttachmentEmblemAcquireRequest": {
@@ -697,31 +525,6 @@
         "default": null,
         "member_kind": "property",
         "name": "DayByBookUniqueId",
-        "required": false
-      }
-    ]
-  },
-  "AuditGachaStatisticsRequest": {
-    "fields": [
-      {
-        "csharp_type": "long",
-        "default": null,
-        "member_kind": "property",
-        "name": "Count",
-        "required": false
-      },
-      {
-        "csharp_type": "long",
-        "default": null,
-        "member_kind": "property",
-        "name": "MerchandiseUniqueId",
-        "required": false
-      },
-      {
-        "csharp_type": "long",
-        "default": null,
-        "member_kind": "property",
-        "name": "ShopUniqueId",
         "required": false
       }
     ]
@@ -820,145 +623,6 @@
         "default": null,
         "member_kind": "property",
         "name": "BattlePassId",
-        "required": false
-      }
-    ]
-  },
-  "BillingCheckConditionCashGoodsRequest": {
-    "fields": [
-      {
-        "csharp_type": "long",
-        "default": null,
-        "member_kind": "property",
-        "name": "product_id",
-        "required": false
-      },
-      {
-        "csharp_type": "string",
-        "default": null,
-        "member_kind": "property",
-        "name": "user_id",
-        "required": false
-      }
-    ]
-  },
-  "BillingPurchaseCashShopVerifyByNexonRequest": {
-    "fields": [
-      {
-        "csharp_type": "string",
-        "default": null,
-        "member_kind": "property",
-        "name": "CurrencyCode",
-        "required": false
-      },
-      {
-        "csharp_type": "long",
-        "default": null,
-        "member_kind": "property",
-        "name": "CurrencyValue",
-        "required": false
-      },
-      {
-        "csharp_type": "long",
-        "default": null,
-        "member_kind": "property",
-        "name": "NpSN",
-        "required": false
-      },
-      {
-        "csharp_type": "List<ShopCashProductSelectionDB>",
-        "default": null,
-        "member_kind": "property",
-        "name": "SelectionDBs",
-        "required": false
-      },
-      {
-        "csharp_type": "long",
-        "default": null,
-        "member_kind": "property",
-        "name": "ShopCashId",
-        "required": false
-      },
-      {
-        "csharp_type": "string",
-        "default": null,
-        "member_kind": "property",
-        "name": "StampToken",
-        "required": false
-      },
-      {
-        "csharp_type": "bool",
-        "default": null,
-        "member_kind": "property",
-        "name": "VirtualPayment",
-        "required": false
-      }
-    ]
-  },
-  "BillingPurchaseFreeProductRequest": {
-    "fields": [
-      {
-        "csharp_type": "long",
-        "default": null,
-        "member_kind": "property",
-        "name": "ShopCashId",
-        "required": false
-      }
-    ]
-  },
-  "BillingPurchaseListByNexonRequest": {
-    "fields": [
-      {
-        "csharp_type": "bool",
-        "default": null,
-        "member_kind": "property",
-        "name": "IsTeenage",
-        "required": false
-      }
-    ]
-  },
-  "BillingPurchaseListByYostarRequest": {
-    "fields": []
-  },
-  "BillingTransactionEndByYostarRequest": {
-    "fields": [
-      {
-        "csharp_type": "BillingTransactionEndType",
-        "default": null,
-        "member_kind": "property",
-        "name": "EndType",
-        "required": false
-      },
-      {
-        "csharp_type": "long",
-        "default": null,
-        "member_kind": "property",
-        "name": "PurchaseOrderId",
-        "required": false
-      }
-    ]
-  },
-  "BillingTransactionStartByYostarRequest": {
-    "fields": [
-      {
-        "csharp_type": "long",
-        "default": null,
-        "member_kind": "property",
-        "name": "ShopCashId",
-        "required": false
-      },
-      {
-        "csharp_type": "List<ShopCashProductSelectionDB>",
-        "default": null,
-        "member_kind": "property",
-        "name": "ShopCashProductSelectionDBs",
-        "required": false
-      },
-      {
-        "csharp_type": "bool",
-        "default": null,
-        "member_kind": "property",
-        "name": "VirtualPayment",
         "required": false
       }
     ]
@@ -1484,31 +1148,6 @@
       }
     ]
   },
-  "CampaignEnterTacticRequest": {
-    "fields": [
-      {
-        "csharp_type": "long",
-        "default": null,
-        "member_kind": "property",
-        "name": "EchelonIndex",
-        "required": false
-      },
-      {
-        "csharp_type": "long",
-        "default": null,
-        "member_kind": "property",
-        "name": "EnemyIndex",
-        "required": false
-      },
-      {
-        "csharp_type": "long",
-        "default": null,
-        "member_kind": "property",
-        "name": "StageUniqueId",
-        "required": false
-      }
-    ]
-  },
   "CampaignEnterTutorialStageRequest": {
     "fields": [
       {
@@ -1547,24 +1186,6 @@
   },
   "CampaignListRequest": {
     "fields": []
-  },
-  "CampaignMainStageStrategySkipResultRequest": {
-    "fields": [
-      {
-        "csharp_type": "bool",
-        "default": null,
-        "member_kind": "property",
-        "name": "PassCheckCharacter",
-        "required": false
-      },
-      {
-        "csharp_type": "BattleSummary",
-        "default": null,
-        "member_kind": "property",
-        "name": "Summary",
-        "required": false
-      }
-    ]
   },
   "CampaignMapMoveRequest": {
     "fields": [
@@ -1627,78 +1248,6 @@
         "default": null,
         "member_kind": "property",
         "name": "StageUniqueId",
-        "required": false
-      }
-    ]
-  },
-  "CampaignRetreatRequest": {
-    "fields": [
-      {
-        "csharp_type": "long",
-        "default": null,
-        "member_kind": "property",
-        "name": "StageUniqueId",
-        "required": false
-      }
-    ]
-  },
-  "CampaignSubStageResultRequest": {
-    "fields": [
-      {
-        "csharp_type": "bool",
-        "default": null,
-        "member_kind": "property",
-        "name": "PassCheckCharacter",
-        "required": false
-      },
-      {
-        "csharp_type": "BattleSummary",
-        "default": null,
-        "member_kind": "property",
-        "name": "Summary",
-        "required": false
-      }
-    ]
-  },
-  "CampaignTacticResultRequest": {
-    "fields": [
-      {
-        "csharp_type": "SkillCardHand",
-        "default": null,
-        "member_kind": "property",
-        "name": "Hand",
-        "required": false
-      },
-      {
-        "csharp_type": "bool",
-        "default": null,
-        "member_kind": "property",
-        "name": "PassCheckCharacter",
-        "required": false
-      },
-      {
-        "csharp_type": "TacticSkipSummary",
-        "default": null,
-        "member_kind": "property",
-        "name": "SkipSummary",
-        "required": false
-      },
-      {
-        "csharp_type": "BattleSummary",
-        "default": null,
-        "member_kind": "property",
-        "name": "Summary",
-        "required": false
-      }
-    ]
-  },
-  "CampaignTutorialStageResultRequest": {
-    "fields": [
-      {
-        "csharp_type": "BattleSummary",
-        "default": null,
-        "member_kind": "property",
-        "name": "Summary",
         "required": false
       }
     ]
@@ -2244,24 +1793,6 @@
       }
     ]
   },
-  "CommonCheatRequest": {
-    "fields": [
-      {
-        "csharp_type": "List<CheatCharacterCustomPreset>",
-        "default": null,
-        "member_kind": "property",
-        "name": "CharacterCustomPreset",
-        "required": false
-      },
-      {
-        "csharp_type": "string",
-        "default": null,
-        "member_kind": "property",
-        "name": "Cheat",
-        "required": false
-      }
-    ]
-  },
   "ConquestCheckRequest": {
     "fields": [
       {
@@ -2344,198 +1875,6 @@
       }
     ]
   },
-  "ConquestConquerWithBattleResultRequest": {
-    "fields": [
-      {
-        "csharp_type": "BattleSummary",
-        "default": null,
-        "member_kind": "property",
-        "name": "BattleSummary",
-        "required": false
-      },
-      {
-        "csharp_type": "StageDifficulty",
-        "default": null,
-        "member_kind": "property",
-        "name": "Difficulty",
-        "required": false
-      },
-      {
-        "csharp_type": "long",
-        "default": null,
-        "member_kind": "property",
-        "name": "EventContentId",
-        "required": false
-      },
-      {
-        "csharp_type": "long",
-        "default": null,
-        "member_kind": "property",
-        "name": "TileUniqueId",
-        "required": false
-      }
-    ]
-  },
-  "ConquestConquerWithBattleStartRequest": {
-    "fields": [
-      {
-        "csharp_type": "ClanAssistUseInfo",
-        "default": null,
-        "member_kind": "property",
-        "name": "ClanAssistUseInfo",
-        "required": false
-      },
-      {
-        "csharp_type": "StageDifficulty",
-        "default": null,
-        "member_kind": "property",
-        "name": "Difficulty",
-        "required": false
-      },
-      {
-        "csharp_type": "Nullable<Int64>",
-        "default": null,
-        "member_kind": "property",
-        "name": "EchelonNumber",
-        "required": false
-      },
-      {
-        "csharp_type": "long",
-        "default": null,
-        "member_kind": "property",
-        "name": "EventContentId",
-        "required": false
-      },
-      {
-        "csharp_type": "long",
-        "default": null,
-        "member_kind": "property",
-        "name": "TileUniqueId",
-        "required": false
-      }
-    ]
-  },
-  "ConquestErosionBattleResultRequest": {
-    "fields": [
-      {
-        "csharp_type": "BattleSummary",
-        "default": null,
-        "member_kind": "property",
-        "name": "BattleSummary",
-        "required": false
-      },
-      {
-        "csharp_type": "long",
-        "default": null,
-        "member_kind": "property",
-        "name": "ConquestObjectDBId",
-        "required": false
-      },
-      {
-        "csharp_type": "long",
-        "default": null,
-        "member_kind": "property",
-        "name": "EventContentId",
-        "required": false
-      }
-    ]
-  },
-  "ConquestErosionBattleStartRequest": {
-    "fields": [
-      {
-        "csharp_type": "ClanAssistUseInfo",
-        "default": null,
-        "member_kind": "property",
-        "name": "ClanAssistUseInfo",
-        "required": false
-      },
-      {
-        "csharp_type": "long",
-        "default": null,
-        "member_kind": "property",
-        "name": "ConquestObjectDBId",
-        "required": false
-      },
-      {
-        "csharp_type": "long",
-        "default": null,
-        "member_kind": "property",
-        "name": "EchelonNumber",
-        "required": false
-      },
-      {
-        "csharp_type": "long",
-        "default": null,
-        "member_kind": "property",
-        "name": "EventContentId",
-        "required": false
-      },
-      {
-        "csharp_type": "bool",
-        "default": null,
-        "member_kind": "property",
-        "name": "UseManageEchelon",
-        "required": false
-      }
-    ]
-  },
-  "ConquestEventObjectBattleResultRequest": {
-    "fields": [
-      {
-        "csharp_type": "BattleSummary",
-        "default": null,
-        "member_kind": "property",
-        "name": "BattleSummary",
-        "required": false
-      },
-      {
-        "csharp_type": "long",
-        "default": null,
-        "member_kind": "property",
-        "name": "ConquestObjectDBId",
-        "required": false
-      },
-      {
-        "csharp_type": "long",
-        "default": null,
-        "member_kind": "property",
-        "name": "EventContentId",
-        "required": false
-      }
-    ]
-  },
-  "ConquestEventObjectBattleStartRequest": {
-    "fields": [
-      {
-        "csharp_type": "ClanAssistUseInfo",
-        "default": null,
-        "member_kind": "property",
-        "name": "ClanAssistUseInfo",
-        "required": false
-      },
-      {
-        "csharp_type": "long",
-        "default": null,
-        "member_kind": "property",
-        "name": "ConquestObjectDBId",
-        "required": false
-      },
-      {
-        "csharp_type": "long",
-        "default": null,
-        "member_kind": "property",
-        "name": "EchelonNumber",
-        "required": false
-      },
-      {
-        "csharp_type": "long",
-        "default": null,
-        "member_kind": "property",
-        "name": "EventContentId",
-        "required": false
-      }
-    ]
-  },
   "ConquestGetInfoRequest": {
     "fields": [
       {
@@ -2579,77 +1918,6 @@
         "default": null,
         "member_kind": "property",
         "name": "TileRewardId",
-        "required": false
-      },
-      {
-        "csharp_type": "long",
-        "default": null,
-        "member_kind": "property",
-        "name": "TileUniqueId",
-        "required": false
-      }
-    ]
-  },
-  "ConquestMainStoryConquerWithBattleResultRequest": {
-    "fields": [
-      {
-        "csharp_type": "BattleSummary",
-        "default": null,
-        "member_kind": "property",
-        "name": "BattleSummary",
-        "required": false
-      },
-      {
-        "csharp_type": "StageDifficulty",
-        "default": null,
-        "member_kind": "property",
-        "name": "Difficulty",
-        "required": false
-      },
-      {
-        "csharp_type": "long",
-        "default": null,
-        "member_kind": "property",
-        "name": "EventContentId",
-        "required": false
-      },
-      {
-        "csharp_type": "long",
-        "default": null,
-        "member_kind": "property",
-        "name": "TileUniqueId",
-        "required": false
-      }
-    ]
-  },
-  "ConquestMainStoryConquerWithBattleStartRequest": {
-    "fields": [
-      {
-        "csharp_type": "ClanAssistUseInfo",
-        "default": null,
-        "member_kind": "property",
-        "name": "ClanAssistUseInfo",
-        "required": false
-      },
-      {
-        "csharp_type": "StageDifficulty",
-        "default": null,
-        "member_kind": "property",
-        "name": "Difficulty",
-        "required": false
-      },
-      {
-        "csharp_type": "Nullable<Int64>",
-        "default": null,
-        "member_kind": "property",
-        "name": "EchelonNumber",
-        "required": false
-      },
-      {
-        "csharp_type": "long",
-        "default": null,
-        "member_kind": "property",
-        "name": "EventContentId",
         "required": false
       },
       {
@@ -3192,109 +2460,6 @@
       }
     ]
   },
-  "EliminateRaidCreateBattleRequest": {
-    "fields": [
-      {
-        "csharp_type": "ClanAssistUseInfo",
-        "default": null,
-        "member_kind": "property",
-        "name": "AssistUseInfo",
-        "required": false
-      },
-      {
-        "csharp_type": "bool",
-        "default": null,
-        "member_kind": "property",
-        "name": "IsPractice",
-        "required": false
-      },
-      {
-        "csharp_type": "long",
-        "default": null,
-        "member_kind": "property",
-        "name": "RaidUniqueId",
-        "required": false
-      }
-    ]
-  },
-  "EliminateRaidEndBattleRequest": {
-    "fields": [
-      {
-        "csharp_type": "ClanAssistUseInfo",
-        "default": null,
-        "member_kind": "property",
-        "name": "AssistUseInfo",
-        "required": false
-      },
-      {
-        "csharp_type": "int",
-        "default": null,
-        "member_kind": "property",
-        "name": "EchelonId",
-        "required": false
-      },
-      {
-        "csharp_type": "bool",
-        "default": null,
-        "member_kind": "property",
-        "name": "IsPractice",
-        "required": false
-      },
-      {
-        "csharp_type": "long",
-        "default": null,
-        "member_kind": "property",
-        "name": "RaidServerId",
-        "required": false
-      },
-      {
-        "csharp_type": "BattleSummary",
-        "default": null,
-        "member_kind": "property",
-        "name": "Summary",
-        "required": false
-      }
-    ]
-  },
-  "EliminateRaidEnterBattleRequest": {
-    "fields": [
-      {
-        "csharp_type": "ClanAssistUseInfo",
-        "default": null,
-        "member_kind": "property",
-        "name": "AssistUseInfo",
-        "required": false
-      },
-      {
-        "csharp_type": "long",
-        "default": null,
-        "member_kind": "property",
-        "name": "EchelonId",
-        "required": false
-      },
-      {
-        "csharp_type": "bool",
-        "default": null,
-        "member_kind": "property",
-        "name": "IsPractice",
-        "required": false
-      },
-      {
-        "csharp_type": "long",
-        "default": null,
-        "member_kind": "property",
-        "name": "RaidServerId",
-        "required": false
-      },
-      {
-        "csharp_type": "long",
-        "default": null,
-        "member_kind": "property",
-        "name": "RaidUniqueId",
-        "required": false
-      }
-    ]
-  },
   "EliminateRaidGetBestTeamRequest": {
     "fields": [
       {
@@ -3302,24 +2467,6 @@
         "default": null,
         "member_kind": "property",
         "name": "SearchAccountId",
-        "required": false
-      }
-    ]
-  },
-  "EliminateRaidGiveUpRequest": {
-    "fields": [
-      {
-        "csharp_type": "bool",
-        "default": null,
-        "member_kind": "property",
-        "name": "IsPractice",
-        "required": false
-      },
-      {
-        "csharp_type": "long",
-        "default": null,
-        "member_kind": "property",
-        "name": "RaidServerId",
         "required": false
       }
     ]
@@ -3553,93 +2700,6 @@
       }
     ]
   },
-  "EventContentBoxGachaShopPurchaseRequest": {
-    "fields": [
-      {
-        "csharp_type": "long",
-        "default": null,
-        "member_kind": "property",
-        "name": "EventContentId",
-        "required": false
-      },
-      {
-        "csharp_type": "bool",
-        "default": null,
-        "member_kind": "property",
-        "name": "PurchaseAll",
-        "required": false
-      },
-      {
-        "csharp_type": "long",
-        "default": null,
-        "member_kind": "property",
-        "name": "PurchaseCount",
-        "required": false
-      }
-    ]
-  },
-  "EventContentBoxGachaShopRefreshRequest": {
-    "fields": [
-      {
-        "csharp_type": "long",
-        "default": null,
-        "member_kind": "property",
-        "name": "EventContentId",
-        "required": false
-      }
-    ]
-  },
-  "EventContentCardShopListRequest": {
-    "fields": [
-      {
-        "csharp_type": "long",
-        "default": null,
-        "member_kind": "property",
-        "name": "EventContentId",
-        "required": false
-      }
-    ]
-  },
-  "EventContentCardShopPurchaseAllRequest": {
-    "fields": [
-      {
-        "csharp_type": "long",
-        "default": null,
-        "member_kind": "property",
-        "name": "EventContentId",
-        "required": false
-      }
-    ]
-  },
-  "EventContentCardShopPurchaseRequest": {
-    "fields": [
-      {
-        "csharp_type": "long",
-        "default": null,
-        "member_kind": "property",
-        "name": "EventContentId",
-        "required": false
-      },
-      {
-        "csharp_type": "int",
-        "default": null,
-        "member_kind": "property",
-        "name": "SlotNumber",
-        "required": false
-      }
-    ]
-  },
-  "EventContentCardShopShuffleRequest": {
-    "fields": [
-      {
-        "csharp_type": "long",
-        "default": null,
-        "member_kind": "property",
-        "name": "EventContentId",
-        "required": false
-      }
-    ]
-  },
   "EventContentClueSearchGetInfoRequest": {
     "fields": [
       {
@@ -3705,64 +2765,6 @@
         "default": null,
         "member_kind": "property",
         "name": "GroupId",
-        "required": false
-      }
-    ]
-  },
-  "EventContentConcentrationFlipCardRequest": {
-    "fields": [
-      {
-        "csharp_type": "long",
-        "default": null,
-        "member_kind": "property",
-        "name": "EventContentId",
-        "required": false
-      },
-      {
-        "csharp_type": "int",
-        "default": null,
-        "member_kind": "property",
-        "name": "FirstIndex",
-        "required": false
-      },
-      {
-        "csharp_type": "int",
-        "default": null,
-        "member_kind": "property",
-        "name": "SecondIndex",
-        "required": false
-      }
-    ]
-  },
-  "EventContentConcentrationGetInfoRequest": {
-    "fields": [
-      {
-        "csharp_type": "long",
-        "default": null,
-        "member_kind": "property",
-        "name": "EventContentId",
-        "required": false
-      }
-    ]
-  },
-  "EventContentConcentrationRoundCompleteRequest": {
-    "fields": [
-      {
-        "csharp_type": "long",
-        "default": null,
-        "member_kind": "property",
-        "name": "EventContentId",
-        "required": false
-      }
-    ]
-  },
-  "EventContentConcentrationRoundSkipRequest": {
-    "fields": [
-      {
-        "csharp_type": "long",
-        "default": null,
-        "member_kind": "property",
-        "name": "EventContentId",
         "required": false
       }
     ]
@@ -3965,49 +2967,6 @@
       }
     ]
   },
-  "EventContentEnterTacticRequest": {
-    "fields": [
-      {
-        "csharp_type": "long",
-        "default": null,
-        "member_kind": "property",
-        "name": "EchelonIndex",
-        "required": false
-      },
-      {
-        "csharp_type": "long",
-        "default": null,
-        "member_kind": "property",
-        "name": "EnemyIndex",
-        "required": false
-      },
-      {
-        "csharp_type": "long",
-        "default": null,
-        "member_kind": "property",
-        "name": "EventContentId",
-        "required": false
-      },
-      {
-        "csharp_type": "long",
-        "default": null,
-        "member_kind": "property",
-        "name": "StageUniqueId",
-        "required": false
-      }
-    ]
-  },
-  "EventContentFortuneGachaPurchaseRequest": {
-    "fields": [
-      {
-        "csharp_type": "long",
-        "default": null,
-        "member_kind": "property",
-        "name": "EventContentId",
-        "required": false
-      }
-    ]
-  },
   "EventContentLocationAttendScheduleRequest": {
     "fields": [
       {
@@ -4040,31 +2999,6 @@
         "default": null,
         "member_kind": "property",
         "name": "EventContentId",
-        "required": false
-      }
-    ]
-  },
-  "EventContentMainGroundStageResultRequest": {
-    "fields": [
-      {
-        "csharp_type": "long",
-        "default": null,
-        "member_kind": "property",
-        "name": "EventContentId",
-        "required": false
-      },
-      {
-        "csharp_type": "bool",
-        "default": null,
-        "member_kind": "property",
-        "name": "PassCheckCharacter",
-        "required": false
-      },
-      {
-        "csharp_type": "BattleSummary",
-        "default": null,
-        "member_kind": "property",
-        "name": "Summary",
         "required": false
       }
     ]
@@ -4159,24 +3093,6 @@
     ]
   },
   "EventContentRestartMainStageRequest": {
-    "fields": [
-      {
-        "csharp_type": "long",
-        "default": null,
-        "member_kind": "property",
-        "name": "EventContentId",
-        "required": false
-      },
-      {
-        "csharp_type": "long",
-        "default": null,
-        "member_kind": "property",
-        "name": "StageUniqueId",
-        "required": false
-      }
-    ]
-  },
-  "EventContentRetreatRequest": {
     "fields": [
       {
         "csharp_type": "long",
@@ -4323,24 +3239,6 @@
       }
     ]
   },
-  "EventContentStoryStageResultRequest": {
-    "fields": [
-      {
-        "csharp_type": "long",
-        "default": null,
-        "member_kind": "property",
-        "name": "EventContentId",
-        "required": false
-      },
-      {
-        "csharp_type": "long",
-        "default": null,
-        "member_kind": "property",
-        "name": "StageUniqueId",
-        "required": false
-      }
-    ]
-  },
   "EventContentSubEventLobbyRequest": {
     "fields": [
       {
@@ -4348,95 +3246,6 @@
         "default": null,
         "member_kind": "property",
         "name": "EventContentId",
-        "required": false
-      }
-    ]
-  },
-  "EventContentSubStageResultRequest": {
-    "fields": [
-      {
-        "csharp_type": "long",
-        "default": null,
-        "member_kind": "property",
-        "name": "EventContentId",
-        "required": false
-      },
-      {
-        "csharp_type": "bool",
-        "default": null,
-        "member_kind": "property",
-        "name": "PassCheckCharacter",
-        "required": false
-      },
-      {
-        "csharp_type": "BattleSummary",
-        "default": null,
-        "member_kind": "property",
-        "name": "Summary",
-        "required": false
-      }
-    ]
-  },
-  "EventContentTacticResultRequest": {
-    "fields": [
-      {
-        "csharp_type": "long",
-        "default": null,
-        "member_kind": "property",
-        "name": "EventContentId",
-        "required": false
-      },
-      {
-        "csharp_type": "SkillCardHand",
-        "default": null,
-        "member_kind": "property",
-        "name": "Hand",
-        "required": false
-      },
-      {
-        "csharp_type": "bool",
-        "default": null,
-        "member_kind": "property",
-        "name": "PassCheckCharacter",
-        "required": false
-      },
-      {
-        "csharp_type": "TacticSkipSummary",
-        "default": null,
-        "member_kind": "property",
-        "name": "SkipSummary",
-        "required": false
-      },
-      {
-        "csharp_type": "BattleSummary",
-        "default": null,
-        "member_kind": "property",
-        "name": "Summary",
-        "required": false
-      }
-    ]
-  },
-  "EventContentTreasureFlipRequest": {
-    "fields": [
-      {
-        "csharp_type": "List<EventContentTreasureCell>",
-        "default": null,
-        "member_kind": "property",
-        "name": "Cells",
-        "required": false
-      },
-      {
-        "csharp_type": "long",
-        "default": null,
-        "member_kind": "property",
-        "name": "EventContentId",
-        "required": false
-      },
-      {
-        "csharp_type": "int",
-        "default": null,
-        "member_kind": "property",
-        "name": "Round",
         "required": false
       }
     ]
@@ -4525,9 +3334,6 @@
     "fields": []
   },
   "FieldSceneChangedRequest": {
-    "fields": []
-  },
-  "FieldStageResultRequest": {
     "fields": []
   },
   "FieldSyncRequest": {
@@ -4998,35 +3804,6 @@
       }
     ]
   },
-  "MiniGameCCGBuyPerkRequest": {
-    "fields": [
-      {
-        "csharp_type": "long",
-        "default": null,
-        "member_kind": "property",
-        "name": "EventContentId",
-        "required": false
-      },
-      {
-        "csharp_type": "long",
-        "default": null,
-        "member_kind": "property",
-        "name": "PerkId",
-        "required": false
-      }
-    ]
-  },
-  "MiniGameCCGCompleteGameRequest": {
-    "fields": [
-      {
-        "csharp_type": "long",
-        "default": null,
-        "member_kind": "property",
-        "name": "EventContentId",
-        "required": false
-      }
-    ]
-  },
   "MiniGameCCGCreateGameRequest": {
     "fields": [
       {
@@ -5048,35 +3825,6 @@
         "default": null,
         "member_kind": "property",
         "name": "ForceDiscardSave",
-        "required": false
-      }
-    ]
-  },
-  "MiniGameCCGEndStageDualRequest": {
-    "fields": [
-      {
-        "csharp_type": "long",
-        "default": null,
-        "member_kind": "property",
-        "name": "EventContentId",
-        "required": false
-      },
-      {
-        "csharp_type": "MiniGameCCGSummary",
-        "default": null,
-        "member_kind": "property",
-        "name": "Summary",
-        "required": false
-      }
-    ]
-  },
-  "MiniGameCCGEndStageEventRequest": {
-    "fields": [
-      {
-        "csharp_type": "long",
-        "default": null,
-        "member_kind": "property",
-        "name": "EventContentId",
         "required": false
       }
     ]
@@ -5153,17 +3901,6 @@
       }
     ]
   },
-  "MiniGameCCGRerollRewardRequest": {
-    "fields": [
-      {
-        "csharp_type": "long",
-        "default": null,
-        "member_kind": "property",
-        "name": "EventContentId",
-        "required": false
-      }
-    ]
-  },
   "MiniGameCCGSelectCampActionRequest": {
     "fields": [
       {
@@ -5189,31 +3926,6 @@
       }
     ]
   },
-  "MiniGameCCGSelectRewardCardRequest": {
-    "fields": [
-      {
-        "csharp_type": "long",
-        "default": null,
-        "member_kind": "property",
-        "name": "EventContentId",
-        "required": false
-      },
-      {
-        "csharp_type": "int",
-        "default": null,
-        "member_kind": "property",
-        "name": "RewardIndex",
-        "required": false
-      },
-      {
-        "csharp_type": "int",
-        "default": null,
-        "member_kind": "property",
-        "name": "SelectedIndex",
-        "required": false
-      }
-    ]
-  },
   "MiniGameCCGSweepRequest": {
     "fields": [
       {
@@ -5228,91 +3940,6 @@
         "default": null,
         "member_kind": "property",
         "name": "SweepCount",
-        "required": false
-      }
-    ]
-  },
-  "MiniGameDefenseBattleResultRequest": {
-    "fields": [
-      {
-        "csharp_type": "int",
-        "default": null,
-        "member_kind": "property",
-        "name": "AliveCount",
-        "required": false
-      },
-      {
-        "csharp_type": "int",
-        "default": null,
-        "member_kind": "property",
-        "name": "BaseDamage",
-        "required": false
-      },
-      {
-        "csharp_type": "int",
-        "default": null,
-        "member_kind": "property",
-        "name": "ClearSecond",
-        "required": false
-      },
-      {
-        "csharp_type": "long",
-        "default": null,
-        "member_kind": "property",
-        "name": "EventContentId",
-        "required": false
-      },
-      {
-        "csharp_type": "int",
-        "default": null,
-        "member_kind": "property",
-        "name": "HeroCount",
-        "required": false
-      },
-      {
-        "csharp_type": "bool",
-        "default": null,
-        "member_kind": "property",
-        "name": "IsPlayerWin",
-        "required": false
-      },
-      {
-        "csharp_type": "int",
-        "default": null,
-        "member_kind": "property",
-        "name": "Multiplier",
-        "required": false
-      },
-      {
-        "csharp_type": "long",
-        "default": null,
-        "member_kind": "property",
-        "name": "StageId",
-        "required": false
-      },
-      {
-        "csharp_type": "BattleSummary",
-        "default": null,
-        "member_kind": "property",
-        "name": "Summary",
-        "required": false
-      }
-    ]
-  },
-  "MiniGameDefenseEnterBattleRequest": {
-    "fields": [
-      {
-        "csharp_type": "long",
-        "default": null,
-        "member_kind": "property",
-        "name": "EventContentId",
-        "required": false
-      },
-      {
-        "csharp_type": "long",
-        "default": null,
-        "member_kind": "property",
-        "name": "StageId",
         "required": false
       }
     ]
@@ -5480,31 +4107,6 @@
       }
     ]
   },
-  "MiniGameResultRequest": {
-    "fields": [
-      {
-        "csharp_type": "long",
-        "default": null,
-        "member_kind": "property",
-        "name": "EventContentId",
-        "required": false
-      },
-      {
-        "csharp_type": "MinigameRhythmSummary",
-        "default": null,
-        "member_kind": "property",
-        "name": "Summary",
-        "required": false
-      },
-      {
-        "csharp_type": "long",
-        "default": null,
-        "member_kind": "property",
-        "name": "UniqueId",
-        "required": false
-      }
-    ]
-  },
   "MiniGameRoadPuzzleClearStageRequest": {
     "fields": [
       {
@@ -5608,35 +4210,6 @@
         "default": null,
         "member_kind": "property",
         "name": "UniqueId",
-        "required": false
-      }
-    ]
-  },
-  "MiniGameShootingBattleEnterRequest": {
-    "fields": [
-      {
-        "csharp_type": "long",
-        "default": null,
-        "member_kind": "property",
-        "name": "EventContentId",
-        "required": false
-      },
-      {
-        "csharp_type": "long",
-        "default": null,
-        "member_kind": "property",
-        "name": "UniqueId",
-        "required": false
-      }
-    ]
-  },
-  "MiniGameShootingBattleResultRequest": {
-    "fields": [
-      {
-        "csharp_type": "MiniGameShootingSummary",
-        "default": null,
-        "member_kind": "property",
-        "name": "Summary",
         "required": false
       }
     ]
@@ -5953,77 +4526,6 @@
       }
     ]
   },
-  "MultiFloorRaidEndBattleRequest": {
-    "fields": [
-      {
-        "csharp_type": "List<ClanAssistUseInfo>",
-        "default": null,
-        "member_kind": "property",
-        "name": "AssistUseInfos",
-        "required": false
-      },
-      {
-        "csharp_type": "int",
-        "default": null,
-        "member_kind": "property",
-        "name": "Difficulty",
-        "required": false
-      },
-      {
-        "csharp_type": "int",
-        "default": null,
-        "member_kind": "property",
-        "name": "EchelonId",
-        "required": false
-      },
-      {
-        "csharp_type": "long",
-        "default": null,
-        "member_kind": "property",
-        "name": "SeasonId",
-        "required": false
-      },
-      {
-        "csharp_type": "BattleSummary",
-        "default": null,
-        "member_kind": "property",
-        "name": "Summary",
-        "required": false
-      }
-    ]
-  },
-  "MultiFloorRaidEnterBattleRequest": {
-    "fields": [
-      {
-        "csharp_type": "List<ClanAssistUseInfo>",
-        "default": null,
-        "member_kind": "property",
-        "name": "AssistUseInfos",
-        "required": false
-      },
-      {
-        "csharp_type": "int",
-        "default": null,
-        "member_kind": "property",
-        "name": "Difficulty",
-        "required": false
-      },
-      {
-        "csharp_type": "int",
-        "default": null,
-        "member_kind": "property",
-        "name": "EchelonId",
-        "required": false
-      },
-      {
-        "csharp_type": "long",
-        "default": null,
-        "member_kind": "property",
-        "name": "SeasonId",
-        "required": false
-      }
-    ]
-  },
   "MultiFloorRaidLoginRequest": {
     "fields": []
   },
@@ -6107,52 +4609,6 @@
         "required": false
       }
     ]
-  },
-  "PermanentRaidEndBattleRequest": {
-    "fields": [
-      {
-        "csharp_type": "ClanAssistUseInfo",
-        "default": null,
-        "member_kind": "property",
-        "name": "AssistUseInfo",
-        "required": false
-      },
-      {
-        "csharp_type": "int",
-        "default": null,
-        "member_kind": "property",
-        "name": "EchelonId",
-        "required": false
-      },
-      {
-        "csharp_type": "BattleSummary",
-        "default": null,
-        "member_kind": "property",
-        "name": "Summary",
-        "required": false
-      }
-    ]
-  },
-  "PermanentRaidEnterBattleRequest": {
-    "fields": [
-      {
-        "csharp_type": "ClanAssistUseInfo",
-        "default": null,
-        "member_kind": "property",
-        "name": "AssistUseInfo",
-        "required": false
-      },
-      {
-        "csharp_type": "long",
-        "default": null,
-        "member_kind": "property",
-        "name": "StageId",
-        "required": false
-      }
-    ]
-  },
-  "PermanentRaidGiveUpRequest": {
-    "fields": []
   },
   "PermanentRaidLobbyRequest": {
     "fields": []
@@ -6404,132 +4860,8 @@
   "RaidCompleteListRequest": {
     "fields": []
   },
-  "RaidCreateBattleRequest": {
-    "fields": [
-      {
-        "csharp_type": "ClanAssistUseInfo",
-        "default": null,
-        "member_kind": "property",
-        "name": "AssistUseInfo",
-        "required": false
-      },
-      {
-        "csharp_type": "Difficulty",
-        "default": null,
-        "member_kind": "property",
-        "name": "Difficulty",
-        "required": false
-      },
-      {
-        "csharp_type": "bool",
-        "default": null,
-        "member_kind": "property",
-        "name": "IsPractice",
-        "required": false
-      },
-      {
-        "csharp_type": "bool",
-        "default": null,
-        "member_kind": "property",
-        "name": "IsPublic",
-        "required": false
-      },
-      {
-        "csharp_type": "long",
-        "default": null,
-        "member_kind": "property",
-        "name": "RaidUniqueId",
-        "required": false
-      },
-      {
-        "csharp_type": "List<Int32>",
-        "default": null,
-        "member_kind": "property",
-        "name": "Tags",
-        "required": false
-      }
-    ]
-  },
   "RaidDetailRequest": {
     "fields": [
-      {
-        "csharp_type": "long",
-        "default": null,
-        "member_kind": "property",
-        "name": "RaidServerId",
-        "required": false
-      },
-      {
-        "csharp_type": "long",
-        "default": null,
-        "member_kind": "property",
-        "name": "RaidUniqueId",
-        "required": false
-      }
-    ]
-  },
-  "RaidEndBattleRequest": {
-    "fields": [
-      {
-        "csharp_type": "ClanAssistUseInfo",
-        "default": null,
-        "member_kind": "property",
-        "name": "AssistUseInfo",
-        "required": false
-      },
-      {
-        "csharp_type": "int",
-        "default": null,
-        "member_kind": "property",
-        "name": "EchelonId",
-        "required": false
-      },
-      {
-        "csharp_type": "bool",
-        "default": null,
-        "member_kind": "property",
-        "name": "IsPractice",
-        "required": false
-      },
-      {
-        "csharp_type": "long",
-        "default": null,
-        "member_kind": "property",
-        "name": "RaidServerId",
-        "required": false
-      },
-      {
-        "csharp_type": "BattleSummary",
-        "default": null,
-        "member_kind": "property",
-        "name": "Summary",
-        "required": false
-      }
-    ]
-  },
-  "RaidEnterBattleRequest": {
-    "fields": [
-      {
-        "csharp_type": "ClanAssistUseInfo",
-        "default": null,
-        "member_kind": "property",
-        "name": "AssistUseInfo",
-        "required": false
-      },
-      {
-        "csharp_type": "long",
-        "default": null,
-        "member_kind": "property",
-        "name": "EchelonId",
-        "required": false
-      },
-      {
-        "csharp_type": "bool",
-        "default": null,
-        "member_kind": "property",
-        "name": "IsPractice",
-        "required": false
-      },
       {
         "csharp_type": "long",
         "default": null,
@@ -6553,24 +4885,6 @@
         "default": null,
         "member_kind": "property",
         "name": "SearchAccountId",
-        "required": false
-      }
-    ]
-  },
-  "RaidGiveUpRequest": {
-    "fields": [
-      {
-        "csharp_type": "bool",
-        "default": null,
-        "member_kind": "property",
-        "name": "IsPractice",
-        "required": false
-      },
-      {
-        "csharp_type": "long",
-        "default": null,
-        "member_kind": "property",
-        "name": "RaidServerId",
         "required": false
       }
     ]
@@ -6764,24 +5078,6 @@
       }
     ]
   },
-  "ScenarioClearRequest": {
-    "fields": [
-      {
-        "csharp_type": "BattleSummary",
-        "default": null,
-        "member_kind": "property",
-        "name": "BattleSummary",
-        "required": false
-      },
-      {
-        "csharp_type": "long",
-        "default": null,
-        "member_kind": "property",
-        "name": "ScenarioId",
-        "required": false
-      }
-    ]
-  },
   "ScenarioConfirmMainStageRequest": {
     "fields": [
       {
@@ -6840,31 +5136,6 @@
         "default": null,
         "member_kind": "property",
         "name": "ScenarioId",
-        "required": false
-      }
-    ]
-  },
-  "ScenarioEnterTacticRequest": {
-    "fields": [
-      {
-        "csharp_type": "long",
-        "default": null,
-        "member_kind": "property",
-        "name": "EchelonIndex",
-        "required": false
-      },
-      {
-        "csharp_type": "long",
-        "default": null,
-        "member_kind": "property",
-        "name": "EnemyIndex",
-        "required": false
-      },
-      {
-        "csharp_type": "long",
-        "default": null,
-        "member_kind": "property",
-        "name": "StageUniqueId",
         "required": false
       }
     ]
@@ -6962,17 +5233,6 @@
       }
     ]
   },
-  "ScenarioRetreatRequest": {
-    "fields": [
-      {
-        "csharp_type": "long",
-        "default": null,
-        "member_kind": "property",
-        "name": "StageUniqueId",
-        "required": false
-      }
-    ]
-  },
   "ScenarioSelectRequest": {
     "fields": [
       {
@@ -7038,38 +5298,6 @@
       }
     ]
   },
-  "ScenarioTacticResultRequest": {
-    "fields": [
-      {
-        "csharp_type": "SkillCardHand",
-        "default": null,
-        "member_kind": "property",
-        "name": "Hand",
-        "required": false
-      },
-      {
-        "csharp_type": "bool",
-        "default": null,
-        "member_kind": "property",
-        "name": "PassCheckCharacter",
-        "required": false
-      },
-      {
-        "csharp_type": "TacticSkipSummary",
-        "default": null,
-        "member_kind": "property",
-        "name": "SkipSummary",
-        "required": false
-      },
-      {
-        "csharp_type": "BattleSummary",
-        "default": null,
-        "member_kind": "property",
-        "name": "Summary",
-        "required": false
-      }
-    ]
-  },
   "ScenarioWithdrawEchelonRequest": {
     "fields": [
       {
@@ -7088,112 +5316,11 @@
       }
     ]
   },
-  "SchoolDungeonBattleResultRequest": {
-    "fields": [
-      {
-        "csharp_type": "bool",
-        "default": null,
-        "member_kind": "property",
-        "name": "PassCheckCharacter",
-        "required": false
-      },
-      {
-        "csharp_type": "long",
-        "default": null,
-        "member_kind": "property",
-        "name": "StageUniqueId",
-        "required": false
-      },
-      {
-        "csharp_type": "BattleSummary",
-        "default": null,
-        "member_kind": "property",
-        "name": "Summary",
-        "required": false
-      }
-    ]
-  },
-  "SchoolDungeonEnterBattleRequest": {
-    "fields": [
-      {
-        "csharp_type": "long",
-        "default": null,
-        "member_kind": "property",
-        "name": "StageUniqueId",
-        "required": false
-      }
-    ]
-  },
   "SchoolDungeonListRequest": {
     "fields": []
   },
-  "SchoolDungeonRetreatRequest": {
-    "fields": [
-      {
-        "csharp_type": "long",
-        "default": null,
-        "member_kind": "property",
-        "name": "StageUniqueId",
-        "required": false
-      }
-    ]
-  },
   "ShopBeforehandGachaGetRequest": {
     "fields": []
-  },
-  "ShopBeforehandGachaPickRequest": {
-    "fields": [
-      {
-        "csharp_type": "long",
-        "default": null,
-        "member_kind": "property",
-        "name": "GoodsId",
-        "required": false
-      },
-      {
-        "csharp_type": "long",
-        "default": null,
-        "member_kind": "property",
-        "name": "ShopUniqueId",
-        "required": false
-      },
-      {
-        "csharp_type": "long",
-        "default": null,
-        "member_kind": "property",
-        "name": "TargetIndex",
-        "required": false
-      }
-    ]
-  },
-  "ShopBeforehandGachaRunRequest": {
-    "fields": [
-      {
-        "csharp_type": "long",
-        "default": null,
-        "member_kind": "property",
-        "name": "GoodsId",
-        "required": false
-      },
-      {
-        "csharp_type": "long",
-        "default": null,
-        "member_kind": "property",
-        "name": "ShopUniqueId",
-        "required": false
-      }
-    ]
-  },
-  "ShopBeforehandGachaSaveRequest": {
-    "fields": [
-      {
-        "csharp_type": "long",
-        "default": null,
-        "member_kind": "property",
-        "name": "TargetIndex",
-        "required": false
-      }
-    ]
   },
   "ShopBuyAPRequest": {
     "fields": [
@@ -7234,45 +5361,6 @@
         "default": null,
         "member_kind": "property",
         "name": "PurchaseCount",
-        "required": false
-      },
-      {
-        "csharp_type": "long",
-        "default": null,
-        "member_kind": "property",
-        "name": "ShopUniqueId",
-        "required": false
-      }
-    ]
-  },
-  "ShopBuyGacha2Request": {
-    "fields": []
-  },
-  "ShopBuyGacha3Request": {
-    "fields": [
-      {
-        "csharp_type": "ParcelCost",
-        "default": null,
-        "member_kind": "property",
-        "name": "Cost",
-        "required": false
-      },
-      {
-        "csharp_type": "long",
-        "default": null,
-        "member_kind": "property",
-        "name": "FreeRecruitId",
-        "required": false
-      }
-    ]
-  },
-  "ShopBuyGachaRequest": {
-    "fields": [
-      {
-        "csharp_type": "long",
-        "default": null,
-        "member_kind": "property",
-        "name": "GoodsId",
         "required": false
       },
       {
@@ -7341,24 +5429,6 @@
       }
     ]
   },
-  "ShopPickupSelectionGachaBuyRequest": {
-    "fields": [
-      {
-        "csharp_type": "ParcelCost",
-        "default": null,
-        "member_kind": "property",
-        "name": "Cost",
-        "required": false
-      },
-      {
-        "csharp_type": "long",
-        "default": null,
-        "member_kind": "property",
-        "name": "FreeRecruitId",
-        "required": false
-      }
-    ]
-  },
   "ShopPickupSelectionGachaGetRequest": {
     "fields": [
       {
@@ -7366,24 +5436,6 @@
         "default": null,
         "member_kind": "property",
         "name": "ShopRecruitId",
-        "required": false
-      }
-    ]
-  },
-  "ShopPickupSelectionGachaSetRequest": {
-    "fields": [
-      {
-        "csharp_type": "Dictionary<Int64, Int64>",
-        "default": null,
-        "member_kind": "property",
-        "name": "PickupCharacterSelection",
-        "required": false
-      },
-      {
-        "csharp_type": "long",
-        "default": null,
-        "member_kind": "property",
-        "name": "ShopRecruitID",
         "required": false
       }
     ]
@@ -7455,78 +5507,6 @@
       }
     ]
   },
-  "TimeAttackDungeonCreateBattleRequest": {
-    "fields": [
-      {
-        "csharp_type": "bool",
-        "default": null,
-        "member_kind": "property",
-        "name": "IsPractice",
-        "required": false
-      }
-    ]
-  },
-  "TimeAttackDungeonEndBattleRequest": {
-    "fields": [
-      {
-        "csharp_type": "ClanAssistUseInfo",
-        "default": null,
-        "member_kind": "property",
-        "name": "AssistUseInfo",
-        "required": false
-      },
-      {
-        "csharp_type": "int",
-        "default": null,
-        "member_kind": "property",
-        "name": "EchelonId",
-        "required": false
-      },
-      {
-        "csharp_type": "long",
-        "default": null,
-        "member_kind": "property",
-        "name": "RoomId",
-        "required": false
-      },
-      {
-        "csharp_type": "BattleSummary",
-        "default": null,
-        "member_kind": "property",
-        "name": "Summary",
-        "required": false
-      }
-    ]
-  },
-  "TimeAttackDungeonEnterBattleRequest": {
-    "fields": [
-      {
-        "csharp_type": "ClanAssistUseInfo",
-        "default": null,
-        "member_kind": "property",
-        "name": "AssistUseInfo",
-        "required": false
-      },
-      {
-        "csharp_type": "long",
-        "default": null,
-        "member_kind": "property",
-        "name": "RoomId",
-        "required": false
-      }
-    ]
-  },
-  "TimeAttackDungeonGiveUpRequest": {
-    "fields": [
-      {
-        "csharp_type": "long",
-        "default": null,
-        "member_kind": "property",
-        "name": "RoomId",
-        "required": false
-      }
-    ]
-  },
   "TimeAttackDungeonLobbyRequest": {
     "fields": []
   },
@@ -7558,129 +5538,8 @@
       }
     ]
   },
-  "WeekDungeonBattleResultRequest": {
-    "fields": [
-      {
-        "csharp_type": "bool",
-        "default": null,
-        "member_kind": "property",
-        "name": "PassCheckCharacter",
-        "required": false
-      },
-      {
-        "csharp_type": "long",
-        "default": null,
-        "member_kind": "property",
-        "name": "StageUniqueId",
-        "required": false
-      },
-      {
-        "csharp_type": "BattleSummary",
-        "default": null,
-        "member_kind": "property",
-        "name": "Summary",
-        "required": false
-      }
-    ]
-  },
-  "WeekDungeonEnterBattleRequest": {
-    "fields": [
-      {
-        "csharp_type": "long",
-        "default": null,
-        "member_kind": "property",
-        "name": "EchelonIndex",
-        "required": false
-      },
-      {
-        "csharp_type": "long",
-        "default": null,
-        "member_kind": "property",
-        "name": "StageUniqueId",
-        "required": false
-      }
-    ]
-  },
   "WeekDungeonListRequest": {
     "fields": []
-  },
-  "WeekDungeonRetreatRequest": {
-    "fields": [
-      {
-        "csharp_type": "long",
-        "default": null,
-        "member_kind": "property",
-        "name": "StageUniqueId",
-        "required": false
-      }
-    ]
-  },
-  "WorldRaidBattleResultRequest": {
-    "fields": [
-      {
-        "csharp_type": "List<ClanAssistUseInfo>",
-        "default": null,
-        "member_kind": "property",
-        "name": "AssistUseInfos",
-        "required": false
-      },
-      {
-        "csharp_type": "long",
-        "default": null,
-        "member_kind": "property",
-        "name": "EchelonId",
-        "required": false
-      },
-      {
-        "csharp_type": "long",
-        "default": null,
-        "member_kind": "property",
-        "name": "GroupId",
-        "required": false
-      },
-      {
-        "csharp_type": "bool",
-        "default": null,
-        "member_kind": "property",
-        "name": "IsPractice",
-        "required": false
-      },
-      {
-        "csharp_type": "bool",
-        "default": null,
-        "member_kind": "property",
-        "name": "IsTicket",
-        "required": false
-      },
-      {
-        "csharp_type": "long",
-        "default": null,
-        "member_kind": "property",
-        "name": "PhaseId",
-        "required": false
-      },
-      {
-        "csharp_type": "long",
-        "default": null,
-        "member_kind": "property",
-        "name": "SeasonId",
-        "required": false
-      },
-      {
-        "csharp_type": "BattleSummary",
-        "default": null,
-        "member_kind": "property",
-        "name": "Summary",
-        "required": false
-      },
-      {
-        "csharp_type": "long",
-        "default": null,
-        "member_kind": "property",
-        "name": "UniqueId",
-        "required": false
-      }
-    ]
   },
   "WorldRaidBossListRequest": {
     "fields": [
@@ -7703,66 +5562,6 @@
         "default": null,
         "member_kind": "property",
         "name": "SeasonId",
-        "required": false
-      }
-    ]
-  },
-  "WorldRaidEnterBattleRequest": {
-    "fields": [
-      {
-        "csharp_type": "List<ClanAssistUseInfo>",
-        "default": null,
-        "member_kind": "property",
-        "name": "AssistUseInfos",
-        "required": false
-      },
-      {
-        "csharp_type": "long",
-        "default": null,
-        "member_kind": "property",
-        "name": "EchelonId",
-        "required": false
-      },
-      {
-        "csharp_type": "long",
-        "default": null,
-        "member_kind": "property",
-        "name": "GroupId",
-        "required": false
-      },
-      {
-        "csharp_type": "bool",
-        "default": null,
-        "member_kind": "property",
-        "name": "IsPractice",
-        "required": false
-      },
-      {
-        "csharp_type": "bool",
-        "default": null,
-        "member_kind": "property",
-        "name": "IsTicket",
-        "required": false
-      },
-      {
-        "csharp_type": "long",
-        "default": null,
-        "member_kind": "property",
-        "name": "PhaseId",
-        "required": false
-      },
-      {
-        "csharp_type": "long",
-        "default": null,
-        "member_kind": "property",
-        "name": "SeasonId",
-        "required": false
-      },
-      {
-        "csharp_type": "long",
-        "default": null,
-        "member_kind": "property",
-        "name": "UniqueId",
         "required": false
       }
     ]

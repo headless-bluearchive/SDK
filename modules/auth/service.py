@@ -17,6 +17,7 @@ class LoginOptions:
     host_url: str = ""
     api_url: str = ""
     android_mobile_profile_path: Path = DEFAULT_ANDROID_MOBILE_PROFILE_PATH
+    android_mobile_profile: Any = None
     nx_id: str = ""
     nx_password: str = ""
     nx_preflight_nexon_sn: bool = True
@@ -32,6 +33,7 @@ class LoginOptions:
             "host_url": self.host_url,
             "api_url": self.api_url,
             "android_mobile_profile_path": self.android_mobile_profile_path,
+            "android_mobile_profile": self.android_mobile_profile,
             "nx_id": self.nx_id,
             "nx_password": self.nx_password,
             "nx_preflight_nexon_sn": self.nx_preflight_nexon_sn,

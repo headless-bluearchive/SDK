@@ -11,13 +11,30 @@ env/
 build/
 dist/
 *.egg-info/
+tests/
+test_*.py
+*_live.py
 
 # Runtime outputs and local challenge artifacts
 analysis_reports/
 logs/
 tmp/
+temp/
 external/
+runtime/
+.runtime/
 BlueArchive_core_packet/
+core/data/students_cn.json
+core/data/students_cn.json.tmp
+core/data/official_data_manifest.json
+official_data/
+*.db
+*.sqlite
+*.sqlite3
+*.zip
+*.download
+*.download.tmp
+*.tmp
 *.log
 hs_err_pid*.log
 
@@ -28,9 +45,16 @@ hs_err_pid*.log
 *secret*.json
 selected_web_token.json
 toy_login_summary.json
+session*.json
+profile*.json
+account*.json
+credential*.json
 
 # IDE / OS
 .idea/
 .vscode/
 Thumbs.db
 .DS_Store
+/core/data/academy_favor_schedule.json
+/core/data/academy_messanger.json
+/test_momotalk_live.py

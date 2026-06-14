@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import binascii
+import base64
 import json
 import random
 from dataclasses import dataclass
@@ -10,6 +11,7 @@ from urllib.parse import urljoin
 
 from config.game import DEFAULTS
 from core.crypto import decode_bytes, decrypt_response_base64
+from core.error import SessionRestoreError
 from core.packet import PacketMeta, build_packet_detailed
 from core.protocol import protocol_value, request_protocol
 from utils.proxy import normalize_proxy_url, requests_proxy_map
@@ -47,6 +49,8 @@ class BAReplayClient:
         server_time_ticks: int | None = None,
         signed_key: bytes | str | None = None,
         signed_iv: bytes | str | None = None,
+        sqlcipher_key: bytes | str | None = None,
+        sqlcipher_license: str | None = None,
         account_check_state: Mapping[str, Any] | None = None,
         timeout: float = 20.0,
         byte_encoding: str = "auto",
@@ -68,6 +72,8 @@ class BAReplayClient:
         self.server_time_ticks = server_time_ticks
         self.signed_key = decode_bytes(signed_key, encoding=byte_encoding)
         self.signed_iv = decode_bytes(signed_iv, encoding=byte_encoding)
+        self.sqlcipher_key = decode_bytes(sqlcipher_key, encoding=byte_encoding)
+        self.sqlcipher_license = str(sqlcipher_license or "")
         self.account_check_state = dict(account_check_state) if account_check_state else None
         self.timeout = timeout
         self.headers = dict(headers or {})
@@ -75,7 +81,79 @@ class BAReplayClient:
         self.proxies = dict(proxies) if proxies is not None else requests_proxy_map(self.proxy)
         self._http_session = None
         self._async_http_client = None
+        self._restored_cookies: dict[str, str] = {}
         self.last_exchange: dict[str, Any] | None = None
+
+    @classmethod
+    def from_session(
+        cls,
+        session: Mapping[str, Any],
+        *,
+        timeout: float = 20.0,
+        proxy: str | None = None,
+        headers: Mapping[str, str] | None = None,
+    ) -> "BAReplayClient":
+        if not isinstance(session, Mapping):
+            raise SessionRestoreError("session payload must be a mapping")
+        host_url = _session_text(session, "host_url", "gateway_url")
+        api_url = _session_text(session, "api_url")
+        if not host_url:
+            raise SessionRestoreError("session payload is missing host_url")
+        if not api_url:
+            raise SessionRestoreError("session payload is missing api_url")
+
+        client = cls(
+            host_url=host_url,
+            api_url=api_url,
+            session_api_url=_session_text(session, "session_api_url"),
+            bundle_version=_session_text(session, "bundle_version") or None,
+            client_version=_session_text(session, "client_version"),
+            aes_key=_session_bytes(session, "aes_key"),
+            aes_iv=_session_bytes(session, "aes_iv"),
+            aes_encrypted_key=_session_bytes(session, "aes_encrypted_key"),
+            aes_encrypted_iv=_session_bytes(session, "aes_encrypted_iv"),
+            signed_key=_session_bytes(session, "signed_key"),
+            signed_iv=_session_bytes(session, "signed_iv"),
+            sqlcipher_key=_session_sqlcipher_key(session),
+            sqlcipher_license=_session_sqlcipher_license(session),
+            session_key=_session_mapping(session, "session_key", "SessionKey"),
+            account_id=_session_int(session, "account_id", "AccountId"),
+            server_time_ticks=_session_int(session, "server_time_ticks", "ServerTimeTicks"),
+            account_check_state=_session_mapping(session, "account_check_state"),
+            timeout=timeout,
+            headers=headers,
+            proxy=proxy,
+        )
+        client._restored_cookies = _session_cookies(session)
+        return client
+
+    def export_session(self) -> dict[str, Any]:
+        return {
+            "version": 1,
+            "host_url": self.host_url,
+            "api_url": self.api_host_url,
+            "session_api_url": self.session_api_url,
+            "gateway_url": self.gateway_url,
+            "bundle_version": self.bundle_version,
+            "client_version": self.client_version,
+            "account_id": self.account_id,
+            "server_time_ticks": self.server_time_ticks,
+            "session_key": dict(self.session_key) if self.session_key else None,
+            "aes_key": _b64(self.aes_key),
+            "aes_iv": _b64(self.aes_iv),
+            "aes_encrypted_key": _b64(self.aes_encrypted_key),
+            "aes_encrypted_iv": _b64(self.aes_encrypted_iv),
+            "signed_key": _b64(self.signed_key),
+            "signed_iv": _b64(self.signed_iv),
+            "sqlcipher": {
+                "key": _b64(self.sqlcipher_key),
+                "license": self.sqlcipher_license,
+            }
+            if self.sqlcipher_key and self.sqlcipher_license
+            else None,
+            "account_check_state": self.account_check_state,
+            "cookies": self._session_cookies(),
+        }
 
     def set_crypto(
         self,
@@ -94,6 +172,18 @@ class BAReplayClient:
             self.aes_encrypted_key = decode_bytes(aes_encrypted_key, encoding=byte_encoding)
         if aes_encrypted_iv is not None:
             self.aes_encrypted_iv = decode_bytes(aes_encrypted_iv, encoding=byte_encoding)
+
+    def set_sqlcipher(
+        self,
+        *,
+        sqlcipher_key: bytes | str | None = None,
+        sqlcipher_license: str | None = None,
+        byte_encoding: str = "base64",
+    ) -> None:
+        if sqlcipher_key is not None:
+            self.sqlcipher_key = decode_bytes(sqlcipher_key, encoding=byte_encoding)
+        if sqlcipher_license is not None:
+            self.sqlcipher_license = str(sqlcipher_license)
 
     def build(
         self,
@@ -271,7 +361,16 @@ class BAReplayClient:
 
         if self._http_session is None:
             self._http_session = requests.Session()
+            if self._restored_cookies:
+                self._http_session.cookies.update(self._restored_cookies)
         return self._http_session
+
+    def _session_cookies(self) -> dict[str, str]:
+        if self._http_session is None:
+            return {}
+        import requests
+
+        return requests.utils.dict_from_cookiejar(getattr(self._http_session, "cookies", {}))
 
     def _get_async_http_client(self):
         import httpx
@@ -280,6 +379,7 @@ class BAReplayClient:
             self._async_http_client = httpx.AsyncClient(
                 timeout=self.timeout,
                 proxy=self.proxy or None,
+                cookies=self._restored_cookies or None,
                 follow_redirects=True,
             )
         return self._async_http_client
@@ -339,8 +439,8 @@ class BAReplayClient:
             "request_url": str(getattr(request, "url", "")),
             "request_headers": dict(getattr(request, "headers", {}) or {}),
             "response_headers": dict(getattr(response, "headers", {}) or {}),
-            "response_cookies": dict(getattr(response, "cookies", {}) or {}),
-            "session_cookies": dict(getattr(client, "cookies", {}) or {}),
+            "response_cookies": _cookie_name_summary(getattr(response, "cookies", None)),
+            "session_cookies": _cookie_name_summary(getattr(client, "cookies", None)),
             "redirect_history": history,
         }
 
@@ -419,6 +519,114 @@ def _parse_gateway_wrapper(text: str) -> tuple[str | int | None, str] | None:
     if isinstance(obj, dict) and "packet" in obj:
         return obj.get("protocol"), str(obj.get("packet", ""))
     return None
+
+
+def _b64(value: bytes | bytearray | memoryview | None) -> str:
+    if not value:
+        return ""
+    return base64.b64encode(bytes(value)).decode("ascii")
+
+
+def _session_text(session: Mapping[str, Any], *keys: str) -> str:
+    for key in keys:
+        value = session.get(key)
+        if value not in (None, ""):
+            return str(value)
+    return ""
+
+
+def _session_int(session: Mapping[str, Any], *keys: str) -> int | None:
+    value = _session_text(session, *keys)
+    if not value:
+        return None
+    try:
+        return int(value)
+    except (TypeError, ValueError) as exc:
+        raise SessionRestoreError("session payload contains an invalid integer field") from exc
+
+
+def _session_mapping(session: Mapping[str, Any], *keys: str) -> dict[str, Any] | None:
+    for key in keys:
+        value = session.get(key)
+        if isinstance(value, Mapping):
+            return dict(value)
+    return None
+
+
+def _session_bytes(session: Mapping[str, Any], key: str) -> bytes:
+    value = session.get(key)
+    if value in (None, ""):
+        return b""
+    if isinstance(value, (bytes, bytearray, memoryview)):
+        return bytes(value)
+    text = str(value)
+    try:
+        return decode_bytes(text, encoding="base64")
+    except Exception:
+        try:
+            return decode_bytes(text, encoding="auto")
+        except Exception as exc:
+            raise SessionRestoreError("session payload contains invalid key material") from exc
+
+
+def _session_sqlcipher_key(session: Mapping[str, Any]) -> bytes:
+    sqlcipher = session.get("sqlcipher")
+    if isinstance(sqlcipher, Mapping):
+        for key in ("key", "sqlcipher_key", "SqlCipherKey"):
+            value = sqlcipher.get(key)
+            if value not in (None, ""):
+                return _decode_session_bytes(value)
+    for key in ("sqlcipher_key", "SqlCipherKey"):
+        value = session.get(key)
+        if value not in (None, ""):
+            return _decode_session_bytes(value)
+    return b""
+
+
+def _session_sqlcipher_license(session: Mapping[str, Any]) -> str:
+    sqlcipher = session.get("sqlcipher")
+    if isinstance(sqlcipher, Mapping):
+        for key in ("license", "sqlcipher_license", "SqlCipherLicense"):
+            value = sqlcipher.get(key)
+            if value not in (None, ""):
+                return str(value)
+    for key in ("sqlcipher_license", "SqlCipherLicense"):
+        value = session.get(key)
+        if value not in (None, ""):
+            return str(value)
+    return ""
+
+
+def _decode_session_bytes(value: Any) -> bytes:
+    if isinstance(value, (bytes, bytearray, memoryview)):
+        return bytes(value)
+    text = str(value)
+    try:
+        return decode_bytes(text, encoding="base64")
+    except Exception:
+        try:
+            return decode_bytes(text, encoding="auto")
+        except Exception as exc:
+            raise SessionRestoreError("session payload contains invalid key material") from exc
+
+
+def _session_cookies(session: Mapping[str, Any]) -> dict[str, str]:
+    cookies = session.get("cookies")
+    if not isinstance(cookies, Mapping):
+        return {}
+    return {str(key): str(value) for key, value in cookies.items() if value not in (None, "")}
+
+
+def _cookie_name_summary(cookies: Any) -> dict[str, str]:
+    if cookies is None:
+        return {}
+    jar = getattr(cookies, "jar", None)
+    if jar is not None:
+        return {str(cookie.name): "<present>" for cookie in jar}
+    try:
+        return {str(key): "<present>" for key in cookies.keys()}
+    except Exception:
+        return {}
 
 
 def build_besthttp_multipart(

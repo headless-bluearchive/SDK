@@ -16,6 +16,8 @@ dependencies = [
     "cryptography>=42",
     "pycryptodome>=3.20",
     "randomandroidphone==0.10",
+    "tqdm>=4.66",
+    "flatbuffers>=25.2.10",
 ]
 
 [project.optional-dependencies]

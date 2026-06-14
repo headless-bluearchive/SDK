@@ -173,6 +173,18 @@ def decrypt_response_base64(aes_key: bytes | None, aes_iv: bytes | None, encrypt
     return aes_cbc_pkcs7_decrypt(ciphertext, aes_key, aes_iv).decode("utf-8")
 
 
+def decode_sqlcipher_material(
+    encrypted_sqlcipher_key: str,
+    encrypted_sqlcipher_license: str,
+    *,
+    aes_key: bytes,
+    aes_iv: bytes,
+) -> tuple[bytes, str]:
+    sql_key_b64 = decrypt_response_base64(aes_key, aes_iv, encrypted_sqlcipher_key)
+    license_code = decrypt_response_base64(aes_key, aes_iv, encrypted_sqlcipher_license)
+    return base64.b64decode(sql_key_b64), license_code
+
+
 def encrypt_response_json(aes_key: bytes, aes_iv: bytes, plaintext_json: str | bytes) -> str:
     if isinstance(plaintext_json, str):
         plaintext_json = plaintext_json.encode("utf-8")

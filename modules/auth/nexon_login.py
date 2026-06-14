@@ -12,7 +12,7 @@ from urllib.request import Request, urlopen
 
 from config.game import DEFAULTS
 from core.client import BAReplayClient, BuiltRequest, decode_gateway_response
-from core.crypto import account_check_nexon_key_iv_fields, generated_key_iv_fields
+from core.crypto import account_check_nexon_key_iv_fields, decode_sqlcipher_material, generated_key_iv_fields
 from core.error import AuthenticationError, ConfigurationError, GatewayError, ProofTokenError
 from modules.auth.login import LoginReplay
 from modules.auth.proof_token import proof_token_search_span, solve_proof_token
@@ -425,18 +425,19 @@ def run_main_game_login(
     omit_account_auth_imei: bool = False,
     enter_ticket: str = "",
     account_check_key_mode: str = "rsa-oaep-sha1",
-    account_check_url_mode: str = "api",
+    account_check_url_mode: str = "wiki",
     account_check_field_mode: str = "android-minimal",
     queue_subchain: bool = False,
     queue_subchain_url_mode: str = "gateway",
     queue_carry_crypto_forward: bool = False,
+    fetch_sqlcipher_material: bool = True,
     session_bootstrap_queue: bool = True,
     session_bootstrap_battle_pass_id: int | None = None,
     session_bootstrap_account_link_reward: bool = False,
     session_bootstrap_continue_on_error: bool = False,
     skip_proof_token: bool = False,
     proof_token_stage: str = "after-account-check",
-    proof_token_url_mode: str = "api",
+    proof_token_url_mode: str = "wiki",
     proof_token_max_attempts: int | None = None,
     debug_logger: Callable[[str], None] | None = None,
 ) -> dict[str, Any]:
@@ -452,6 +453,7 @@ def run_main_game_login(
         "queue_subchain": queue_subchain,
         "queue_subchain_url_mode": queue_subchain_url_mode,
         "queue_carry_crypto_forward": queue_carry_crypto_forward,
+        "fetch_sqlcipher_material": fetch_sqlcipher_material,
         "session_bootstrap_queue": session_bootstrap_queue,
         "session_bootstrap_battle_pass_id": session_bootstrap_battle_pass_id,
         "session_bootstrap_account_link_reward": session_bootstrap_account_link_reward,
@@ -462,7 +464,7 @@ def run_main_game_login(
         "proof_token_max_attempts": proof_token_max_attempts,
         "session_sequence_model": [
             "Queuing_GetTicket(gateway)",
-            "Account_CheckNexon(api)",
+            "Account_CheckNexon(wiki)",
             "Account_CheckNexon response SessionKey is injected into later RequestPacket hashes",
             "ProofToken_RequestQuestion/Submit(session_api) when enabled",
             "Session bootstrap queue(session_api): NetworkTimeSync, AcademyGetInfo, AccountLoginSyncNoPart, ItemList, ContentSaveGet, ShopBeforehandGachaGet, optional BattlePassGetInfo/AccountLinkReward",
@@ -536,6 +538,17 @@ def run_main_game_login(
         )
         resolved_enter_ticket = queue_stage.get("enter_ticket") or resolved_enter_ticket
         resolved_waiting_ticket = queue_stage.get("waiting_ticket") or resolved_waiting_ticket
+    elif fetch_sqlcipher_material:
+        fetch_sqlcipher_material_from_queue(
+            client,
+            login,
+            flow=flow,
+            body_mode=body_mode,
+            client_version=client_version,
+            os_type=os_type,
+            url_mode=queue_subchain_url_mode,
+            debug_logger=debug_logger,
+        )
 
     generated_fields, raw_key, raw_iv = account_check_nexon_key_iv_fields(mode=account_check_key_mode)
     client.set_crypto(aes_key=raw_key, aes_iv=raw_iv)
@@ -794,7 +807,7 @@ def run_queue_subchain(
     url_mode: str,
     carry_crypto_forward: bool,
     debug_logger: Callable[[str], None] | None = None,
-) -> dict[str, str]:
+) -> dict[str, Any]:
     saved_aes_key = bytes(client.aes_key)
     saved_aes_iv = bytes(client.aes_iv)
     saved_aes_encrypted_key = bytes(client.aes_encrypted_key)
@@ -827,7 +840,14 @@ def run_queue_subchain(
             flow["status"] = "queue_get_crypto_keys_error"
             flow["error_response"] = crypto_response.get("parsed") or crypto_response.get("payload")
             raise GatewayError("Queuing_GetCryptoKeys returned Error")
-        _apply_crypto_material_from_response(client, crypto_response.get("parsed"), aes_key=queue_raw_key, aes_iv=queue_raw_iv)
+        crypto_state = _apply_crypto_material_from_response(
+            client,
+            crypto_response.get("parsed"),
+            aes_key=queue_raw_key,
+            aes_iv=queue_raw_iv,
+        )
+        if crypto_state.get("sqlcipher"):
+            queue_state["sqlcipher"] = crypto_state["sqlcipher"]
         _log(debug_logger, "gateway.ok Queuing_GetCryptoKeys")
 
         auth_fields = build_queuing_get_auth_ticket_fields(
@@ -853,7 +873,14 @@ def run_queue_subchain(
             flow["status"] = "queue_get_auth_ticket_error"
             flow["error_response"] = auth_response.get("parsed") or auth_response.get("payload")
             raise GatewayError("Queuing_GetAuthTicket returned Error")
-        _apply_crypto_material_from_response(client, auth_response.get("parsed"), aes_key=queue_raw_key, aes_iv=queue_raw_iv)
+        auth_crypto_state = _apply_crypto_material_from_response(
+            client,
+            auth_response.get("parsed"),
+            aes_key=queue_raw_key,
+            aes_iv=queue_raw_iv,
+        )
+        if auth_crypto_state.get("sqlcipher"):
+            queue_state["sqlcipher"] = auth_crypto_state["sqlcipher"]
         _log(debug_logger, "gateway.ok Queuing_GetAuthTicket")
 
         auth_ticket = _as_str(_find_first(auth_response.get("parsed"), "AuthTicket", "authTicket"))
@@ -904,6 +931,78 @@ def run_queue_subchain(
                 aes_encrypted_key=saved_aes_encrypted_key,
                 aes_encrypted_iv=saved_aes_encrypted_iv,
             )
+
+
+def fetch_sqlcipher_material_from_queue(
+    client: BAReplayClient,
+    login: LoginReplay,
+    *,
+    flow: dict[str, Any],
+    body_mode: str,
+    client_version: str,
+    os_type: str,
+    url_mode: str,
+    debug_logger: Callable[[str], None] | None = None,
+) -> dict[str, Any]:
+    fields, raw_key, raw_iv = generated_key_iv_fields()
+    state: dict[str, Any] = {"available": False, "source": "", "responses": []}
+
+    def request_crypto(name: str, built: BuiltRequest) -> dict[str, Any]:
+        record = build_request_record(name, built)
+        record["url_mode"] = url_mode
+        flow["steps"].append(record)
+        _log(debug_logger, f"gateway.post {record['protocol_name']}")
+        response = post_built_request_to_url(
+            client,
+            built,
+            url=_queue_subchain_url(client, url_mode),
+            body_mode=body_mode,
+            response_aes_key=raw_key,
+            response_aes_iv=raw_iv,
+        )
+        parsed = response.get("parsed")
+        crypto_state = _apply_crypto_material_from_response(
+            client,
+            parsed,
+            aes_key=raw_key,
+            aes_iv=raw_iv,
+        )
+        response_state = {
+            "name": name,
+            "protocol": record.get("protocol_name"),
+            "parsed": parsed is not None,
+            "http_status": (response.get("http") or {}).get("status_code")
+            if isinstance(response.get("http"), Mapping)
+            else None,
+            "raw_len": len(response.get("raw") or ""),
+            "payload_len": len(response.get("payload") or ""),
+            "decode_error": response.get("decode_error"),
+            "sqlcipher": crypto_state.get("sqlcipher"),
+        }
+        state["responses"].append(response_state)
+        if crypto_state.get("sqlcipher"):
+            state["available"] = True
+            state["source"] = record.get("protocol_name") or name
+            state["sqlcipher"] = crypto_state["sqlcipher"]
+        _log(debug_logger, f"gateway.ok {record['protocol_name']} sqlcipher={bool(crypto_state.get('sqlcipher'))}")
+        return response
+
+    try:
+        request_crypto("01a_queuing_get_crypto_keys", login.queuing_get_crypto_keys(fields))
+        if not state["available"]:
+            auth_fields = build_queuing_get_auth_ticket_fields(
+                client_generated_key=fields["ClientGeneratedKey"],
+                client_generated_iv=fields["ClientGeneratedIV"],
+                client_version=client_version,
+                os_type=os_type,
+            )
+            request_crypto("01b_queuing_get_auth_ticket_crypto", login.queuing_get_auth_ticket(auth_fields))
+    except Exception as exc:
+        state["error"] = {"type": type(exc).__name__, "message": str(exc)}
+        _log(debug_logger, f"gateway.sqlcipher_material error={type(exc).__name__}")
+
+    flow["sqlcipher_material"] = state
+    return state
 
 
 def run_proof_token_stage(
@@ -1020,29 +1119,29 @@ def post_built_request_to_url(
 
 def _account_check_url(client: BAReplayClient, mode: str) -> str:
     normalized = mode.strip().lower()
-    if normalized == "api":
+    if normalized == "wiki":
         return client.api_url
     if normalized == "gateway":
         return client.gateway_url
-    raise ConfigurationError("account_check_url_mode must be 'api' or 'gateway'")
+    raise ConfigurationError("account_check_url_mode must be 'wiki' or 'gateway'")
 
 
 def _proof_token_url(client: BAReplayClient, mode: str) -> str:
     normalized = mode.strip().lower()
-    if normalized == "api":
+    if normalized == "wiki":
         return client.session_api_url
     if normalized == "gateway":
         return client.gateway_url
-    raise ConfigurationError("proof_token_url_mode must be 'api' or 'gateway'")
+    raise ConfigurationError("proof_token_url_mode must be 'wiki' or 'gateway'")
 
 
 def _queue_subchain_url(client: BAReplayClient, mode: str) -> str:
     normalized = mode.strip().lower()
     if normalized == "gateway":
         return client.gateway_url
-    if normalized == "api":
+    if normalized == "wiki":
         return client.api_url
-    raise ConfigurationError("queue_subchain_url_mode must be 'api' or 'gateway'")
+    raise ConfigurationError("queue_subchain_url_mode must be 'wiki' or 'gateway'")
 
 
 def _normalize_proof_token_stage(stage: str) -> str:
@@ -1229,19 +1328,36 @@ def _apply_crypto_material_from_response(
     *,
     aes_key: bytes,
     aes_iv: bytes,
-) -> bool:
+) -> dict[str, Any]:
+    state: dict[str, Any] = {"gateway": False, "sqlcipher": None}
     encrypted_key = _as_str(_find_first(parsed, "EncryptedKey", "encryptedKey"))
     encrypted_iv = _as_str(_find_first(parsed, "EncryptedIV", "encryptedIV"))
-    if not encrypted_key or not encrypted_iv:
-        return False
-    client.set_crypto(
-        aes_key=aes_key,
-        aes_iv=aes_iv,
-        aes_encrypted_key=encrypted_key,
-        aes_encrypted_iv=encrypted_iv,
-        byte_encoding="auto",
-    )
-    return True
+    if encrypted_key and encrypted_iv:
+        client.set_crypto(
+            aes_key=aes_key,
+            aes_iv=aes_iv,
+            aes_encrypted_key=encrypted_key,
+            aes_encrypted_iv=encrypted_iv,
+            byte_encoding="auto",
+        )
+        state["gateway"] = True
+
+    encrypted_sql_key = _as_str(_find_first(parsed, "EncryptedSqlCipherKey", "encryptedSqlCipherKey"))
+    encrypted_sql_license = _as_str(_find_first(parsed, "EncryptedSqlCipherLicense", "encryptedSqlCipherLicense"))
+    if encrypted_sql_key and encrypted_sql_license:
+        sqlcipher_key, sqlcipher_license = decode_sqlcipher_material(
+            encrypted_sql_key,
+            encrypted_sql_license,
+            aes_key=aes_key,
+            aes_iv=aes_iv,
+        )
+        client.set_sqlcipher(sqlcipher_key=sqlcipher_key, sqlcipher_license=sqlcipher_license, byte_encoding="base64")
+        state["sqlcipher"] = {
+            "available": True,
+            "key_length": len(sqlcipher_key),
+            "license_length": len(sqlcipher_license),
+        }
+    return state
 
 
 def _try_json(text: str) -> Any:

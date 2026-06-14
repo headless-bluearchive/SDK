@@ -2,16 +2,17 @@
 
 ## 项目定位
 
-本仓库按独立ba客户端开发。默认能力必须来自项目自身的配置、代码、持久化 profile 和网络请求结果，而不是原游戏客户端。
+本仓库按独立 BA SDK 开发。默认能力必须来自项目自身的配置、代码、调用方传入的 profile/session 和网络请求结果，而不是原游戏客户端。
 
 ## 基本原则
 
 - 正常调用先实例化 `HLBA.Client`，再调用实例方法。
 - 新能力写入 `core/`、`modules/`、`config/` 或 `docs/`。
 - 不新增分散的 CLI 文件、脚本入口、`argparse`、`__main__` 执行块或命令行参数解析。
-- 未来需要 CLI 时，只能集中到顶层 `cli.py`。
+- 未来需要 CLI 时也应该放到外部项目里；SDK 内部先保持库形态。
 - 不新增读取原游戏目录、dump、`shared_prefs`、`LocalConfig`、`Hosts`、DLL、调试桥输出的逻辑。
-- 变更说明只更新 `docs/`，不要修改 `README.md`。
+- 逆向/调试目录只能作为人工对照来源；需要进入 SDK 的稳定表必须整理到 `core/data/`，运行时不能依赖外部调试路径。
+- 细节说明写进 `docs/wiki/`；README 只放当前状态和入口说明，不要把它写成小说。
 
 ## Game 模块
 
@@ -32,4 +33,4 @@
 
 - 宏观结构写在 `docs/architecture.md`。
 - 开发规则写在 `docs/development.md`。
-- 具体协议、登录、游戏 API 写到 `docs/api/`。
+- 具体协议、登录、游戏 API 写到 `docs/wiki/`。

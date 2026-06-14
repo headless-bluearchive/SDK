@@ -4,7 +4,7 @@ from __future__ import annotations
 import asyncio
 from dataclasses import asdict, dataclass, replace
 from pathlib import Path
-from typing import Any, Callable
+from typing import Any, Callable, Mapping
 
 from config.game import DEFAULTS
 from core.error import AuthenticationError, ConfigurationError
@@ -13,8 +13,8 @@ from modules.runtime.android_mobile_profile import (
     AndroidMobileProfile,
     app_version_code_from_client_version,
     fetch_galaxy_store_client_version,
-    load_or_create_android_mobile_profile,
-    save_android_mobile_profile,
+    generate_android_mobile_profile,
+    load_android_mobile_profile,
     with_client_version,
 )
 from core.client import BAReplayClient
@@ -43,7 +43,7 @@ class IntegratedLoginOptions:
     auto_host: bool = True
     android_mobile_profile_path: Path = DEFAULT_ANDROID_MOBILE_PROFILE_PATH
     no_android_mobile_profile: bool = False
-    android_mobile_profile: AndroidMobileProfile | None = None
+    android_mobile_profile: AndroidMobileProfile | Mapping[str, Any] | None = None
     bundle_version: str = ""
     client_version: str = ""
     access_ip: str = ""
@@ -67,18 +67,19 @@ class IntegratedLoginOptions:
     proxy: str = ""
     body_mode: str = DEFAULTS.body_mode
     account_check_key_mode: str = "rsa-oaep-sha1"
-    account_check_url_mode: str = "api"
+    account_check_url_mode: str = "wiki"
     account_check_field_mode: str = "android-minimal"
     queue_subchain: bool = False
     queue_subchain_url_mode: str = "gateway"
     queue_carry_crypto_forward: bool = False
+    fetch_sqlcipher_material: bool = True
     session_bootstrap_queue: bool = True
     session_bootstrap_battle_pass_id: int | None = None
     session_bootstrap_account_link_reward: bool = False
     session_bootstrap_continue_on_error: bool = False
     skip_proof_token: bool = False
     proof_token_stage: str = "after-account-check"
-    proof_token_url_mode: str = "api"
+    proof_token_url_mode: str = "wiki"
     proof_token_max_attempts: int | None = None
     device_id: str = ""
     device_system_memory_size: int | None = None
@@ -104,6 +105,7 @@ class IntegratedLoginResult:
     credentials: NexonGameCredentials
     connection: RuntimeConnectionInfo | None
     android_mobile_profile: AndroidMobileProfile | None
+    session: dict[str, Any]
     flow: dict[str, Any]
 
     def to_dict(self) -> dict[str, Any]:
@@ -112,6 +114,8 @@ class IntegratedLoginResult:
             "credentials": asdict(self.credentials),
             "connection": self.connection.to_dict() if self.connection else None,
             "android_mobile_profile": self.android_mobile_profile.to_dict() if self.android_mobile_profile else None,
+            "profile": self.android_mobile_profile.to_dict() if self.android_mobile_profile else None,
+            "session": self.session,
             "flow": self.flow,
         }
 
@@ -137,7 +141,7 @@ def run_android_direct_login(options: IntegratedLoginOptions) -> IntegratedLogin
 
     credentials = build_credentials(toy_login)
     host_url, api_url, connection = resolve_host_url(options)
-    _log(options, f"gateway.ready gateway={host_url} api={api_url}")
+    _log(options, f"gateway.ready gateway={host_url} wiki={api_url}")
 
     client = BAReplayClient(
         host_url=host_url,
@@ -175,6 +179,7 @@ def run_android_direct_login(options: IntegratedLoginOptions) -> IntegratedLogin
         queue_subchain=options.queue_subchain,
         queue_subchain_url_mode=options.queue_subchain_url_mode,
         queue_carry_crypto_forward=options.queue_carry_crypto_forward,
+        fetch_sqlcipher_material=options.fetch_sqlcipher_material,
         session_bootstrap_queue=options.session_bootstrap_queue,
         session_bootstrap_battle_pass_id=options.session_bootstrap_battle_pass_id,
         session_bootstrap_account_link_reward=options.session_bootstrap_account_link_reward,
@@ -186,7 +191,11 @@ def run_android_direct_login(options: IntegratedLoginOptions) -> IntegratedLogin
         debug_logger=options.debug_logger,
     )
     _log(options, f"login.done status={flow.get('status', '')}")
-    return IntegratedLoginResult(toy_login, credentials, connection, android_mobile_profile, flow)
+    session = client.export_session()
+    attendance_cache = _attendance_cache_from_flow(flow)
+    if attendance_cache is not None:
+        session["attendance"] = attendance_cache
+    return IntegratedLoginResult(toy_login, credentials, connection, android_mobile_profile, session, flow)
 
 
 async def run_android_direct_login_async(options: IntegratedLoginOptions) -> IntegratedLoginResult:
@@ -214,12 +223,19 @@ def resolve_android_mobile_profile(
     if options.no_android_mobile_profile:
         return None
     if options.android_mobile_profile is not None:
-        return options.android_mobile_profile
-    return load_or_create_android_mobile_profile(
-        options.android_mobile_profile_path,
-        country=options.country,
-        locale=options.locale,
-    )
+        return _coerce_android_mobile_profile(options.android_mobile_profile)
+    profile_path = Path(options.android_mobile_profile_path).expanduser()
+    if profile_path.exists():
+        return load_android_mobile_profile(profile_path)
+    return generate_android_mobile_profile(country=options.country, locale=options.locale)
+
+
+def _coerce_android_mobile_profile(value: AndroidMobileProfile | Mapping[str, Any]) -> AndroidMobileProfile:
+    if isinstance(value, AndroidMobileProfile):
+        return value
+    allowed = AndroidMobileProfile.__dataclass_fields__
+    values = {key: value.get(key) for key in allowed if key in value}
+    return AndroidMobileProfile(**values)
 
 
 def resolve_client_version(
@@ -256,10 +272,7 @@ def update_android_mobile_profile_version(
 ) -> AndroidMobileProfile | None:
     if profile is None or not version:
         return profile
-    updated = with_client_version(profile, version)
-    if updated != profile:
-        save_android_mobile_profile(options.android_mobile_profile_path, updated)
-    return updated
+    return with_client_version(profile, version)
 
 
 def apply_android_mobile_profile_defaults(
@@ -366,3 +379,28 @@ def _mask_tail(value: str, tail: int = 4) -> str:
     if not text:
         return ""
     return "*" * max(len(text) - tail, 0) + text[-tail:]
+
+
+def _attendance_cache_from_flow(flow: Mapping[str, Any]) -> dict[str, Any] | None:
+    account_data = flow.get("account_data")
+    if not isinstance(account_data, Mapping):
+        return None
+    rewards = account_data.get("AttendanceBookRewards")
+    history = account_data.get("AttendanceHistoryDBs")
+    if rewards is None and history is None:
+        return None
+    return {
+        "source": "Account_Auth",
+        "AttendanceBookRewards": _as_list(rewards),
+        "AttendanceHistoryDBs": _as_list(history),
+    }
+
+
+def _as_list(value: Any) -> list[Any]:
+    if value is None:
+        return []
+    if isinstance(value, list):
+        return value
+    if isinstance(value, tuple):
+        return list(value)
+    return [value]

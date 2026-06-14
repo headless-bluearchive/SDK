@@ -3,3 +3,5 @@ httpx>=0.27
 cryptography>=42
 pycryptodome>=3.20
 randomandroidphone==0.10
+tqdm>=4.66
+flatbuffers>=25.2.10
