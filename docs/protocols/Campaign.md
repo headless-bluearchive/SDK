@@ -73,7 +73,7 @@
 - 作用：主线关卡：ConfirmMain关卡
 - RequestClass：`CampaignConfirmMainStageRequest`
 - ResponseClass：`CampaignConfirmMainStageResponse`
-- 状态：结构参考，发包前需要用真实网关响应验证。
+- 状态：SDK 已封装为主线关卡结果确认方法 `client.campaign.confirm_main_stage(stage_unique_id, confirm=True)`；默认 `validate=True` 会本地拦截。live 验证表明 `Campaign_List` 历史关卡 ID 会返回 `ErrorCode=6003 CampaignStageInvalidSaveData`，只有调用方先从活跃主线关卡 SaveData 流程获得目标 `StageUniqueId` 后，才应传 `validate=False` 发送。
 
 #### Request 字段
 

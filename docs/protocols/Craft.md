@@ -1,4 +1,4 @@
-# Craft 协议
+﻿# Craft 协议
 
 制造模块相关协议。
 
@@ -34,7 +34,7 @@
 - 作用：制造：获取列表数据
 - RequestClass：`CraftInfoListRequest`
 - ResponseClass：`CraftInfoListResponse`
-- 状态：结构参考，发包前需要用真实网关响应验证。
+- 状态：SDK 已封装为游戏页面状态读取方法；实际可用性仍以真实账号当前开放内容和网关返回为准。
 
 #### Request 字段
 
@@ -266,7 +266,7 @@
 - 作用：制造：CompleteProcess全部
 - RequestClass：`CraftCompleteProcessAllRequest`
 - ResponseClass：`CraftCompleteProcessAllResponse`
-- 状态：结构参考，发包前需要用真实网关响应验证。
+- 状态：SDK 已封装为制造页普通制造一键领取方法 `client.craft.complete_process_all(confirm=True)`；默认先校验 `Craft_List` 中存在普通制造记录，本地协议调用测试通过，真实执行会领取/变更制造状态。
 
 #### Request 字段
 
@@ -304,7 +304,7 @@
 - 作用：制造：ShiftingCompleteProcess全部
 - RequestClass：`CraftShiftingCompleteProcessAllRequest`
 - ResponseClass：`CraftShiftingCompleteProcessAllResponse`
-- 状态：结构参考，发包前需要用真实网关响应验证。
+- 状态：SDK 已封装为制造页转化制造一键领取方法 `client.craft.shifting_complete_process_all(confirm=True)`；默认先校验 `Craft_List` 中存在转化制造记录，本地协议调用测试通过，真实执行会领取/变更制造状态。
 
 #### Request 字段
 

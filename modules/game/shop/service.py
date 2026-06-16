@@ -4,6 +4,7 @@ from typing import Any
 
 from core.error import UnsafeOperationError
 from modules.game.base import GameService
+from modules.game.common import as_list, extra_fields, required_int
 
 
 class ShopService(GameService):
@@ -27,6 +28,21 @@ class ShopService(GameService):
         }
         payload = await self.request("ShopBuyAPRequest", fields)
         return format_shop_purchase(payload)
+
+    async def gacha_recruit_list(self) -> dict[str, Any]:
+        payload = await self.request("ShopGachaRecruitListRequest")
+        return format_shop_gacha_recruit_list(payload)
+
+    async def beforehand_gacha_get(self) -> dict[str, Any]:
+        payload = await self.request("ShopBeforehandGachaGetRequest")
+        return format_shop_beforehand_gacha_get(payload)
+
+    async def pickup_selection_gacha_get(self, shop_recruit_id: int) -> dict[str, Any]:
+        payload = await self.request(
+            "ShopPickupSelectionGachaGetRequest",
+            {"ShopRecruitId": required_int("shop_recruit_id", shop_recruit_id)},
+        )
+        return format_shop_pickup_selection_gacha_get(payload)
 
 
 def format_shop_list(payload: dict[str, Any]) -> dict[str, Any]:
@@ -56,6 +72,50 @@ def format_shop_purchase(payload: dict[str, Any]) -> dict[str, Any]:
         "mail": payload.get("MailDB"),
         "shop_product": payload.get("ShopProductDB"),
         "extra": {key: value for key, value in payload.items() if key not in known_keys},
+    }
+
+
+def format_shop_gacha_recruit_list(payload: dict[str, Any]) -> dict[str, Any]:
+    known_keys = {
+        "ShopRecruits",
+        "ShopFreeRecruitHistoryDBs",
+        "ShopRecruitDBs",
+        "RecruitList",
+        "AccountCurrencyDB",
+    }
+    recruits = as_list(payload.get("ShopRecruits", payload.get("ShopRecruitDBs", payload.get("RecruitList"))))
+    free_history = as_list(payload.get("ShopFreeRecruitHistoryDBs"))
+    return {
+        "shop_recruits": recruits,
+        "free_recruit_history": free_history,
+        "account_currency": payload.get("AccountCurrencyDB"),
+        "count": len(recruits),
+        "free_history_count": len(free_history),
+        "extra": extra_fields(payload, known_keys),
+    }
+
+
+def format_shop_beforehand_gacha_get(payload: dict[str, Any]) -> dict[str, Any]:
+    known_keys = {
+        "BeforehandGachaDB",
+        "BeforehandGachaHistoryDB",
+    }
+    return {
+        "beforehand_gacha": payload.get("BeforehandGachaDB"),
+        "beforehand_gacha_history": payload.get("BeforehandGachaHistoryDB"),
+        "extra": extra_fields(payload, known_keys),
+    }
+
+
+def format_shop_pickup_selection_gacha_get(payload: dict[str, Any]) -> dict[str, Any]:
+    known_keys = {
+        "PickupSelectionGachaDB",
+        "ShopRecruitDB",
+    }
+    return {
+        "pickup_selection_gacha": payload.get("PickupSelectionGachaDB"),
+        "shop_recruit": payload.get("ShopRecruitDB"),
+        "extra": extra_fields(payload, known_keys),
     }
 
 

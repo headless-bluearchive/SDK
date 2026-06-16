@@ -1,12 +1,27 @@
-# 扩展只读接口
+# 好友、社团、活动、Raid、小游戏等页面数据
 
-本页是扩展只读接口的 SDK API 文档。这批接口只读取服务器状态或公开查询结果，不执行领奖、购买、进入战斗、提交成绩、抽卡、好友申请、社团加入、票券选择等状态变更。
+本页按游戏里能看到的页面来整理 SDK 方法：好友页、社团页、活动页、活动商店、总力战/大决战排行、制约解除决战、WorldRaid、活动小游戏、装备仓库、道具仓库、编队、记忆大厅等。这里的内容都属于“打开页面看状态”，不会领奖、购买、进入战斗、提交成绩、抽卡、发送好友申请、加入社团或选择票券。
 
 调用前需要先完成 `client.login(...)`，或用已持久化的 `session/profile` 调用 `client.restore_session(...)`。示例只展示方法形态，不包含账号凭据、session、profile 或 token 输出。
 
-## 通用约定
+## 游戏功能速查
 
-所有方法都是异步方法，返回值统一是 `dict`。能从协议文档确定含义的字段会整理成蛇形命名；无法归类的顶层字段放进 `extra`。
+| 游戏里看到的功能 | SDK 入口 |
+| --- | --- |
+| 头像框/附件/Emblem | `client.attachment.get()` / `client.attachment.emblem_list()` |
+| 编队、装备、道具、爱用品 | `client.echelon.list()` / `client.equipment.list()` / `client.item.list()` / `client.character_gear.list()` |
+| 记忆大厅、剧情回放、学院交流会 | `client.memory_lobby.list()` / `client.scenario.list()` / `client.school_dungeon.list()` |
+| 活动列表、永久化活动、活动关卡、活动商店 | `client.event.list()` / `client.event_content.*` |
+| 招募页面状态，不抽卡 | `client.shop.gacha_recruit_list()` / `client.shop.beforehand_gacha_get()` / `client.shop.pickup_selection_gacha_get()` |
+| 好友列表、好友搜索、玩家名片 | `client.friend.*` |
+| 社团大厅、社团搜索、成员、助战 | `client.clan.*` |
+| 总力战/大决战/制约解除决战/WorldRaid | `client.raid.*` / `client.eliminate_raid.*` / `client.permanent_raid.*` / `client.world_raid.*` |
+| 活动小游戏大厅和任务 | `client.mini_game.*` |
+| 战斗通行证、制造、公告、协议锁 | `client.battle_pass.*` / `client.craft.list()` / `client.management.*` |
+
+## 阅读方式
+
+每个小节先说明它对应游戏里的哪个页面或功能，再列出 SDK 方法、参数和返回结构。所有方法都是异步方法，返回值统一是 `dict`。列表里的单条记录通常仍是服务端原始 DB dict，SDK 不会把每个嵌套对象再拆成复杂模型。
 
 返回结构通常长这样：
 
@@ -20,11 +35,15 @@
 
 `extra` 不是错误。服务端经常会附带 `ServerTime`、版本、活动期信息等额外字段，SDK 会保留它们但不把它们当稳定 API 承诺。
 
-## 账号与基础资料
+参数说明里写成 `int` 的字段会经过 SDK 的整数校验；写成 `list[int]` 的字段会逐项转成整数。涉及活动、赛季、招募、社团、好友的 ID 必须来自当前账号能看到的页面数据或游戏数据配置，不能随便硬填。
+
+## 老师资料、仓库和编队页面
+
+这一组对应游戏里的账号基础状态、头像框/Emblem、装备仓库、道具仓库、爱用品、编队、记忆大厅、剧情回放和学院交流会页面。
 
 ### `client.account.tutorial()`
 
-读取账号教程进度。
+对应新号开局教程流程。读取账号已经完成或触发过的教程步骤，用来判断外部界面是否还需要提示用户完成教程。
 
 | 项 | 内容 |
 | --- | --- |
@@ -50,7 +69,7 @@ print(result["tutorial_ids"], result["count"])
 
 ### `client.attachment.get()`
 
-读取账号当前附件/头像框挂载状态。
+对应个人资料里的头像框、称号附件等装饰挂载状态。
 
 | 项 | 内容 |
 | --- | --- |
@@ -65,7 +84,7 @@ attachment = await client.attachment.get()
 
 ### `client.attachment.emblem_list()`
 
-读取已拥有的 Emblem 列表。
+对应个人资料/成就展示里可选择的 Emblem 列表。
 
 | 项 | 内容 |
 | --- | --- |
@@ -81,7 +100,7 @@ print(emblems["count"])
 
 ### `client.character_gear.list()`
 
-读取爱用品/角色装备列表。
+对应学生详情里的爱用品页面。返回账号已经拥有和培养过的角色装备/爱用品记录。
 
 | 项 | 内容 |
 | --- | --- |
@@ -96,7 +115,7 @@ gears = await client.character_gear.list()
 
 ### `client.equipment.list()`
 
-读取装备道具列表。
+对应装备仓库。返回账号持有的装备道具记录。
 
 | 项 | 内容 |
 | --- | --- |
@@ -111,7 +130,7 @@ equipment = await client.equipment.list()
 
 ### `client.item.list()`
 
-读取账号物品、限时物品、装备和爱用品数据。
+对应道具仓库。一次返回普通物品、限时物品、装备物品和爱用品数据，适合做仓库页初始化。
 
 | 项 | 内容 |
 | --- | --- |
@@ -127,7 +146,7 @@ print(items["count"], items["expiry_count"])
 
 ### `client.echelon.list()`
 
-读取编队和编队预设。
+对应编队页面和预设编队页面。返回当前编队以及预设编队数据。
 
 | 项 | 内容 |
 | --- | --- |
@@ -142,7 +161,7 @@ echelons = await client.echelon.list()
 
 ### `client.memory_lobby.list()`
 
-读取记忆大厅解锁列表。
+对应记忆大厅设置页。返回已解锁、可设置为大厅的记忆大厅条目。
 
 | 项 | 内容 |
 | --- | --- |
@@ -157,7 +176,7 @@ memory_lobbies = await client.memory_lobby.list()
 
 ### `client.scenario.list()`
 
-读取剧情历史、剧情组历史和收藏数据。
+对应剧情回放/故事收藏页面。返回已读剧情、剧情组进度和收藏状态。
 
 | 项 | 内容 |
 | --- | --- |
@@ -172,7 +191,7 @@ scenario = await client.scenario.list()
 
 ### `client.school_dungeon.list()`
 
-读取学院交流会/日常副本状态。
+对应学院交流会页面。返回关卡历史和最佳队伍；小号没开放该功能时会返回开放条件错误。
 
 | 项 | 内容 |
 | --- | --- |
@@ -187,7 +206,7 @@ school = await client.school_dungeon.list()
 
 ### `client.system.version()`
 
-读取系统版本信息。该接口不带基础默认字段。
+对应客户端版本检查。通常用于确认当前 SDK 配置的客户端版本是否仍被服务端接受。
 
 | 项 | 内容 |
 | --- | --- |
@@ -202,7 +221,7 @@ version = await client.system.version()
 
 ### `client.toast.list()`
 
-读取 Toast 提示列表。
+对应服务端下发的轻量提示/Toast 列表，通常用于打开大厅或页面时展示提示。
 
 | 项 | 内容 |
 | --- | --- |
@@ -215,11 +234,13 @@ version = await client.system.version()
 toasts = await client.toast.list()
 ```
 
-## 活动与活动内容
+## 活动页、活动关卡和活动商店
+
+这一组对应游戏里的活动入口、活动 Banner、永久化活动、活动关卡、活动商店、箱式商店、活动收藏、DiceRace、Treasure、ClueSearch 等活动页面。活动页面数据最依赖当前开放内容，`event_content_id` 必须来自当前账号能看到的活动或永久化活动。
 
 ### `client.event.list()`
 
-读取当前账号可见的活动列表。
+对应活动入口/活动列表。返回当前账号能看到的活动摘要。
 
 | 项 | 内容 |
 | --- | --- |
@@ -234,13 +255,22 @@ events = await client.event.list()
 
 ### `client.event.image(event_id)`
 
-读取活动图片信息。
+对应活动 Banner、活动图片资源信息。通常用于 GUI 展示当前活动图。
 
 | 参数 | 类型 | 说明 |
 | --- | --- | --- |
 | `event_id` | `int` | 活动 ID。通常应来自活动配置或 `event.list()` 可见活动。 |
 
-返回：`event_image`, `images`, `count`, `extra`。
+返回结构：
+
+```python
+{
+    "event_image": {...},
+    "images": [{...}],
+    "count": 1,
+    "extra": {},
+}
+```
 
 ```python
 images = await client.event.image(event_id)
@@ -248,7 +278,7 @@ images = await client.event.image(event_id)
 
 ### `client.event_content.permanent_list()`
 
-读取永久化活动内容列表。
+对应常驻化/永久化活动列表。这个列表常用来寻找后续活动内容方法需要的 `event_content_id`。
 
 | 项 | 内容 |
 | --- | --- |
@@ -261,41 +291,301 @@ images = await client.event.image(event_id)
 permanent = await client.event_content.permanent_list()
 ```
 
-### 活动内容通用参数
+### 活动内容 ID 怎么取
 
-以下接口都需要 `event_content_id`。这个 ID 必须来自当前账号可见、当前开放或永久化且类型匹配的活动内容；不要随便硬填。活动类型不匹配时，服务端会返回 `DataEntityNotFound`、`DataClassNotFound` 或玩法专属错误。
+下面这些活动内容方法都需要 `event_content_id`。这个 ID 必须来自当前账号可见、当前开放或永久化且类型匹配的活动内容；不要随便硬填。活动类型不匹配时，服务端会返回 `DataEntityNotFound`、`DataClassNotFound` 或玩法专属错误。
 
-| 方法 | 用途 | 参数 | 返回 |
-| --- | --- | --- | --- |
-| `adventure_list(event_content_id)` | 活动关卡/冒险状态 | `event_content_id: int` | `stage_history`, `strategy_object_history`, `bonus_rewards`, `already_receive_reward_ids`, `stage_point`, `stage_count`, `extra` |
-| `shop_list(event_content_id, category_list=None)` | 活动商店列表 | `event_content_id: int`, `category_list: list[int] \| None` | `shop_infos`, `eligma_history`, `count`, `extra` |
-| `box_gacha_shop_list(event_content_id)` | 活动 Box Gacha 商店状态 | `event_content_id: int` | `box_gacha`, `box_gacha_group_id_by_count`, `extra` |
-| `collection_list(event_content_id, group_id=None)` | 活动 CG/收藏解锁列表 | `event_content_id: int`, `group_id: int \| None` | `collections`, `count`, `extra` |
-| `collection_for_mission(event_content_id)` | 活动任务相关收藏状态 | `event_content_id: int` | `collections`, `count`, `extra` |
-| `location_get_info(event_content_id)` | Location 类活动状态 | `event_content_id: int` | `location`, `extra` |
-| `sub_event_lobby(event_content_id)` | SubEvent 大厅状态 | `event_content_id: int` | `event_content_change`, `is_on_sub_event`, `extra` |
-| `dice_race_lobby(event_content_id)` | DiceRace 大厅状态 | `event_content_id: int` | `dice_race`, `extra` |
-| `treasure_lobby(event_content_id)` | Treasure 大厅状态 | `event_content_id: int` | `board_history`, `hidden_image`, `variation_id`, `extra` |
-| `clue_search_get_info(event_content_id)` | ClueSearch 活动信息 | `event_content_id: int` | `payload`, `extra` |
+常见取法：
 
 ```python
 permanent = await client.event_content.permanent_list()
 event_content_id = permanent["permanent"][0]["EventContentId"]
-
-adventure = await client.event_content.adventure_list(event_content_id)
-collections = await client.event_content.collection_list(event_content_id)
-missions = await client.event_content.collection_for_mission(event_content_id)
 ```
 
-`clue_search_get_info()` 当前协议文档没有稳定 Response 字段，因此 SDK 会把原始顶层响应放到 `payload`，不做字段猜测。
+### `client.event_content.adventure_list(event_content_id)`
 
-## 商店和招募只读
+对应活动关卡页面。返回关卡历史、地图策略对象、额外奖励状态和活动点数。
 
-这些接口只读招募状态，不购买、不抽卡、不保存结果。
+| 项 | 内容 |
+| --- | --- |
+| 协议 | `EventContent_AdventureList` |
+| RequestClass | `EventContentAdventureListRequest` |
+| 参数 | `event_content_id: int` |
+| live | 已通过 |
+
+返回结构：
+
+```python
+{
+    "stage_history": [{...}],
+    "strategy_object_history": [{...}],
+    "bonus_rewards": [{...}],
+    "already_receive_reward_ids": [1, 2],
+    "stage_point": {...},
+    "stage_count": 1,
+    "extra": {},
+}
+```
+
+示例：
+
+```python
+adventure = await client.event_content.adventure_list(event_content_id)
+stages = adventure["stage_history"]
+```
+
+### `client.event_content.shop_list(event_content_id, category_list=None)`
+
+对应活动商店页面。返回活动商店货架和兑换历史，只看状态，不购买道具。
+
+| 项 | 内容 |
+| --- | --- |
+| 协议 | `EventContent_ShopList` |
+| RequestClass | `EventContentShopListRequest` |
+| 参数 | `event_content_id: int`, `category_list: list[int] \| tuple[int, ...] \| None` |
+| live | 已封装；本轮账号缺少匹配活动商店上下文 |
+
+返回结构：
+
+```python
+{
+    "shop_infos": [{...}],
+    "eligma_history": [{...}],
+    "count": 1,
+    "extra": {},
+}
+```
+
+示例：
+
+```python
+shops = await client.event_content.shop_list(event_content_id)
+filtered = await client.event_content.shop_list(event_content_id, category_list=[1, 2])
+```
+
+### `client.event_content.box_gacha_shop_list(event_content_id)`
+
+对应活动里的箱式商店/Box Gacha 页面。只读取箱池状态，不抽取、不重置。
+
+| 项 | 内容 |
+| --- | --- |
+| 协议 | `EventContent_BoxGachaShopList` |
+| RequestClass | `EventContentBoxGachaShopListRequest` |
+| 参数 | `event_content_id: int` |
+| live | 已封装；本轮账号缺少匹配 Box Gacha 活动上下文 |
+
+返回结构：
+
+```python
+{
+    "box_gacha": {...},
+    "box_gacha_group_id_by_count": {...},
+    "extra": {},
+}
+```
+
+示例：
+
+```python
+box_state = await client.event_content.box_gacha_shop_list(event_content_id)
+```
+
+### `client.event_content.collection_list(event_content_id, group_id=None)`
+
+对应活动收藏/CG 回收页面。返回已解锁收藏条目。
+
+| 项 | 内容 |
+| --- | --- |
+| 协议 | `EventContent_CollectionList` |
+| RequestClass | `EventContentCollectionListRequest` |
+| 参数 | `event_content_id: int`, `group_id: int \| None` |
+| live | 已通过 |
+
+返回结构：
+
+```python
+{
+    "collections": [{...}],
+    "count": 1,
+    "extra": {},
+}
+```
+
+示例：
+
+```python
+collections = await client.event_content.collection_list(event_content_id)
+group_collections = await client.event_content.collection_list(event_content_id, group_id=1)
+```
+
+### `client.event_content.collection_for_mission(event_content_id)`
+
+对应活动任务页里的收藏类任务进度，用来判断收藏相关任务状态。
+
+| 项 | 内容 |
+| --- | --- |
+| 协议 | `EventContent_CollectionForMission` |
+| RequestClass | `EventContentCollectionForMissionRequest` |
+| 参数 | `event_content_id: int` |
+| live | 已通过 |
+
+返回结构：
+
+```python
+{
+    "collections": [{...}],
+    "count": 1,
+    "extra": {},
+}
+```
+
+示例：
+
+```python
+mission_collections = await client.event_content.collection_for_mission(event_content_id)
+```
+
+### `client.event_content.location_get_info(event_content_id)`
+
+对应 Location 类型活动页面。只有当前活动确实是 Location 类型时才会成功。
+
+| 项 | 内容 |
+| --- | --- |
+| 协议 | `EventContent_LocationGetInfo` |
+| RequestClass | `EventContentLocationGetInfoRequest` |
+| 参数 | `event_content_id: int` |
+| live | 已封装；本轮账号缺少匹配 Location 活动上下文 |
+
+返回结构：
+
+```python
+{
+    "location": {...},
+    "extra": {},
+}
+```
+
+示例：
+
+```python
+location = await client.event_content.location_get_info(event_content_id)
+```
+
+### `client.event_content.sub_event_lobby(event_content_id)`
+
+对应活动里的 SubEvent 子活动大厅，返回当前是否处于子活动状态。
+
+| 项 | 内容 |
+| --- | --- |
+| 协议 | `EventContent_SubEventLobby` |
+| RequestClass | `EventContentSubEventLobbyRequest` |
+| 参数 | `event_content_id: int` |
+| live | 已封装；本轮账号缺少匹配 SubEvent 活动上下文 |
+
+返回结构：
+
+```python
+{
+    "event_content_change": {...},
+    "is_on_sub_event": False,
+    "extra": {},
+}
+```
+
+示例：
+
+```python
+sub_event = await client.event_content.sub_event_lobby(event_content_id)
+```
+
+### `client.event_content.dice_race_lobby(event_content_id)`
+
+对应活动里的 DiceRace 骰子赛跑页面。
+
+| 项 | 内容 |
+| --- | --- |
+| 协议 | `EventContent_DiceRaceLobby` |
+| RequestClass | `EventContentDiceRaceLobbyRequest` |
+| 参数 | `event_content_id: int` |
+| live | 已通过 |
+
+返回结构：
+
+```python
+{
+    "dice_race": {...},
+    "extra": {},
+}
+```
+
+示例：
+
+```python
+dice_race = await client.event_content.dice_race_lobby(event_content_id)
+```
+
+### `client.event_content.treasure_lobby(event_content_id)`
+
+对应活动里的 Treasure 寻宝/翻图页面，返回棋盘历史、隐藏图和变体 ID。
+
+| 项 | 内容 |
+| --- | --- |
+| 协议 | `EventContent_TreasureLobby` |
+| RequestClass | `EventContentTreasureLobbyRequest` |
+| 参数 | `event_content_id: int` |
+| live | 已封装；本轮账号缺少匹配 Treasure 活动上下文 |
+
+返回结构：
+
+```python
+{
+    "board_history": {...},
+    "hidden_image": {...},
+    "variation_id": 0,
+    "extra": {},
+}
+```
+
+示例：
+
+```python
+treasure = await client.event_content.treasure_lobby(event_content_id)
+```
+
+### `client.event_content.clue_search_get_info(event_content_id)`
+
+对应活动里的 ClueSearch 线索搜索页面。当前协议文档没有稳定 Response 字段，因此 SDK 暂时把顶层响应放到 `payload`，不猜测字段含义。
+
+| 项 | 内容 |
+| --- | --- |
+| 协议 | `EventContent_ClueSearchGetInfo` |
+| RequestClass | `EventContentClueSearchGetInfoRequest` |
+| 参数 | `event_content_id: int` |
+| live | 已封装；本轮账号缺少匹配 ClueSearch 活动上下文 |
+
+返回结构：
+
+```python
+{
+    "payload": {...},
+    "extra": {},
+}
+```
+
+示例：
+
+```python
+clue = await client.event_content.clue_search_get_info(event_content_id)
+raw_payload = clue["payload"]
+```
+
+## 招募页面状态
+
+这一组对应招募页面、预抽卡页面和自选 Pickup 状态。只读招募列表和状态，不购买、不抽卡、不保存结果。
 
 ### `client.shop.gacha_recruit_list()`
 
-读取当前招募列表和免费招募历史。
+对应招募列表页面。返回当前开放卡池、免费招募历史和账号货币摘要。
 
 | 项 | 内容 |
 | --- | --- |
@@ -310,7 +600,7 @@ recruits = await client.shop.gacha_recruit_list()
 
 ### `client.shop.beforehand_gacha_get()`
 
-读取 Beforehand Gacha 状态。
+对应预抽卡/Beforehand Gacha 页面。只读取当前状态和历史，不保存结果。
 
 | 项 | 内容 |
 | --- | --- |
@@ -325,13 +615,21 @@ beforehand = await client.shop.beforehand_gacha_get()
 
 ### `client.shop.pickup_selection_gacha_get(shop_recruit_id)`
 
-读取自选 Pickup 招募状态。
+对应自选 Pickup 招募页面。只读取当前选择状态，不抽卡、不购买。
 
 | 参数 | 类型 | 说明 |
 | --- | --- | --- |
 | `shop_recruit_id` | `int` | 当前开放自选 Pickup 招募的 ID，应来自招募列表。 |
 
-返回：`pickup_selection_gacha`, `shop_recruit`, `extra`。
+返回结构：
+
+```python
+{
+    "pickup_selection_gacha": {...},
+    "shop_recruit": {...},
+    "extra": {},
+}
+```
 
 ```python
 recruits = await client.shop.gacha_recruit_list()
@@ -341,15 +639,31 @@ state = await client.shop.pickup_selection_gacha_get(shop_recruit_id)
 
 本轮 live 账号没有有效自选 Pickup 招募，错误为 `ShopInfoNotFound`。
 
-## 好友查询
+## 好友页和玩家名片
 
-好友查询接口不会发送、接受、拒绝或取消好友申请。状态变更好友接口见 `state-changing.md`。
+这一组对应好友页面、好友搜索、玩家详情和自己的名片。这里只做查看，不发送、接受、拒绝或取消好友申请。好友申请操作见 [好友申请、制造完成、关卡确认和剧情跳过](state-changing.md)。
 
 ### `client.friend.list()`
 
-读取好友、收到的申请、已发送申请、屏蔽列表和名片背景。
+对应好友列表页。返回好友、收到的申请、已发送申请、屏蔽列表和名片背景。
 
-返回：`id_card_backgrounds`, `friends`, `received_requests`, `sent_requests`, `blocked_friends`, `friend_id_card`, `count`, `received_count`, `sent_count`, `blocked_count`, `extra`。
+返回结构：
+
+```python
+{
+    "id_card_backgrounds": [{...}],
+    "friends": [{...}],
+    "received_requests": [{...}],
+    "sent_requests": [{...}],
+    "blocked_friends": [{...}],
+    "friend_id_card": {...},
+    "count": 1,
+    "received_count": 0,
+    "sent_count": 0,
+    "blocked_count": 0,
+    "extra": {},
+}
+```
 
 ```python
 friends = await client.friend.list()
@@ -358,13 +672,21 @@ print(friends["count"], friends["received_count"])
 
 ### `client.friend.detailed_info(friend_account_id)`
 
-读取某个账号的详细信息。
+对应点击好友/玩家后打开的玩家详情页。
 
 | 参数 | 类型 | 说明 |
 | --- | --- | --- |
 | `friend_account_id` | `int` | 好友或目标账号 ID。 |
 
-返回：`detailed_account_info`, `friend`, `extra`。
+返回结构：
+
+```python
+{
+    "detailed_account_info": {...},
+    "friend": {...},
+    "extra": {},
+}
+```
 
 ```python
 friends = await client.friend.list()
@@ -374,9 +696,16 @@ info = await client.friend.detailed_info(friend_account_id)
 
 ### `client.friend.id_card()`
 
-读取自己的好友名片。
+对应自己的好友名片页面。
 
-返回：`id_card`, `extra`。
+返回结构：
+
+```python
+{
+    "id_card": {...},
+    "extra": {},
+}
+```
 
 ```python
 id_card = await client.friend.id_card()
@@ -384,14 +713,22 @@ id_card = await client.friend.id_card()
 
 ### `client.friend.search(friend_code=None, level_option=None)`
 
-搜索好友。
+对应好友搜索页面，可按好友码或等级筛选搜索玩家。
 
 | 参数 | 类型 | 说明 |
 | --- | --- | --- |
 | `friend_code` | `str \| None` | 好友码。不传则按服务端默认搜索行为。 |
 | `level_option` | `int \| None` | 等级筛选枚举值。 |
 
-返回：`friends`, `count`, `extra`。
+返回结构：
+
+```python
+{
+    "friends": [{...}],
+    "count": 1,
+    "extra": {},
+}
+```
 
 ```python
 result = await client.friend.search(friend_code="ABCDEF")
@@ -399,25 +736,48 @@ result = await client.friend.search(friend_code="ABCDEF")
 
 ### `client.friend.list_by_ids(target_account_ids)`
 
-按账号 ID 批量查询好友信息。
+对应外部程序已持有账号 ID 时批量查玩家信息。
 
 | 参数 | 类型 | 说明 |
 | --- | --- | --- |
 | `target_account_ids` | `list[int] \| tuple[int, ...]` | 目标账号 ID 列表，不能为空。 |
 
-返回：`friends`, `count`, `extra`。
+返回结构：
+
+```python
+{
+    "friends": [{...}],
+    "count": 1,
+    "extra": {},
+}
+```
 
 ```python
 result = await client.friend.list_by_ids([target_account_id])
 ```
 
-## 社团查询
+## 社团页和社团助战
+
+这一组对应社团大厅、社团搜索、社团成员列表和社团助战页面。这里只查看社团信息，不申请加入、不退出、不解散。
 
 ### `client.clan.lobby()`
 
-读取社团大厅、当前账号社团、成员和默认展示社团。
+对应社团大厅。返回当前账号社团、成员摘要、IRC 配置和默认展示社团。
 
-返回：`irc_config`, `account_clan`, `default_exposed_clans`, `account_clan_member`, `clan_members`, `member_count`, `default_exposed_count`, `extra`。
+返回结构：
+
+```python
+{
+    "irc_config": {...},
+    "account_clan": {...},
+    "default_exposed_clans": [{...}],
+    "account_clan_member": {...},
+    "clan_members": [{...}],
+    "member_count": 1,
+    "default_exposed_count": 1,
+    "extra": {},
+}
+```
 
 ```python
 lobby = await client.clan.lobby()
@@ -425,7 +785,7 @@ lobby = await client.clan.lobby()
 
 ### `client.clan.search(...)`
 
-搜索社团。
+对应社团搜索页面。只返回搜索结果，不申请加入。
 
 | 参数 | 类型 | 说明 |
 | --- | --- | --- |
@@ -433,7 +793,15 @@ lobby = await client.clan.lobby()
 | `clan_unique_code` | `str \| None` | 社团唯一码。 |
 | `search_string` | `str \| None` | 搜索文本。 |
 
-返回：`clans`, `count`, `extra`。
+返回结构：
+
+```python
+{
+    "clans": [{...}],
+    "count": 1,
+    "extra": {},
+}
+```
 
 ```python
 clans = await client.clan.search(search_string="test")
@@ -441,14 +809,23 @@ clans = await client.clan.search(search_string="test")
 
 ### `client.clan.member(clan_db_id, member_account_id)`
 
-读取社团单个成员信息。
+对应社团成员详情页。
 
 | 参数 | 类型 | 说明 |
 | --- | --- | --- |
 | `clan_db_id` | `int` | 社团 DB ID。 |
 | `member_account_id` | `int` | 成员账号 ID。 |
 
-返回：`clan`, `clan_member`, `detailed_account_info`, `extra`。
+返回结构：
+
+```python
+{
+    "clan": {...},
+    "clan_member": {...},
+    "detailed_account_info": {...},
+    "extra": {},
+}
+```
 
 ```python
 lobby = await client.clan.lobby()
@@ -459,9 +836,18 @@ member = await client.clan.member(clan_db_id, member_account_id)
 
 ### `client.clan.member_list(clan_db_id)`
 
-读取社团成员列表。
+对应社团成员列表页。
 
-返回：`clan`, `clan_members`, `count`, `extra`。
+返回结构：
+
+```python
+{
+    "clan": {...},
+    "clan_members": [{...}],
+    "count": 1,
+    "extra": {},
+}
+```
 
 ```python
 members = await client.clan.member_list(clan_db_id)
@@ -469,9 +855,17 @@ members = await client.clan.member_list(clan_db_id)
 
 ### `client.clan.my_assist_list()`
 
-读取自己的社团助战槽位。
+对应自己的社团助战设置页。
 
-返回：`assist_slots`, `count`, `extra`。
+返回结构：
+
+```python
+{
+    "assist_slots": [{...}],
+    "count": 1,
+    "extra": {},
+}
+```
 
 ```python
 my_assists = await client.clan.my_assist_list()
@@ -479,7 +873,7 @@ my_assists = await client.clan.my_assist_list()
 
 ### `client.clan.all_assist_list(...)`
 
-读取社团全部助战列表。
+对应社团助战选择页。只读取可用助战和租借历史，不借用。
 
 | 参数 | 类型 | 说明 |
 | --- | --- | --- |
@@ -487,7 +881,17 @@ my_assists = await client.clan.my_assist_list()
 | `is_practice` | `bool` | 是否练习模式。默认 `False`。 |
 | `pending_assist_use_info` | `list[dict] \| tuple[dict, ...] \| None` | 待使用助战信息。通常传空列表。 |
 
-返回：`assist_characters`, `assist_character_rent_history`, `clan_db_id`, `count`, `extra`。
+返回结构：
+
+```python
+{
+    "assist_characters": [{...}],
+    "assist_character_rent_history": [{...}],
+    "clan_db_id": 123,
+    "count": 1,
+    "extra": {},
+}
+```
 
 ```python
 assists = await client.clan.all_assist_list(
@@ -497,11 +901,13 @@ assists = await client.clan.all_assist_list(
 )
 ```
 
-## Raid 与排行查询
+## 总力战、大决战、制约解除决战和 WorldRaid
+
+这一组对应总力战/大决战大厅、房间列表、排名列表、最佳队伍、制约解除决战、常驻 Raid 和 WorldRaid 页面。这里只看大厅、排行和队伍数据，不进入战斗、不提交成绩、不领奖。
 
 ### `client.raid.list(...)`
 
-读取可见 Raid 房间列表。
+对应 Raid 房间列表页。
 
 | 参数 | 类型 | 说明 |
 | --- | --- | --- |
@@ -509,7 +915,17 @@ assists = await client.clan.all_assist_list(
 | `raid_difficulty` | `int \| None` | 难度筛选。 |
 | `raid_room_sort_option` | `int \| None` | 排序选项。 |
 
-返回：`create_raids`, `enter_raids`, `list_raids`, `count`, `extra`。
+返回结构：
+
+```python
+{
+    "create_raids": [{...}],
+    "enter_raids": [{...}],
+    "list_raids": [{...}],
+    "count": 1,
+    "extra": {},
+}
+```
 
 ```python
 raids = await client.raid.list()
@@ -517,9 +933,20 @@ raids = await client.raid.list()
 
 ### `client.raid.complete_list()`
 
-读取已完成 Raid 列表和赛季摘要。
+对应已完成 Raid 记录和赛季摘要。
 
-返回：`raids`, `stacked_damage`, `receive_reward_ids`, `current_season_unique_id`, `count`, `extra`。
+返回结构：
+
+```python
+{
+    "raids": [{...}],
+    "stacked_damage": 0,
+    "receive_reward_ids": [1, 2],
+    "current_season_unique_id": 0,
+    "count": 1,
+    "extra": {},
+}
+```
 
 ```python
 completed = await client.raid.complete_list()
@@ -527,9 +954,17 @@ completed = await client.raid.complete_list()
 
 ### `client.raid.search(secret_code=None, tags=None)`
 
-搜索 Raid 房间。
+对应按房间码或标签搜索 Raid 房间。
 
-返回：`raids`, `count`, `extra`。
+返回结构：
+
+```python
+{
+    "raids": [{...}],
+    "count": 1,
+    "extra": {},
+}
+```
 
 ```python
 result = await client.raid.search(secret_code=None, tags=[])
@@ -537,9 +972,20 @@ result = await client.raid.search(secret_code=None, tags=[])
 
 ### `client.raid.lobby()`
 
-读取 Raid 大厅信息。
+对应总力战/大决战大厅。返回赛季类型、大厅信息、放弃状态和货币摘要。
 
-返回：`season_type`, `raid_give_up`, `raid_lobby_info`, `account_currency`, `parcel_result`, `extra`。
+返回结构：
+
+```python
+{
+    "season_type": 0,
+    "raid_give_up": {...},
+    "raid_lobby_info": {...},
+    "account_currency": {...},
+    "parcel_result": {...},
+    "extra": {},
+}
+```
 
 ```python
 lobby = await client.raid.lobby()
@@ -547,7 +993,7 @@ lobby = await client.raid.lobby()
 
 ### `client.raid.opponent_list(...)`
 
-读取 Raid 排名邻近玩家列表。
+对应 Raid 排行榜邻近玩家列表。
 
 | 参数 | 类型 | 说明 |
 | --- | --- | --- |
@@ -557,7 +1003,15 @@ lobby = await client.raid.lobby()
 | `score` | `int \| None` | 基准分数。 |
 | `search_type` | `int \| None` | 搜索类型。 |
 
-返回：`opponents`, `count`, `extra`。
+返回结构：
+
+```python
+{
+    "opponents": [{...}],
+    "count": 1,
+    "extra": {},
+}
+```
 
 ```python
 opponents = await client.raid.opponent_list(
@@ -571,9 +1025,17 @@ opponents = await client.raid.opponent_list(
 
 ### `client.raid.get_best_team(search_account_id)`
 
-读取指定账号的 Raid 最佳队伍。
+对应排行榜里查看某个玩家最佳队伍。
 
-返回：`team_settings`, `count`, `extra`。
+返回结构：
+
+```python
+{
+    "team_settings": [{...}],
+    "count": 1,
+    "extra": {},
+}
+```
 
 ```python
 team = await client.raid.get_best_team(search_account_id)
@@ -581,65 +1043,237 @@ team = await client.raid.get_best_team(search_account_id)
 
 ### `client.raid.ranking_index()`
 
-读取 Raid 排名分段索引。
+对应 Raid 排行榜分段索引，用于分页或定位排名区间。
 
-返回：`rank_brackets`, `count`, `extra`。
+返回结构：
+
+```python
+{
+    "rank_brackets": [{...}],
+    "count": 1,
+    "extra": {},
+}
+```
 
 ```python
 index = await client.raid.ranking_index()
 ```
 
-### 制约解除决战
+### `client.eliminate_raid.lobby()`
 
-| 方法 | 用途 | 参数 | 返回 |
-| --- | --- | --- | --- |
-| `client.eliminate_raid.lobby()` | 制约解除决战大厅 | 无 | `lobby_info`, `give_up`, `season_type`, `account_currency`, `parcel_result`, `extra` |
-| `client.eliminate_raid.opponent_list(...)` | 排名邻近玩家 | `boss_group_index`, `is_first_request`, `is_upper`, `rank`, `score`, `search_type` 均可选 | `opponents`, `count`, `extra` |
-| `client.eliminate_raid.get_best_team(search_account_id)` | 指定账号最佳队伍 | `search_account_id: int` | `team_settings_by_key`, `team_settings`, `count`, `extra` |
-| `client.eliminate_raid.ranking_index()` | 排名分段索引 | 无 | `rank_brackets`, `count`, `extra` |
+对应制约解除决战大厅。返回大厅信息、放弃状态、赛季类型和货币摘要。
+
+| 项 | 内容 |
+| --- | --- |
+| 协议 | `EliminateRaid_Lobby` |
+| RequestClass | `EliminateRaidLobbyRequest` |
+| 参数 | 无 |
+| live | 已通过 |
+
+返回结构：
+
+```python
+{
+    "lobby_info": {...},
+    "give_up": {...},
+    "season_type": 0,
+    "account_currency": {...},
+    "parcel_result": {...},
+    "extra": {},
+}
+```
+
+示例：
 
 ```python
 lobby = await client.eliminate_raid.lobby()
+```
+
+### `client.eliminate_raid.opponent_list(...)`
+
+对应制约解除决战排行榜邻近玩家列表。
+
+| 参数 | 类型 | 说明 |
+| --- | --- | --- |
+| `boss_group_index` | `int \| None` | Boss 组索引。 |
+| `is_first_request` | `bool \| None` | 是否首次请求。 |
+| `is_upper` | `bool \| None` | 是否查询上方排名。 |
+| `rank` | `int \| None` | 基准排名。 |
+| `score` | `int \| None` | 基准分数。 |
+| `search_type` | `int \| None` | 搜索类型。 |
+
+返回结构：
+
+```python
+{
+    "opponents": [{...}],
+    "count": 1,
+    "extra": {},
+}
+```
+
+示例：
+
+```python
+opponents = await client.eliminate_raid.opponent_list(
+    boss_group_index=0,
+    is_first_request=True,
+    is_upper=False,
+    rank=0,
+    score=0,
+    search_type=0,
+)
+```
+
+### `client.eliminate_raid.get_best_team(search_account_id)`
+
+对应制约解除决战排行榜里查看某个玩家最佳队伍。
+
+| 参数 | 类型 | 说明 |
+| --- | --- | --- |
+| `search_account_id` | `int` | 目标账号 ID，通常来自排名、好友或搜索结果。 |
+
+返回结构：
+
+```python
+{
+    "team_settings_by_key": {"key": [{...}]},
+    "team_settings": [{...}],
+    "count": 1,
+    "extra": {},
+}
+```
+
+示例：
+
+```python
+team = await client.eliminate_raid.get_best_team(search_account_id)
+```
+
+### `client.eliminate_raid.ranking_index()`
+
+对应制约解除决战排行榜分段索引。
+
+返回结构：
+
+```python
+{
+    "rank_brackets": [{...}],
+    "count": 1,
+    "extra": {},
+}
+```
+
+示例：
+
+```python
 ranking = await client.eliminate_raid.ranking_index()
 ```
 
 ### `client.permanent_raid.lobby()`
 
-读取常驻 Raid 大厅信息。
+对应常驻 Raid 大厅和赛季列表。
 
-返回：`lobby_infos`, `seasons`, `account_currency`, `count`, `season_count`, `extra`。
+返回结构：
+
+```python
+{
+    "lobby_infos": [{...}],
+    "seasons": [{...}],
+    "account_currency": {...},
+    "count": 1,
+    "season_count": 1,
+    "extra": {},
+}
+```
 
 ```python
 permanent_raid = await client.permanent_raid.lobby()
 ```
 
-### WorldRaid
+### `client.world_raid.lobby(content_type, season_id)`
 
-WorldRaid 需要当前开放的 `content_type` 和 `season_id`。
+对应 WorldRaid 大厅。返回清除历史、本地 Boss 和 Boss 组信息。WorldRaid 需要当前开放的 `content_type` 和 `season_id`，本轮 live 没有拿到候选参数。
 
-| 方法 | 用途 | 参数 | 返回 |
-| --- | --- | --- | --- |
-| `client.world_raid.lobby(content_type, season_id)` | 世界 Raid 大厅 | `content_type: int`, `season_id: int` | `clear_history`, `local_bosses`, `boss_groups`, `clear_history_count`, `local_boss_count`, `boss_group_count`, `extra` |
-| `client.world_raid.boss_list(content_type, season_id, request_only_world_boss_data=False)` | 世界 Raid Boss 列表 | `content_type: int`, `season_id: int`, `request_only_world_boss_data: bool` | `boss_list_info`, `count`, `extra` |
+| 项 | 内容 |
+| --- | --- |
+| 协议 | `WorldRaid_Lobby` |
+| RequestClass | `WorldRaidLobbyRequest` |
+| 参数 | `content_type: int`, `season_id: int` |
+| live | 已封装；本轮无当前开放 WorldRaid 参数 |
+
+返回结构：
+
+```python
+{
+    "clear_history": [{...}],
+    "local_bosses": [{...}],
+    "boss_groups": [{...}],
+    "clear_history_count": 1,
+    "local_boss_count": 1,
+    "boss_group_count": 1,
+    "extra": {},
+}
+```
+
+示例：
 
 ```python
 lobby = await client.world_raid.lobby(content_type, season_id)
-bosses = await client.world_raid.boss_list(content_type, season_id)
 ```
 
-本轮 live 没有拿到 WorldRaid 候选参数。
+### `client.world_raid.boss_list(content_type, season_id, request_only_world_boss_data=False)`
 
-## 其他玩法和系统查询
+对应 WorldRaid Boss 列表。`request_only_world_boss_data=True` 时只请求 WorldBoss 数据。
+
+| 项 | 内容 |
+| --- | --- |
+| 协议 | `WorldRaid_BossList` |
+| RequestClass | `WorldRaidBossListRequest` |
+| 参数 | `content_type: int`, `season_id: int`, `request_only_world_boss_data: bool = False` |
+| live | 已封装；本轮无当前开放 WorldRaid 参数 |
+
+返回结构：
+
+```python
+{
+    "boss_list_info": [{...}],
+    "count": 1,
+    "extra": {},
+}
+```
+
+示例：
+
+```python
+bosses = await client.world_raid.boss_list(content_type, season_id)
+world_only = await client.world_raid.boss_list(
+    content_type,
+    season_id,
+    request_only_world_boss_data=True,
+)
+```
+
+## 战斗通行证、制造、公告和指南任务
+
+这一组对应战斗通行证、咖啡厅奖杯历史、占领战、制造页、公告横幅、协议锁和指南任务赛季。
 
 ### `client.battle_pass.get_info(battle_pass_id)`
 
-读取 BattlePass 信息。
+对应战斗通行证页面的基础信息。
 
 | 参数 | 类型 | 说明 |
 | --- | --- | --- |
 | `battle_pass_id` | `int` | BattlePass ID。需要来自当前活动/配置。 |
 
-返回：`battle_pass_info`, `extra`。
+返回结构：
+
+```python
+{
+    "battle_pass_info": {...},
+    "extra": {},
+}
+```
 
 ```python
 info = await client.battle_pass.get_info(battle_pass_id)
@@ -647,9 +1281,18 @@ info = await client.battle_pass.get_info(battle_pass_id)
 
 ### `client.battle_pass.mission_list(battle_pass_id)`
 
-读取 BattlePass 任务列表。
+对应战斗通行证任务页。
 
-返回：`mission_history_unique_ids`, `progress`, `count`, `extra`。
+返回结构：
+
+```python
+{
+    "mission_history_unique_ids": [1, 2],
+    "progress": [{...}],
+    "count": 1,
+    "extra": {},
+}
+```
 
 ```python
 missions = await client.battle_pass.mission_list(battle_pass_id)
@@ -657,9 +1300,17 @@ missions = await client.battle_pass.mission_list(battle_pass_id)
 
 ### `client.cafe.trophy_history()`
 
-读取咖啡厅奖杯历史。
+对应咖啡厅奖杯历史页。
 
-返回：`trophy_history`, `count`, `extra`。
+返回结构：
+
+```python
+{
+    "trophy_history": [{...}],
+    "count": 1,
+    "extra": {},
+}
+```
 
 ```python
 trophy = await client.cafe.trophy_history()
@@ -667,9 +1318,25 @@ trophy = await client.cafe.trophy_history()
 
 ### `client.conquest.get_info(event_content_id)`
 
-读取占领战活动信息。
+对应占领战活动页面。只有当前开放且账号可访问的占领战活动 ID 才会成功。
 
-返回：`conquest_info`, `conquered_tiles`, `echelons`, `event_objects`, `difficulty_to_step`, `is_first_enter`, `display_infos`, `conquered_tile_count`, `echelon_count`, `event_object_count`, `extra`。
+返回结构：
+
+```python
+{
+    "conquest_info": {...},
+    "conquered_tiles": [{...}],
+    "echelons": [{...}],
+    "event_objects": [{...}],
+    "difficulty_to_step": {...},
+    "is_first_enter": False,
+    "display_infos": [{...}],
+    "conquered_tile_count": 1,
+    "echelon_count": 1,
+    "event_object_count": 1,
+    "extra": {},
+}
+```
 
 ```python
 conquest = await client.conquest.get_info(event_content_id)
@@ -677,9 +1344,17 @@ conquest = await client.conquest.get_info(event_content_id)
 
 ### `client.conquest.main_story_get_info(event_content_id)`
 
-读取占领战主线型活动信息。
+对应占领战主线活动页面。只有当前开放且账号可访问的占领战主线活动 ID 才会成功。
 
-返回：`main_stories`, `count`, `extra`。
+返回结构：
+
+```python
+{
+    "main_stories": [{...}],
+    "count": 1,
+    "extra": {},
+}
+```
 
 ```python
 story = await client.conquest.main_story_get_info(event_content_id)
@@ -687,9 +1362,23 @@ story = await client.conquest.main_story_get_info(event_content_id)
 
 ### `client.craft.list()`
 
-读取制造和转化制造状态。
+对应制造页面。这里只看普通制造、转化制造、制造节点和槽位状态，不领取完成结果。
 
-返回：`craft_infos`, `shifting_craft_infos`, `craft_nodes`, `craft_slots`, `count`, `shifting_count`, `node_count`, `slot_count`, `extra`。
+返回结构：
+
+```python
+{
+    "craft_infos": [{...}],
+    "shifting_craft_infos": [{...}],
+    "craft_nodes": [{...}],
+    "craft_slots": [{...}],
+    "count": 1,
+    "shifting_count": 0,
+    "node_count": 1,
+    "slot_count": 1,
+    "extra": {},
+}
+```
 
 ```python
 craft = await client.craft.list()
@@ -697,9 +1386,17 @@ craft = await client.craft.list()
 
 ### `client.management.banner_list()`
 
-读取管理公告/横幅列表。
+对应公告横幅/管理公告列表。
 
-返回：`banners`, `count`, `extra`。
+返回结构：
+
+```python
+{
+    "banners": [{...}],
+    "count": 1,
+    "extra": {},
+}
+```
 
 ```python
 banners = await client.management.banner_list()
@@ -707,9 +1404,17 @@ banners = await client.management.banner_list()
 
 ### `client.management.protocol_lock_list()`
 
-读取协议锁列表。
+对应服务端协议开放限制列表，常用于判断某些页面或玩法是否被服务端锁定。
 
-返回：`protocol_locks`, `count`, `extra`。
+返回结构：
+
+```python
+{
+    "protocol_locks": [{...}],
+    "count": 1,
+    "extra": {},
+}
+```
 
 ```python
 locks = await client.management.protocol_lock_list()
@@ -717,42 +1422,206 @@ locks = await client.management.protocol_lock_list()
 
 ### `client.mission.guide_season_list()`
 
-读取指南任务赛季列表。
+对应指南任务/Guide Mission 的赛季列表。
 
-返回：`guide_mission_seasons`, `count`, `extra`。
+返回结构：
+
+```python
+{
+    "guide_mission_seasons": [{...}],
+    "count": 1,
+    "extra": {},
+}
+```
 
 ```python
 seasons = await client.mission.guide_season_list()
 ```
 
-## 小游戏查询
+## 活动小游戏页面
 
-小游戏接口都需要 `event_content_id`，必须对应当前有效的小游戏活动。
+这一组对应活动小游戏页面，比如 Shooting、TableBoard、DreamMaker、Defense、RoadPuzzle、CCG。小游戏方法都需要 `event_content_id`，必须对应当前有效的小游戏活动。这里只读取大厅、关卡和任务状态，不进入小游戏、不结算、不提交成绩。
 
-| 方法 | 用途 | 返回 |
-| --- | --- | --- |
-| `stage_list(event_content_id)` | 小游戏关卡/历史列表 | `stages`, `count`, `extra` |
-| `mission_list(event_content_id)` | 小游戏任务列表 | `mission_history_unique_ids`, `progress`, `count`, `extra` |
-| `shooting_lobby(event_content_id)` | Shooting 小游戏大厅 | `shooting_lobby`, `stage_history`, `account_currency`, `stage_count`, `extra` |
-| `table_board_sync(event_content_id)` | TableBoard 同步 | `table_board`, `stages`, `account_currency`, `stage_count`, `extra` |
-| `dream_maker_get_info(event_content_id)` | DreamMaker 信息 | `dream_maker`, `schedules`, `account_currency`, `schedule_count`, `extra` |
-| `defense_get_info(event_content_id)` | Defense 信息 | `defense`, `stage_history`, `account_currency`, `stage_count`, `extra` |
-| `road_puzzle_get_info(event_content_id)` | RoadPuzzle 信息 | `road_puzzle`, `stage_history`, `account_currency`, `stage_count`, `extra` |
-| `ccg_lobby(event_content_id)` | CCG 大厅 | `ccg`, `decks`, `account_currency`, `deck_count`, `extra` |
+### `client.mini_game.stage_list(event_content_id)`
+
+对应活动小游戏的关卡列表或游玩历史页面。
+
+返回结构：
+
+```python
+{
+    "stages": [{...}],
+    "count": 1,
+    "extra": {},
+}
+```
+
+示例：
 
 ```python
 stages = await client.mini_game.stage_list(event_content_id)
+```
+
+### `client.mini_game.mission_list(event_content_id)`
+
+对应活动小游戏任务页面。
+
+返回结构：
+
+```python
+{
+    "mission_history_unique_ids": [1, 2],
+    "progress": [{...}],
+    "count": 1,
+    "extra": {},
+}
+```
+
+示例：
+
+```python
 missions = await client.mini_game.mission_list(event_content_id)
+```
+
+### `client.mini_game.shooting_lobby(event_content_id)`
+
+对应 Shooting 类活动小游戏大厅，返回小游戏大厅状态、关卡历史和活动货币摘要。
+
+返回结构：
+
+```python
+{
+    "shooting_lobby": {...},
+    "stage_history": [{...}],
+    "account_currency": {...},
+    "stage_count": 1,
+    "extra": {},
+}
+```
+
+示例：
+
+```python
 shooting = await client.mini_game.shooting_lobby(event_content_id)
 ```
 
-本轮 live 中 `stage_list`、`mission_list`、`shooting_lobby` 有成功样本；其它小游戏接口需要对应开放赛季。
+### `client.mini_game.table_board_sync(event_content_id)`
+
+对应 TableBoard 桌游/棋盘类活动小游戏页面，同步棋盘状态、关卡和活动货币摘要。
+
+返回结构：
+
+```python
+{
+    "table_board": {...},
+    "stages": [{...}],
+    "account_currency": {...},
+    "stage_count": 1,
+    "extra": {},
+}
+```
+
+示例：
+
+```python
+table_board = await client.mini_game.table_board_sync(event_content_id)
+```
+
+### `client.mini_game.dream_maker_get_info(event_content_id)`
+
+对应 DreamMaker 类活动小游戏页面，返回小游戏状态、日程和活动货币摘要。
+
+返回结构：
+
+```python
+{
+    "dream_maker": {...},
+    "schedules": [{...}],
+    "account_currency": {...},
+    "schedule_count": 1,
+    "extra": {},
+}
+```
+
+示例：
+
+```python
+dream_maker = await client.mini_game.dream_maker_get_info(event_content_id)
+```
+
+### `client.mini_game.defense_get_info(event_content_id)`
+
+对应 Defense 类活动小游戏页面，返回防守小游戏状态、关卡历史和活动货币摘要。
+
+返回结构：
+
+```python
+{
+    "defense": {...},
+    "stage_history": [{...}],
+    "account_currency": {...},
+    "stage_count": 1,
+    "extra": {},
+}
+```
+
+示例：
+
+```python
+defense = await client.mini_game.defense_get_info(event_content_id)
+```
+
+### `client.mini_game.road_puzzle_get_info(event_content_id)`
+
+对应 RoadPuzzle 类活动小游戏页面，返回道路解谜状态、关卡历史和活动货币摘要。
+
+返回结构：
+
+```python
+{
+    "road_puzzle": {...},
+    "stage_history": [{...}],
+    "account_currency": {...},
+    "stage_count": 1,
+    "extra": {},
+}
+```
+
+示例：
+
+```python
+road_puzzle = await client.mini_game.road_puzzle_get_info(event_content_id)
+```
+
+### `client.mini_game.ccg_lobby(event_content_id)`
+
+对应 CCG 卡牌类活动小游戏大厅，返回 CCG 状态、卡组和活动货币摘要。这里只看大厅状态，不创建游戏、不进入关卡、不放弃游戏、不替换角色。
+
+返回结构：
+
+```python
+{
+    "ccg": {...},
+    "decks": [{...}],
+    "account_currency": {...},
+    "deck_count": 1,
+    "extra": {},
+}
+```
+
+示例：
+
+```python
+ccg = await client.mini_game.ccg_lobby(event_content_id)
+```
+
+本轮 live 中 `stage_list`、`mission_list`、`shooting_lobby` 有成功样本；其它小游戏方法需要对应开放赛季。
 
 ## Live 验证
 
-2026-06-16 使用小号优先、大号兜底做过 live 验证。验证过程只输出接口名、计数和错误码摘要，不保存请求包、响应包或 dump，不输出 session/profile/token。
+2026-06-16 使用小号优先、大号兜底做过 live 验证。验证过程只输出方法名、计数和错误码摘要，不保存请求包、响应包或 dump，不输出 session/profile/token。
 
-已在至少一个账号上 live 通过的 54 个接口：
+已在至少一个账号上 live 通过的 54 个方法：
 
 ```text
 account.tutorial
@@ -811,9 +1680,9 @@ system.version
 toast.list
 ```
 
-当前账号或当前活动上下文不足，已封装但本轮 live 未得到成功响应的 16 个接口：
+当前账号或当前活动上下文不足，已封装但本轮 live 未得到成功响应的 16 个方法：
 
-| 方法 | 本轮 live 结果 | 后续验证条件 |
+| 游戏功能/SDK 方法 | 本轮 live 结果 | 后续验证条件 |
 | --- | --- | --- |
 | `conquest.get_info(event_content_id)` | `ErrorCode=16 DataEntityNotFound` | 需要当前开放且账号可访问的占领战活动 ID。 |
 | `conquest.main_story_get_info(event_content_id)` | `ErrorCode=16 DataEntityNotFound` | 需要当前开放且账号可访问的占领战主线活动 ID。 |

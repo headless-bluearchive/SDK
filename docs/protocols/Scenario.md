@@ -1,4 +1,4 @@
-# Scenario 协议
+﻿# Scenario 协议
 
 剧情模块相关协议。
 
@@ -34,7 +34,7 @@
 - 作用：剧情：获取列表数据
 - RequestClass：`ScenarioListRequest`
 - ResponseClass：`ScenarioListResponse`
-- 状态：结构参考，发包前需要用真实网关响应验证。
+- 状态：SDK 已封装为游戏页面状态读取方法；实际可用性仍以真实账号当前开放内容和网关返回为准。
 
 #### Request 字段
 
@@ -209,7 +209,7 @@
 - 作用：剧情：ConfirmMain关卡
 - RequestClass：`ScenarioConfirmMainStageRequest`
 - ResponseClass：`ScenarioConfirmMainStageResponse`
-- 状态：结构参考，发包前需要用真实网关响应验证。
+- 状态：SDK 已封装为剧情关卡结果确认方法 `client.scenario.confirm_main_stage(stage_unique_id, confirm=True)`；默认 `validate=True` 会本地拦截。当前 live 账号没有可确认的活跃剧情关卡 SaveData，`Scenario_List` 历史记录不能作为默认前置条件；只有调用方先获得活跃关卡上下文后，才应传 `validate=False` 发送。
 
 #### Request 字段
 
@@ -365,7 +365,7 @@
 - 作用：剧情：SkipMain关卡
 - RequestClass：`ScenarioSkipMainStageRequest`
 - ResponseClass：`ScenarioSkipMainStageResponse`
-- 状态：结构参考，发包前需要用真实网关响应验证。
+- 状态：SDK 已封装为剧情关卡跳过方法 `client.scenario.skip_main_stage(stage_unique_id, confirm=True)`；默认 `validate=True` 会本地拦截。当前 live 账号没有可跳过的活跃剧情关卡 SaveData，`Scenario_List` 历史记录不能作为默认前置条件；只有调用方先获得活跃关卡上下文后，才应传 `validate=False` 发送。
 
 #### Request 字段
 

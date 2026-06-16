@@ -3,13 +3,17 @@ from __future__ import annotations
 from typing import Any
 
 from modules.game.base import GameService
-from modules.game.common import extra_fields
+from modules.game.common import as_list, extra_fields
 
 
 class AccountService(GameService):
     async def currency(self) -> dict[str, Any]:
         payload = await self.request("AccountCurrencySyncRequest")
         return format_account_currency(payload)
+
+    async def tutorial(self) -> dict[str, Any]:
+        payload = await self.request("AccountGetTutorialRequest")
+        return format_account_tutorial(payload)
 
 
 def format_account_currency(payload: dict[str, Any]) -> dict[str, Any]:
@@ -25,5 +29,17 @@ def format_account_currency(payload: dict[str, Any]) -> dict[str, Any]:
         "currency": currency_dict if isinstance(currency_dict, dict) else {},
         "update_time": update_time_dict if isinstance(update_time_dict, dict) else {},
         "expired_currency": payload.get("ExpiredCurrency") if isinstance(payload.get("ExpiredCurrency"), dict) else {},
+        "extra": extra_fields(payload, known_keys),
+    }
+
+
+def format_account_tutorial(payload: dict[str, Any]) -> dict[str, Any]:
+    known_keys = {
+        "TutorialIds",
+    }
+    tutorial_ids = as_list(payload.get("TutorialIds"))
+    return {
+        "tutorial_ids": tutorial_ids,
+        "count": len(tutorial_ids),
         "extra": extra_fields(payload, known_keys),
     }

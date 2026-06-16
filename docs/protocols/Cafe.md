@@ -1,4 +1,4 @@
-# Cafe 协议
+﻿# Cafe 协议
 
 咖啡厅模块相关协议。
 
@@ -448,7 +448,7 @@ result = await client.cafe.receive_currency(cafe_db_id=cafe_db_id)
 - 作用：咖啡厅：获取咖啡厅奖杯历史
 - RequestClass：`CafeTrophyHistoryRequest`
 - ResponseClass：`CafeTrophyHistoryResponse`
-- 状态：结构参考，发包前需要用真实网关响应验证。
+- 状态：SDK 已封装为游戏页面状态读取方法；实际可用性仍以真实账号当前开放内容和网关返回为准。
 
 #### Request 字段
 

@@ -1,4 +1,4 @@
-# Clan 协议
+﻿# Clan 协议
 
 社团模块相关协议。
 
@@ -38,7 +38,7 @@
 - 作用：社团：获取或进入模块大厅
 - RequestClass：`ClanLobbyRequest`
 - ResponseClass：`ClanLobbyResponse`
-- 状态：结构参考，发包前需要用真实网关响应验证。
+- 状态：SDK 已封装为游戏页面状态读取方法；实际可用性仍以真实账号当前开放内容和网关返回为准。
 
 #### Request 字段
 
@@ -80,7 +80,7 @@
 - 作用：社团：搜索
 - RequestClass：`ClanSearchRequest`
 - ResponseClass：`ClanSearchResponse`
-- 状态：结构参考，发包前需要用真实网关响应验证。
+- 状态：SDK 已封装为游戏页面状态读取方法；实际可用性仍以真实账号当前开放内容和网关返回为准。
 
 #### Request 字段
 
@@ -125,7 +125,7 @@
 - 作用：社团：成员
 - RequestClass：`ClanMemberRequest`
 - ResponseClass：`ClanMemberResponse`
-- 状态：结构参考，发包前需要用真实网关响应验证。
+- 状态：SDK 已封装为游戏页面状态读取方法；实际可用性仍以真实账号当前开放内容和网关返回为准。
 
 #### Request 字段
 
@@ -328,7 +328,7 @@
 - 作用：社团：获取成员列表
 - RequestClass：`ClanMemberListRequest`
 - ResponseClass：`ClanMemberListResponse`
-- 状态：结构参考，发包前需要用真实网关响应验证。
+- 状态：SDK 已封装为游戏页面状态读取方法；实际可用性仍以真实账号当前开放内容和网关返回为准。
 
 #### Request 字段
 
@@ -365,7 +365,7 @@
 - 作用：社团：My助战列表
 - RequestClass：`ClanMyAssistListRequest`
 - ResponseClass：`ClanMyAssistListResponse`
-- 状态：结构参考，发包前需要用真实网关响应验证。
+- 状态：SDK 已封装为游戏页面状态读取方法；实际可用性仍以真实账号当前开放内容和网关返回为准。
 
 #### Request 字段
 
@@ -445,7 +445,7 @@
 - 作用：社团：全部助战列表
 - RequestClass：`ClanAllAssistListRequest`
 - ResponseClass：`ClanAllAssistListResponse`
-- 状态：结构参考，发包前需要用真实网关响应验证。
+- 状态：SDK 已封装为游戏页面状态读取方法；实际可用性仍以真实账号当前开放内容和网关返回为准。
 
 #### Request 字段
 

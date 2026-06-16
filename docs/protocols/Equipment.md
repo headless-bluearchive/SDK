@@ -1,4 +1,4 @@
-# Equipment 协议
+﻿# Equipment 协议
 
 装备模块相关协议。
 
@@ -24,7 +24,7 @@
 - 作用：装备：获取列表数据
 - RequestClass：`EquipmentItemListRequest`
 - ResponseClass：`EquipmentItemListResponse`
-- 状态：结构参考，发包前需要用真实网关响应验证。
+- 状态：SDK 已封装为游戏页面状态读取方法；实际可用性仍以真实账号当前开放内容和网关返回为准。
 
 #### Request 字段
 

@@ -1,4 +1,4 @@
-# SchoolDungeon 协议
+﻿# SchoolDungeon 协议
 
 学院交流会模块相关协议。
 
@@ -24,7 +24,7 @@
 - 作用：学院交流会：获取列表数据
 - RequestClass：`SchoolDungeonListRequest`
 - ResponseClass：`SchoolDungeonListResponse`
-- 状态：结构参考，发包前需要用真实网关响应验证。
+- 状态：SDK 已封装为游戏页面状态读取方法；实际可用性仍以真实账号当前开放内容和网关返回为准。
 
 #### Request 字段
 

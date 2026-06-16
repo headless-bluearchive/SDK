@@ -21,7 +21,7 @@ logs/
 tmp/
 temp/
 external/
-runtime/
+/runtime/
 .runtime/
 BlueArchive_core_packet/
 core/data/students_cn.json

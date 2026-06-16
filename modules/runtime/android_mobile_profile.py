@@ -13,6 +13,7 @@ from urllib.request import Request, urlopen
 from config.game import DEFAULTS
 from config.paths import DEFAULT_REPORT_DIR
 from core.error import NetworkError, RuntimeProfileError
+from modules.runtime.ngsm_token import NGSM_FINGERPRINT_VERSION, with_ngsm_fingerprint_defaults
 
 DEFAULT_ANDROID_MOBILE_PROFILE_PATH = (
     DEFAULT_REPORT_DIR.parent / "runtime_profiles" / "android_mobile_profile.json"
@@ -79,6 +80,12 @@ class AndroidMobileProfile:
     mcc: int = 0
     mnc: int = 0
     carrier_name: str = ""
+    mac: str = ""
+    display_name: str = ""
+    volume_serial: str = ""
+    disk_serial: str = ""
+    filetime: str = ""
+    version: str = NGSM_FINGERPRINT_VERSION
 
     def to_dict(self) -> dict[str, Any]:
         return asdict(self)
@@ -91,7 +98,7 @@ def load_android_mobile_profile(path: str | Path) -> AndroidMobileProfile:
         raise RuntimeProfileError(f"Android mobile profile must be a JSON object: {profile_path}")
     allowed = AndroidMobileProfile.__dataclass_fields__
     values = {key: data.get(key) for key in allowed if key in data}
-    return AndroidMobileProfile(**values)
+    return with_ngsm_fingerprint_defaults(AndroidMobileProfile(**values))
 
 
 def generate_android_mobile_profile(
@@ -113,7 +120,7 @@ def generate_android_mobile_profile(
     adid = str(uuid.UUID(int=rng.getrandbits(128), version=4))
     platform_store_uuid = str(uuid.UUID(int=rng.getrandbits(128), version=4))
     app_set_id = str(uuid.UUID(int=rng.getrandbits(128), version=4))
-    return AndroidMobileProfile(
+    profile = AndroidMobileProfile(
         seed=resolved_seed,
         source=generated["source"],
         country=country.upper() or "TW",
@@ -139,6 +146,7 @@ def generate_android_mobile_profile(
         mnc=int(network.get("mnc") or 0),
         carrier_name=str(network.get("carrier_name") or ""),
     )
+    return with_ngsm_fingerprint_defaults(profile)
 
 
 def fetch_galaxy_store_client_version(

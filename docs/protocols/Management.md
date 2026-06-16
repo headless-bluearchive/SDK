@@ -1,4 +1,4 @@
-# Management 协议
+﻿# Management 协议
 
 运营管理模块相关协议。
 
@@ -19,7 +19,7 @@
 - 作用：经营/管理玩法：Banner列表
 - RequestClass：`ManagementBannerListRequest`
 - ResponseClass：`ManagementBannerListResponse`
-- 状态：结构参考，发包前需要用真实网关响应验证。
+- 状态：SDK 已封装为游戏页面状态读取方法；实际可用性仍以真实账号当前开放内容和网关返回为准。
 
 #### Request 字段
 
@@ -37,7 +37,7 @@
 - 作用：经营/管理玩法：ProtocolLock列表
 - RequestClass：`ManagementProtocolLockListRequest`
 - ResponseClass：`ManagementProtocolLockListResponse`
-- 状态：结构参考，发包前需要用真实网关响应验证。
+- 状态：SDK 已封装为游戏页面状态读取方法；实际可用性仍以真实账号当前开放内容和网关返回为准。
 
 #### Request 字段
 

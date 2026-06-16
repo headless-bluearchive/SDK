@@ -122,15 +122,38 @@ reward = await client.mail.receive([mail_server_id])
 - 作用：邮件：列表Semi常驻
 - RequestClass：`MailListSemiPermanentRequest`
 - ResponseClass：`MailListSemiPermanentResponse`
-- 状态：待补结构。
+- 状态：SDK 已封装并通过 live 只读验证。当前测试账号返回空列表结构。
+
+#### SDK 方法
+
+```python
+mails = await client.mail.list_semi_permanent()
+```
+
+返回结构：
+
+| 字段 | 说明 |
+| --- | --- |
+| `mails` | 半永久邮件数据列表。 |
+| `count` | 服务端返回的邮件数量。 |
+| `extra` | 服务端返回中的其他顶层字段。 |
 
 #### Request 字段
 
-无字段或未匹配到结构。
+| 字段 | 类型 | 说明 |
+| --- | --- | --- |
+| `IsDescending` | `bool` | 是否倒序。 |
+| `IsReadMail` | `bool` | 是否读取已读邮件。 |
+| `mailSortingRule` | `MailSortingRule` | 邮件排序规则。 |
+| `PivotIndex` | `long` | 分页基准索引。 |
+| `PivotTime` | `DateTime` | 分页基准时间。 |
 
 #### Response 字段
 
-无字段或未匹配到结构。
+| 字段 | 类型 | 说明 |
+| --- | --- | --- |
+| `MailDBs` | `List<MailDB>?` | Mail 数据列表。 |
+| `Count` | `long` | 数量。 |
 
 ### Mail_ReceiveSemiPermanent
 
@@ -138,12 +161,31 @@ reward = await client.mail.receive([mail_server_id])
 - 作用：邮件：领取Semi常驻
 - RequestClass：`MailReceiveSemiPermanentRequest`
 - ResponseClass：`MailReceiveSemiPermanentResponse`
-- 状态：待补结构。
+- 状态：SDK 已封装。状态变更调用前会先用 `Mail_ListSemiPermanent` 校验当前邮件存在；当前 live 账号无可领取半永久邮件，因此未盲发领取。
+
+#### SDK 方法
+
+```python
+reward = await client.mail.receive_semi_permanent(mail_db_id, product_id=product_id)
+```
+
+`product_id` 可选；如果传入，SDK 会和当前半永久邮件列表里的 `ProductId` 做一致性校验。
 
 #### Request 字段
 
-无字段或未匹配到结构。
+| 字段 | 类型 | 说明 |
+| --- | --- | --- |
+| `MailDBId` | `long` | 半永久邮件 DB ID。 |
+| `ProductId` | `Nullable<Int64>` | 商品 ID，可选。 |
 
 #### Response 字段
 
-无字段或未匹配到结构。
+| 字段 | 类型 | 说明 |
+| --- | --- | --- |
+| `MailDBId` | `long` | 已领取的半永久邮件 DB ID。 |
+| `ParcelResultDB` | `ParcelResultDB?` | 奖励或道具变更结果。 |
+| `AppliedMonthlyProductPurchaseDB` | `MonthlyProductPurchaseDB?` | 已应用月卡购买数据。 |
+| `AppliedDailyRecordDB` | `DailyRecordDB?` | 已应用 DailyRecord 数据。 |
+| `AppliedBattlePassProductPurchaseDB` | `BattlePassProductPurchaseDB?` | 已应用 BattlePass 购买数据。 |
+| `AppliedBattlePassInfoDB` | `BattlePassInfoDB?` | 已应用 BattlePass 信息。 |
+| `BattlePassInfoDBs` | `List<BattlePassInfoDB>?` | BattlePassInfo 数据列表。 |

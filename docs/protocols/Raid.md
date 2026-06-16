@@ -1,4 +1,4 @@
-# Raid 协议
+﻿# Raid 协议
 
 总力战模块相关协议。
 
@@ -35,7 +35,7 @@
 - 作用：总力战：获取列表数据
 - RequestClass：`RaidListRequest`
 - ResponseClass：`RaidListResponse`
-- 状态：结构参考，发包前需要用真实网关响应验证。
+- 状态：SDK 已封装为游戏页面状态读取方法；实际可用性仍以真实账号当前开放内容和网关返回为准。
 
 #### Request 字段
 
@@ -59,7 +59,7 @@
 - 作用：总力战：Complete列表
 - RequestClass：`RaidCompleteListRequest`
 - ResponseClass：`RaidCompleteListResponse`
-- 状态：结构参考，发包前需要用真实网关响应验证。
+- 状态：SDK 已封装为游戏页面状态读取方法；实际可用性仍以真实账号当前开放内容和网关返回为准。
 
 #### Request 字段
 
@@ -102,7 +102,7 @@
 - 作用：总力战：搜索
 - RequestClass：`RaidSearchRequest`
 - ResponseClass：`RaidSearchResponse`
-- 状态：结构参考，发包前需要用真实网关响应验证。
+- 状态：SDK 已封装为游戏页面状态读取方法；实际可用性仍以真实账号当前开放内容和网关返回为准。
 
 #### Request 字段
 
@@ -259,7 +259,7 @@
 - 作用：总力战：获取或进入模块大厅
 - RequestClass：`RaidLobbyRequest`
 - ResponseClass：`RaidLobbyResponse`
-- 状态：结构参考，发包前需要用真实网关响应验证。
+- 状态：SDK 已封装为游戏页面状态读取方法；实际可用性仍以真实账号当前开放内容和网关返回为准。
 
 #### Request 字段
 
@@ -281,7 +281,7 @@
 - 作用：总力战：获取对手列表
 - RequestClass：`RaidOpponentListRequest`
 - ResponseClass：`RaidOpponentListResponse`
-- 状态：结构参考，发包前需要用真实网关响应验证。
+- 状态：SDK 已封装为游戏页面状态读取方法；实际可用性仍以真实账号当前开放内容和网关返回为准。
 
 #### Request 字段
 
@@ -368,7 +368,7 @@
 - 作用：总力战：获取BestTeam
 - RequestClass：`RaidGetBestTeamRequest`
 - ResponseClass：`RaidGetBestTeamResponse`
-- 状态：结构参考，发包前需要用真实网关响应验证。
+- 状态：SDK 已封装为游戏页面状态读取方法；实际可用性仍以真实账号当前开放内容和网关返回为准。
 
 #### Request 字段
 
@@ -388,7 +388,7 @@
 - 作用：总力战：排行Index
 - RequestClass：`RaidRankingIndexRequest`
 - ResponseClass：`RaidRankingIndexResponse`
-- 状态：结构参考，发包前需要用真实网关响应验证。
+- 状态：SDK 已封装为游戏页面状态读取方法；实际可用性仍以真实账号当前开放内容和网关返回为准。
 
 #### Request 字段
 

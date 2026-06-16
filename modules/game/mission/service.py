@@ -31,6 +31,10 @@ class MissionService(GameService):
         payload = await self.request("MissionListRequest", fields)
         return format_mission_list(payload)
 
+    async def guide_season_list(self) -> dict[str, Any]:
+        payload = await self.request("GuideMissionSeasonListRequest")
+        return format_guide_mission_season_list(payload)
+
     async def reward(
         self,
         mission_unique_id: int,
@@ -150,6 +154,18 @@ def format_mission_multiple_reward(payload: dict[str, Any]) -> dict[str, Any]:
         "added_histories": _as_list(payload.get("AddedHistoryDBs")),
         "mission_progress": _as_list(payload.get("MissionProgressDBs")),
         "parcel_result": payload.get("ParcelResultDB"),
+        "extra": {key: value for key, value in payload.items() if key not in known_keys},
+    }
+
+
+def format_guide_mission_season_list(payload: dict[str, Any]) -> dict[str, Any]:
+    known_keys = {
+        "GuideMissionSeasonDBs",
+    }
+    seasons = _as_list(payload.get("GuideMissionSeasonDBs"))
+    return {
+        "guide_mission_seasons": seasons,
+        "count": len(seasons),
         "extra": {key: value for key, value in payload.items() if key not in known_keys},
     }
 

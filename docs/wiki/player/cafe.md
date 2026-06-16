@@ -1,35 +1,43 @@
 # 咖啡厅
 
-咖啡厅目前封装了三件事：读状态、摸头、收收益。不是装修模拟器，家具摆放、预设编辑那些高风险改状态接口先不碰。
+这一页对应游戏里的咖啡厅页面：查看咖啡厅状态、给来访学生摸头、领取咖啡厅产出，以及查看奖杯历史。SDK 不处理家具摆放、预设编辑、邀请券使用等更复杂的装修/状态变更功能。
 
-## 读取状态
+## 咖啡厅页面状态
+
+对应打开咖啡厅后看到的咖啡厅等级、家具、来访学生和可互动状态。
 
 ```python
 state = await client.cafe.get()
 ```
 
-返回重点：
+通常不需要参数；SDK 会使用当前账号的 `account_id`。如果要查询指定账号的咖啡厅，可以传 `account_server_id`。
 
-| 字段 | 说明 |
-| --- | --- |
-| `cafes` | 咖啡厅列表，当前支持两个咖啡厅。 |
-| `furniture` | 家具状态。 |
-| `interaction_targets` | SDK 整理出的可摸头目标。 |
+返回结构：
 
-`CafeVisitCharacterDBs` 在 live 里可能是 map：
-
-```json
+```python
 {
-  "10100": {
-    "ServerId": 853994605,
-    "UniqueId": 10100
-  }
+    "cafe": {...},                 # 主咖啡厅状态
+    "cafes": [...],                # 咖啡厅列表，当前游戏通常有两个咖啡厅
+    "furniture": [...],            # 家具状态
+    "interaction_targets": [...],  # SDK 整理出的可摸头目标
+    "extra": {},
 }
 ```
 
-真正给 `Cafe_Interact.CharacterId` 用的是 map key / `UniqueId`，不是 `ServerId`。这个坑 SDK 已经填了。
+`interaction_targets` 的单项长这样：
+
+```python
+{
+    "CafeDBId": 4077273,
+    "CharacterId": 10100,
+}
+```
+
+live 中 `CafeVisitCharacterDBs` 有时是 map，真正给摸头请求使用的是 map key 或 `UniqueId`，不是 `ServerId`。SDK 已经把这个差异整理进 `interaction_targets`。
 
 ## 摸头
+
+对应游戏里点击咖啡厅来访学生获得羁绊点数。这个动作会改变账号状态。
 
 ```python
 state = await client.cafe.get()
@@ -41,24 +49,76 @@ for target in state["interaction_targets"]:
     )
 ```
 
-如果只想让 SDK 自动选一个目标：
+如果当前只有一个可摸头目标，可以让 SDK 自动选择：
 
 ```python
 result = await client.cafe.interact()
 ```
 
-多个可摸头目标同时存在时，SDK 会让你显式传 `cafe_db_id` 和 `character_id`，免得替你乱点。
+参数说明：
 
-## 收收益
+| 参数 | 游戏含义 |
+| --- | --- |
+| `cafe_db_id` | 咖啡厅实例 ID，来自 `interaction_targets`。 |
+| `character_id` | 可摸头学生 ID，来自 `interaction_targets`。 |
+| `validate` | 默认 `True`，会先读取咖啡厅状态确认目标存在。 |
+
+返回结构：
+
+```python
+{
+    "cafe": {...},           # 摸头后的咖啡厅状态
+    "character": {...},      # 被互动学生的状态更新
+    "parcel_result": {...},  # 奖励/资源变化
+    "extra": {},
+}
+```
+
+多个可摸头目标同时存在时，SDK 会要求你显式传 `cafe_db_id` 和 `character_id`。
+
+## 领取咖啡厅收益
+
+对应游戏里点击咖啡厅收益领取。这个动作会改变账号资源。
 
 ```python
 result = await client.cafe.receive_currency()
 ```
 
-`receive_currency()` 默认会先读咖啡厅状态，确认 `cafe_db_id` 存在。要指定哪个咖啡厅就传：
+要指定某个咖啡厅：
 
 ```python
-await client.cafe.receive_currency(cafe_db_id=4077273)
+result = await client.cafe.receive_currency(cafe_db_id=4077273)
 ```
 
-live 验证：`Cafe_Get`、`Cafe_Interact`、`Cafe_ReceiveCurrency` 均已接入测试过。收益领取属于状态变更，外部别拿它当只读接口循环刷。
+返回结构：
+
+```python
+{
+    "cafe": {...},
+    "cafes": [...],
+    "parcel_result": {...},
+    "extra": {},
+}
+```
+
+`receive_currency()` 默认会先读取咖啡厅状态，确认 `cafe_db_id` 存在。
+
+## 奖杯历史
+
+对应咖啡厅里可展示的 Raid/赛季相关奖杯历史。
+
+```python
+history = await client.cafe.trophy_history()
+```
+
+返回结构：
+
+```python
+{
+    "raid_season_ranking_history": [...],
+    "count": 0,
+    "extra": {},
+}
+```
+
+live 验证：`Cafe_Get`、`Cafe_Interact`、`Cafe_ReceiveCurrency` 均已接入测试过。收益领取和摸头属于账号状态变更，不要把它们放进循环轮询。

@@ -1,4 +1,4 @@
-# Attachment 协议
+﻿# Attachment 协议
 
 附件与头像框模块相关协议。
 
@@ -21,7 +21,7 @@
 - 作用：附件与头像框：获取数据
 - RequestClass：`AttachmentGetRequest`
 - ResponseClass：`AttachmentGetResponse`
-- 状态：结构参考，发包前需要用真实网关响应验证。
+- 状态：SDK 已封装为游戏页面状态读取方法；实际可用性仍以真实账号当前开放内容和网关返回为准。
 
 #### Request 字段
 
@@ -39,7 +39,7 @@
 - 作用：附件与头像框：Emblem列表
 - RequestClass：`AttachmentEmblemListRequest`
 - ResponseClass：`AttachmentEmblemListResponse`
-- 状态：结构参考，发包前需要用真实网关响应验证。
+- 状态：SDK 已封装为游戏页面状态读取方法；实际可用性仍以真实账号当前开放内容和网关返回为准。
 
 #### Request 字段
 

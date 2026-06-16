@@ -1,4 +1,4 @@
-# EventContent 协议
+﻿# EventContent 协议
 
 EventContent 是限时活动的主协议集合。SDK 文档只保留活动状态、活动商店、常驻列表、扫荡相关和普通资料查询类协议。
 
@@ -6,7 +6,7 @@ EventContent 是限时活动的主协议集合。SDK 文档只保留活动状态
 
 ## 接入原则
 
-- 先通过登录同步、活动列表或活动大厅接口确认活动是否开放。
+- 先通过登录同步、活动列表或活动大厅方法确认活动是否开放。
 - 不写死 `EventContentId`、关卡 ID、商店 ID、活动货币或轮次。
 - 只读查询和扫荡类协议可以优先接入。
 - 会直接影响公平性的活动协议不在 SDK 文档中提供字段结构。
@@ -61,7 +61,7 @@ EventContent 是限时活动的主协议集合。SDK 文档只保留活动状态
 - 作用：活动内容：Adventure列表
 - RequestClass：`EventContentAdventureListRequest`
 - ResponseClass：`EventContentAdventureListResponse`
-- 状态：结构参考，发包前需要用真实网关响应验证。
+- 状态：SDK 已封装为游戏页面状态读取方法；实际可用性仍以真实账号当前开放内容和网关返回为准。
 
 #### Request 字段
 
@@ -290,7 +290,7 @@ EventContent 是限时活动的主协议集合。SDK 文档只保留活动状态
 - 作用：活动内容：商店列表
 - RequestClass：`EventContentShopListRequest`
 - ResponseClass：`EventContentShopListResponse`
-- 状态：结构参考，发包前需要用真实网关响应验证。
+- 状态：SDK 已封装为游戏页面状态读取方法；实际可用性仍以真实账号当前开放内容和网关返回为准。
 
 #### Request 字段
 
@@ -455,7 +455,7 @@ EventContent 是限时活动的主协议集合。SDK 文档只保留活动状态
 - 作用：活动内容：Box招募商店列表
 - RequestClass：`EventContentBoxGachaShopListRequest`
 - ResponseClass：`EventContentBoxGachaShopListResponse`
-- 状态：结构参考，发包前需要用真实网关响应验证。
+- 状态：SDK 已封装为游戏页面状态读取方法；实际可用性仍以真实账号当前开放内容和网关返回为准。
 
 #### Request 字段
 
@@ -476,7 +476,7 @@ EventContent 是限时活动的主协议集合。SDK 文档只保留活动状态
 - 作用：活动内容：Collection列表
 - RequestClass：`EventContentCollectionListRequest`
 - ResponseClass：`EventContentCollectionListResponse`
-- 状态：结构参考，发包前需要用真实网关响应验证。
+- 状态：SDK 已封装为游戏页面状态读取方法；实际可用性仍以真实账号当前开放内容和网关返回为准。
 
 #### Request 字段
 
@@ -497,7 +497,7 @@ EventContent 是限时活动的主协议集合。SDK 文档只保留活动状态
 - 作用：活动内容：CollectionFor任务
 - RequestClass：`EventContentCollectionForMissionRequest`
 - ResponseClass：`EventContentCollectionForMissionResponse`
-- 状态：结构参考，发包前需要用真实网关响应验证。
+- 状态：SDK 已封装为游戏页面状态读取方法；实际可用性仍以真实账号当前开放内容和网关返回为准。
 
 #### Request 字段
 
@@ -563,7 +563,7 @@ EventContent 是限时活动的主协议集合。SDK 文档只保留活动状态
 - 作用：活动内容：Location获取信息
 - RequestClass：`EventContentLocationGetInfoRequest`
 - ResponseClass：`EventContentLocationGetInfoResponse`
-- 状态：结构参考，发包前需要用真实网关响应验证。
+- 状态：SDK 已封装为游戏页面状态读取方法；实际可用性仍以真实账号当前开放内容和网关返回为准。
 
 #### Request 字段
 
@@ -608,7 +608,7 @@ EventContent 是限时活动的主协议集合。SDK 文档只保留活动状态
 - 作用：活动内容：Sub活动大厅
 - RequestClass：`EventContentSubEventLobbyRequest`
 - ResponseClass：`EventContentSubEventLobbyResponse`
-- 状态：结构参考，发包前需要用真实网关响应验证。
+- 状态：SDK 已封装为游戏页面状态读取方法；实际可用性仍以真实账号当前开放内容和网关返回为准。
 
 #### Request 字段
 
@@ -651,7 +651,7 @@ EventContent 是限时活动的主协议集合。SDK 文档只保留活动状态
 - 作用：活动内容：DiceRace大厅
 - RequestClass：`EventContentDiceRaceLobbyRequest`
 - ResponseClass：`EventContentDiceRaceLobbyResponse`
-- 状态：结构参考，发包前需要用真实网关响应验证。
+- 状态：SDK 已封装为游戏页面状态读取方法；实际可用性仍以真实账号当前开放内容和网关返回为准。
 
 #### Request 字段
 
@@ -715,7 +715,7 @@ EventContent 是限时活动的主协议集合。SDK 文档只保留活动状态
 - 作用：活动内容：常驻列表
 - RequestClass：`EventContentPermanentListRequest`
 - ResponseClass：`EventContentPermanentListResponse`
-- 状态：结构参考，发包前需要用真实网关响应验证。
+- 状态：SDK 已封装为游戏页面状态读取方法；实际可用性仍以真实账号当前开放内容和网关返回为准。
 
 #### Request 字段
 
@@ -757,7 +757,7 @@ EventContent 是限时活动的主协议集合。SDK 文档只保留活动状态
 - 作用：活动内容：Treasure大厅
 - RequestClass：`EventContentTreasureLobbyRequest`
 - ResponseClass：`EventContentTreasureLobbyResponse`
-- 状态：结构参考，发包前需要用真实网关响应验证。
+- 状态：SDK 已封装为游戏页面状态读取方法；实际可用性仍以真实账号当前开放内容和网关返回为准。
 
 #### Request 字段
 
@@ -801,7 +801,7 @@ EventContent 是限时活动的主协议集合。SDK 文档只保留活动状态
 - 作用：活动内容：Clue搜索获取信息
 - RequestClass：`EventContentClueSearchGetInfoRequest`
 - ResponseClass：`EventContentClueSearchGetInfoResponse`
-- 状态：待补结构。
+- 状态：SDK 已封装为游戏页面状态读取方法；实际可用性仍以真实账号当前开放内容和网关返回为准。
 
 #### Request 字段
 

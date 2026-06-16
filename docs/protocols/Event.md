@@ -1,4 +1,4 @@
-# Event 协议
+﻿# Event 协议
 
 Event 模块相关协议。
 
@@ -21,7 +21,7 @@ Event 模块相关协议。
 - 作用：活动：获取列表
 - RequestClass：`EventListRequest`
 - ResponseClass：`EventListResponse`
-- 状态：结构参考，发包前需要用真实网关响应验证。
+- 状态：SDK 已封装为游戏页面状态读取方法；实际可用性仍以真实账号当前开放内容和网关返回为准。
 
 #### Request 字段
 
@@ -39,7 +39,7 @@ Event 模块相关协议。
 - 作用：活动：获取Image
 - RequestClass：`EventImageRequest`
 - ResponseClass：`EventImageResponse`
-- 状态：结构参考，发包前需要用真实网关响应验证。
+- 状态：SDK 已封装为游戏页面状态读取方法；实际可用性仍以真实账号当前开放内容和网关返回为准。
 
 #### Request 字段
 

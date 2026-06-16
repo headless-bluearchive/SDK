@@ -34,6 +34,23 @@ def optional_int(name: str, value: Any) -> int | None:
     return result
 
 
+def int_list(name: str, values: Any, *, allow_empty: bool = True) -> list[int]:
+    if values is None:
+        if allow_empty:
+            return []
+        raise UnsafeOperationError(f"{name} is required")
+    if not isinstance(values, (list, tuple)):
+        raise UnsafeOperationError(f"{name} must be a list")
+    result = [required_int(name, value) for value in values]
+    if not allow_empty and not result:
+        raise UnsafeOperationError(f"{name} must not be empty")
+    return result
+
+
+def compact_fields(**fields: Any) -> dict[str, Any]:
+    return {key: value for key, value in fields.items() if value is not None}
+
+
 def normalize_id_map(value: Any) -> dict[int, list[int]]:
     if not isinstance(value, dict):
         return {}
@@ -52,6 +69,12 @@ def normalize_id_map(value: Any) -> dict[int, list[int]]:
 
 def extra_fields(payload: dict[str, Any], known_keys: set[str]) -> dict[str, Any]:
     return {key: value for key, value in payload.items() if key not in known_keys}
+
+
+def format_payload(payload: dict[str, Any], known_keys: set[str], **fields: Any) -> dict[str, Any]:
+    result = dict(fields)
+    result["extra"] = extra_fields(payload, known_keys)
+    return result
 
 
 def _safe_int(value: Any) -> int | None:

@@ -1,4 +1,4 @@
-# Toast 协议
+﻿# Toast 协议
 
 Toast 模块相关协议。
 
@@ -18,7 +18,7 @@ Toast 模块相关协议。
 - 作用：Toast 提示：获取列表数据
 - RequestClass：`ToastListRequest`
 - ResponseClass：`ToastListResponse`
-- 状态：结构参考，发包前需要用真实网关响应验证。
+- 状态：SDK 已封装为游戏页面状态读取方法；实际可用性仍以真实账号当前开放内容和网关返回为准。
 
 #### Request 字段
 

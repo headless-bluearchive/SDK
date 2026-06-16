@@ -1,4 +1,4 @@
-# Shop 协议
+﻿# Shop 协议
 
 商店模块相关协议。
 
@@ -140,7 +140,7 @@ shops = await client.shop.list()
 - 作用：商店/招募：获取招募列表
 - RequestClass：`ShopGachaRecruitListRequest`
 - ResponseClass：`ShopGachaRecruitListResponse`
-- 状态：结构参考，发包前需要用真实网关响应验证。
+- 状态：SDK 已封装为游戏页面状态读取方法；实际可用性仍以真实账号当前开放内容和网关返回为准。
 
 #### Request 字段
 
@@ -191,7 +191,7 @@ shops = await client.shop.list()
 result = await client.shop.buy_ap(shop_unique_id, purchase_count=1, confirm=True)
 ```
 
-该接口会消耗资源，不会被 SDK 默认自动调用。
+这个方法会消耗资源，不会被 SDK 默认自动调用。
 
 #### Request 字段
 
@@ -216,7 +216,7 @@ result = await client.shop.buy_ap(shop_unique_id, purchase_count=1, confirm=True
 - 作用：商店/招募：Beforehand招募获取
 - RequestClass：`ShopBeforehandGachaGetRequest`
 - ResponseClass：`ShopBeforehandGachaGetResponse`
-- 状态：结构参考，发包前需要用真实网关响应验证。
+- 状态：SDK 已封装为游戏页面状态读取方法；实际可用性仍以真实账号当前开放内容和网关返回为准。
 
 #### Request 字段
 
@@ -235,7 +235,7 @@ result = await client.shop.buy_ap(shop_unique_id, purchase_count=1, confirm=True
 - 作用：商店/招募：获取自选 Pickup 招募状态
 - RequestClass：`ShopPickupSelectionGachaGetRequest`
 - ResponseClass：`ShopPickupSelectionGachaGetResponse`
-- 状态：结构参考，发包前需要用真实网关响应验证。
+- 状态：SDK 已封装为游戏页面状态读取方法；实际可用性仍以真实账号当前开放内容和网关返回为准。
 
 #### Request 字段
 

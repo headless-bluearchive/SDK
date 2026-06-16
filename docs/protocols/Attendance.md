@@ -23,7 +23,7 @@ status = client.attendance.status()
 reward = await client.attendance.reward()
 ```
 
-`reward()` / `claim()` 是状态变更接口。当前 live 结构里 `AttendanceBookRewards` 实际是签到簿数据，`AttendanceHistoryDBs.AttendedDay` 是已签到天数记录；SDK 会根据签到簿 `UniqueId / BookSize` 与历史中的最后签到日期推导今天应领取的 `Day`，再调用 `Attendance_Reward`。如果无法推导出可领取天数，SDK 会拒绝发包。
+`reward()` / `claim()` 对应游戏签到弹窗里的领取按钮，会改变签到历史和账号资源。当前 live 结构里 `AttendanceBookRewards` 实际是签到簿数据，`AttendanceHistoryDBs.AttendedDay` 是已签到天数记录；SDK 会根据签到簿 `UniqueId / BookSize` 与历史中的最后签到日期推导今天应领取的 `Day`，再调用 `Attendance_Reward`。如果无法推导出可领取天数，SDK 会拒绝发包。
 
 真实请求字段示例：
 

@@ -17,6 +17,7 @@ from modules.runtime.android_mobile_profile import (
     load_android_mobile_profile,
     with_client_version,
 )
+from modules.runtime.ngsm_token import with_ngsm_fingerprint_defaults
 from core.client import BAReplayClient
 from modules.auth.nexon_login import (
     NexonGameCredentials,
@@ -139,7 +140,10 @@ def run_android_direct_login(options: IntegratedLoginOptions) -> IntegratedLogin
     toy_login = resolve_toy_login(options)
     _log(options, f"toysdk.ready npSN={toy_login.np_sn} guid={_mask_tail(toy_login.guid)} npaCode={bool(toy_login.npa_code)}")
 
-    credentials = build_credentials(toy_login)
+    credentials = build_credentials(
+        toy_login,
+        profile=android_mobile_profile.to_dict() if android_mobile_profile is not None else None,
+    )
     host_url, api_url, connection = resolve_host_url(options)
     _log(options, f"gateway.ready gateway={host_url} wiki={api_url}")
 
@@ -223,11 +227,11 @@ def resolve_android_mobile_profile(
     if options.no_android_mobile_profile:
         return None
     if options.android_mobile_profile is not None:
-        return _coerce_android_mobile_profile(options.android_mobile_profile)
+        return with_ngsm_fingerprint_defaults(_coerce_android_mobile_profile(options.android_mobile_profile))
     profile_path = Path(options.android_mobile_profile_path).expanduser()
     if profile_path.exists():
-        return load_android_mobile_profile(profile_path)
-    return generate_android_mobile_profile(country=options.country, locale=options.locale)
+        return with_ngsm_fingerprint_defaults(load_android_mobile_profile(profile_path))
+    return with_ngsm_fingerprint_defaults(generate_android_mobile_profile(country=options.country, locale=options.locale))
 
 
 def _coerce_android_mobile_profile(value: AndroidMobileProfile | Mapping[str, Any]) -> AndroidMobileProfile:

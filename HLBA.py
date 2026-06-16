@@ -12,17 +12,40 @@ from core.session_lifecycle import stamp_session_daily_reset, validate_session_d
 from core.student_data import refresh_student_names
 from modules.auth.service import Login as _login
 from modules.game.account.service import AccountService
+from modules.game.attachment.service import AttachmentService
 from modules.game.attendance.service import AttendanceService, extract_attendance_cache
+from modules.game.battle_pass.service import BattlePassService
 from modules.game.campaign.service import CampaignService
 from modules.game.character.service import CharacterService
+from modules.game.character_gear.service import CharacterGearService
+from modules.game.clan.service import ClanService
+from modules.game.conquest.service import ConquestService
+from modules.game.craft.service import CraftService
+from modules.game.echelon.service import EchelonService
+from modules.game.eliminate_raid.service import EliminateRaidService
+from modules.game.equipment.service import EquipmentService
+from modules.game.event.service import EventService
+from modules.game.event_content.service import EventContentService
+from modules.game.friend.service import FriendService
+from modules.game.item.service import ItemService
 from modules.game.mail.service import MailService
+from modules.game.management.service import ManagementService
+from modules.game.memory_lobby.service import MemoryLobbyService
+from modules.game.mini_game.service import MiniGameService
 from modules.game.mission.service import MissionService
 from modules.game.momotalk.service import MomoTalkService
+from modules.game.permanent_raid.service import PermanentRaidService
 from modules.game.player.academy.service import AcademyService
 from modules.game.player.cafe.service import CafeService
+from modules.game.raid.service import RaidService
+from modules.game.scenario.service import ScenarioService
+from modules.game.school_dungeon.service import SchoolDungeonService
 from modules.game.shop.service import ShopService
 from modules.game.sweep.service import SweepService
+from modules.game.system.service import SystemService
+from modules.game.toast.service import ToastService
 from modules.game.week_dungeon.service import WeekDungeonService
+from modules.game.world_raid.service import WorldRaidService
 from modules.runtime.android_mobile_profile import (
     app_version_code_from_client_version,
     fetch_galaxy_store_client_version,
@@ -110,6 +133,8 @@ class Client:
         self._data_warning_keys: set[tuple[_Any, ...]] = set()
         self.logs: list[str] = []
         self.account = self._mount_service("account", AccountService)
+        self.attachment = self._mount_service("attachment", AttachmentService)
+        self.battle_pass = self._mount_service("battle_pass", BattlePassService)
         self.mission = self._mount_service("mission", MissionService)
         self.cafe = self._mount_service("cafe", CafeService)
         self.academy = self._mount_service("academy", AcademyService)
@@ -119,8 +144,29 @@ class Client:
         self.attendance = self._mount_service("attendance", AttendanceService)
         self.momotalk = self._mount_service("momotalk", MomoTalkService)
         self.character = self._mount_service("character", CharacterService)
+        self.character_gear = self._mount_service("character_gear", CharacterGearService)
         self.campaign = self._mount_service("campaign", CampaignService)
         self.week_dungeon = self._mount_service("week_dungeon", WeekDungeonService)
+        self.clan = self._mount_service("clan", ClanService)
+        self.conquest = self._mount_service("conquest", ConquestService)
+        self.craft = self._mount_service("craft", CraftService)
+        self.echelon = self._mount_service("echelon", EchelonService)
+        self.eliminate_raid = self._mount_service("eliminate_raid", EliminateRaidService)
+        self.equipment = self._mount_service("equipment", EquipmentService)
+        self.event = self._mount_service("event", EventService)
+        self.event_content = self._mount_service("event_content", EventContentService)
+        self.friend = self._mount_service("friend", FriendService)
+        self.item = self._mount_service("item", ItemService)
+        self.management = self._mount_service("management", ManagementService)
+        self.memory_lobby = self._mount_service("memory_lobby", MemoryLobbyService)
+        self.mini_game = self._mount_service("mini_game", MiniGameService)
+        self.permanent_raid = self._mount_service("permanent_raid", PermanentRaidService)
+        self.raid = self._mount_service("raid", RaidService)
+        self.scenario = self._mount_service("scenario", ScenarioService)
+        self.school_dungeon = self._mount_service("school_dungeon", SchoolDungeonService)
+        self.system = self._mount_service("system", SystemService)
+        self.toast = self._mount_service("toast", ToastService)
+        self.world_raid = self._mount_service("world_raid", WorldRaidService)
         self._warn_if_data_not_ready()
 
     async def login(self, account: str, password: str) -> LoginResult:

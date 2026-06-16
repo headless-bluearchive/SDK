@@ -1,4 +1,4 @@
-# Friend 协议
+﻿# Friend 协议
 
 好友模块相关协议。
 
@@ -31,7 +31,7 @@
 - 作用：好友：获取列表数据
 - RequestClass：`FriendListRequest`
 - ResponseClass：`FriendListResponse`
-- 状态：结构参考，发包前需要用真实网关响应验证。
+- 状态：SDK 已封装为游戏页面状态读取方法；实际可用性仍以真实账号当前开放内容和网关返回为准。
 
 #### Request 字段
 
@@ -77,7 +77,7 @@
 - 作用：好友：获取FriendDetailed信息
 - RequestClass：`FriendGetFriendDetailedInfoRequest`
 - ResponseClass：`FriendGetFriendDetailedInfoResponse`
-- 状态：结构参考，发包前需要用真实网关响应验证。
+- 状态：SDK 已封装为游戏页面状态读取方法；实际可用性仍以真实账号当前开放内容和网关返回为准。
 
 #### Request 字段
 
@@ -112,7 +112,7 @@
 - 作用：好友：获取IdCard
 - RequestClass：`FriendGetIdCardRequest`
 - ResponseClass：`FriendGetIdCardResponse`
-- 状态：结构参考，发包前需要用真实网关响应验证。
+- 状态：SDK 已封装为游戏页面状态读取方法；实际可用性仍以真实账号当前开放内容和网关返回为准。
 
 #### Request 字段
 
@@ -157,7 +157,7 @@
 - 作用：好友：搜索
 - RequestClass：`FriendSearchRequest`
 - ResponseClass：`FriendSearchResponse`
-- 状态：结构参考，发包前需要用真实网关响应验证。
+- 状态：SDK 已封装为游戏页面状态读取方法；实际可用性仍以真实账号当前开放内容和网关返回为准。
 
 #### Request 字段
 
@@ -178,7 +178,7 @@
 - 作用：好友：SendFriend请求
 - RequestClass：`FriendSendFriendRequestRequest`
 - ResponseClass：`FriendSendFriendRequestResponse`
-- 状态：结构参考，发包前需要用真实网关响应验证。
+- 状态：SDK 已封装为好友页发送申请方法 `client.friend.send_request(target_account_id, confirm=True)`；默认先校验好友/已发送/已收到/屏蔽列表，本地协议调用测试通过，真实执行会发送好友申请。
 
 #### Request 字段
 
@@ -201,7 +201,7 @@
 - 作用：好友：AcceptFriend请求
 - RequestClass：`FriendAcceptFriendRequestRequest`
 - ResponseClass：`FriendAcceptFriendRequestResponse`
-- 状态：结构参考，发包前需要用真实网关响应验证。
+- 状态：SDK 已封装为好友页接受申请方法 `client.friend.accept_request(target_account_id, confirm=True)`；默认先校验收到的好友申请列表，本地协议调用测试通过，真实执行会接受好友申请。
 
 #### Request 字段
 
@@ -224,7 +224,7 @@
 - 作用：好友：DeclineFriend请求
 - RequestClass：`FriendDeclineFriendRequestRequest`
 - ResponseClass：`FriendDeclineFriendRequestResponse`
-- 状态：结构参考，发包前需要用真实网关响应验证。
+- 状态：SDK 已封装为好友页拒绝申请方法 `client.friend.decline_request(target_account_id, confirm=True)`；默认先校验收到的好友申请列表，本地协议调用测试通过，真实执行会拒绝好友申请。
 
 #### Request 字段
 
@@ -247,7 +247,7 @@
 - 作用：好友：取消Friend请求
 - RequestClass：`FriendCancelFriendRequestRequest`
 - ResponseClass：`FriendCancelFriendRequestResponse`
-- 状态：结构参考，发包前需要用真实网关响应验证。
+- 状态：SDK 已封装为好友页取消申请方法 `client.friend.cancel_request(target_account_id, confirm=True)`；默认先校验已发送的好友申请列表，本地协议调用测试通过，真实执行会取消好友申请。
 
 #### Request 字段
 
@@ -286,7 +286,7 @@
 - 作用：好友：列表ByIds
 - RequestClass：`FriendListByIdsRequest`
 - ResponseClass：`FriendListByIdsResponse`
-- 状态：结构参考，发包前需要用真实网关响应验证。
+- 状态：SDK 已封装为游戏页面状态读取方法；实际可用性仍以真实账号当前开放内容和网关返回为准。
 
 #### Request 字段
 

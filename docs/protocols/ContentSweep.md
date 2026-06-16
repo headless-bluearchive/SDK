@@ -22,7 +22,19 @@
 - 作用：扫荡预设：请求
 - RequestClass：`ContentSweepRequest`
 - ResponseClass：`ContentSweepResponse`
-- 状态：暂不封装为消耗型稳定 API。SDK 目前缺少可靠的通关状态、扫荡次数和资源校验来源。
+- 状态：SDK 已封装为单关扫荡方法。调用方必须传 `confirm=True`，并自行确认 AP、次数、通关状态和用户授权。
+
+#### SDK 方法
+
+```python
+result = await client.sweep.request(
+    content=content_type,
+    stage_id=stage_id,
+    count=1,
+    event_content_id=0,
+    confirm=True,
+)
+```
 
 #### Request 字段
 
@@ -49,7 +61,16 @@
 - 作用：扫荡预设：执行 MultiSweep 流程
 - RequestClass：`ContentSweepMultiSweepRequest`
 - ResponseClass：`ContentSweepMultiSweepResponse`
-- 状态：暂不封装为消耗型稳定 API。逆向可确认 `MultiSweepParameter` 包含 `EventContentId`、`ContentType`、`StageId`、`SweepCount`，但 SDK 目前缺少可靠的通关状态、扫荡次数和资源校验来源。
+- 状态：SDK 已封装为多关扫荡方法。逆向可确认 `MultiSweepParameter` 包含 `EventContentId`、`ContentType`、`StageId`、`SweepCount`；调用方必须传 `confirm=True`，并自行确认 AP、次数、通关状态和用户授权。
+
+#### SDK 方法
+
+```python
+result = await client.sweep.multi_sweep(
+    [{"content_type": content_type, "stage_id": stage_id, "sweep_count": 1}],
+    confirm=True,
+)
+```
 
 #### Request 字段
 

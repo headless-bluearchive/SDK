@@ -1,4 +1,4 @@
-# EliminateRaid 协议
+﻿# EliminateRaid 协议
 
 综合战术考试模块相关协议。
 
@@ -49,7 +49,7 @@
 - 作用：制约解除决战：获取或进入模块大厅
 - RequestClass：`EliminateRaidLobbyRequest`
 - ResponseClass：`EliminateRaidLobbyResponse`
-- 状态：结构参考，发包前需要用真实网关响应验证。
+- 状态：SDK 已封装为游戏页面状态读取方法；实际可用性仍以真实账号当前开放内容和网关返回为准。
 
 #### Request 字段
 
@@ -71,7 +71,7 @@
 - 作用：制约解除决战：获取对手列表
 - RequestClass：`EliminateRaidOpponentListRequest`
 - ResponseClass：`EliminateRaidOpponentListResponse`
-- 状态：结构参考，发包前需要用真实网关响应验证。
+- 状态：SDK 已封装为游戏页面状态读取方法；实际可用性仍以真实账号当前开放内容和网关返回为准。
 
 #### Request 字段
 
@@ -96,7 +96,7 @@
 - 作用：制约解除决战：获取BestTeam
 - RequestClass：`EliminateRaidGetBestTeamRequest`
 - ResponseClass：`EliminateRaidGetBestTeamResponse`
-- 状态：结构参考，发包前需要用真实网关响应验证。
+- 状态：SDK 已封装为游戏页面状态读取方法；实际可用性仍以真实账号当前开放内容和网关返回为准。
 
 #### Request 字段
 
@@ -196,7 +196,7 @@
 - 作用：制约解除决战：排行Index
 - RequestClass：`EliminateRaidRankingIndexRequest`
 - ResponseClass：`EliminateRaidRankingIndexResponse`
-- 状态：结构参考，发包前需要用真实网关响应验证。
+- 状态：SDK 已封装为游戏页面状态读取方法；实际可用性仍以真实账号当前开放内容和网关返回为准。
 
 #### Request 字段
 

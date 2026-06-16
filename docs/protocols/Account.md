@@ -1,4 +1,4 @@
-# Account 协议
+﻿# Account 协议
 
 账号与登录模块相关协议。
 
@@ -188,7 +188,7 @@ SDK 会把 `AttendanceBookRewards` 和 `AttendanceHistoryDBs` 写入登录结果
 - 作用：账号与登录：获取教程进度
 - RequestClass：`AccountGetTutorialRequest`
 - ResponseClass：`AccountGetTutorialResponse`
-- 状态：结构参考，发包前需要用真实网关响应验证。
+- 状态：SDK 已封装为游戏页面状态读取方法；实际可用性仍以真实账号当前开放内容和网关返回为准。
 
 #### Request 字段
 

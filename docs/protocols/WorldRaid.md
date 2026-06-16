@@ -1,4 +1,4 @@
-# WorldRaid 协议
+﻿# WorldRaid 协议
 
 WorldRaid 模块相关协议。
 
@@ -21,12 +21,13 @@ WorldRaid 模块相关协议。
 - 作用：世界 Raid：获取或进入模块大厅
 - RequestClass：`WorldRaidLobbyRequest`
 - ResponseClass：`WorldRaidLobbyResponse`
-- 状态：结构参考，发包前需要用真实网关响应验证。
+- 状态：SDK 已封装为游戏页面状态读取方法；实际可用性仍以真实账号当前开放内容和网关返回为准。
 
 #### Request 字段
 
 | 字段 | 类型 | 说明 |
 | --- | --- | --- |
+| `ContentType` | `ContentType` | 内容类型。 |
 | `SeasonId` | `long` | 赛季 ID。 |
 
 #### Response 字段
@@ -43,12 +44,13 @@ WorldRaid 模块相关协议。
 - 作用：世界 Raid：Boss列表
 - RequestClass：`WorldRaidBossListRequest`
 - ResponseClass：`WorldRaidBossListResponse`
-- 状态：结构参考，发包前需要用真实网关响应验证。
+- 状态：SDK 已封装为游戏页面状态读取方法；实际可用性仍以真实账号当前开放内容和网关返回为准。
 
 #### Request 字段
 
 | 字段 | 类型 | 说明 |
 | --- | --- | --- |
+| `ContentType` | `ContentType` | 内容类型。 |
 | `SeasonId` | `long` | 赛季 ID。 |
 | `RequestOnlyWorldBossData` | `bool` | 是否只请求世界 Boss 数据。 |
 

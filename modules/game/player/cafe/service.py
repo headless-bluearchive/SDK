@@ -5,6 +5,7 @@ from typing import Any
 
 from core.error import UnsafeOperationError
 from modules.game.base import GameService
+from modules.game.common import as_list, extra_fields
 
 
 class CafeService(GameService):
@@ -66,6 +67,10 @@ class CafeService(GameService):
             {"AccountServerId": account_id, "CafeDBId": cafe_id},
         )
         return format_cafe_receive_currency(payload)
+
+    async def trophy_history(self) -> dict[str, Any]:
+        payload = await self.request("CafeTrophyHistoryRequest")
+        return format_cafe_trophy_history(payload)
 
     async def _resolve_interaction_target(
         self,
@@ -147,6 +152,18 @@ def format_cafe_receive_currency(payload: dict[str, Any]) -> dict[str, Any]:
         "cafes": _as_list(payload.get("CafeDBs")),
         "parcel_result": payload.get("ParcelResultDB"),
         "extra": {key: value for key, value in payload.items() if key not in known_keys},
+    }
+
+
+def format_cafe_trophy_history(payload: dict[str, Any]) -> dict[str, Any]:
+    known_keys = {
+        "RaidSeasonRankingHistoryDBs",
+    }
+    history = as_list(payload.get("RaidSeasonRankingHistoryDBs"))
+    return {
+        "raid_season_ranking_history": history,
+        "count": len(history),
+        "extra": extra_fields(payload, known_keys),
     }
 
 

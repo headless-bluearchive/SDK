@@ -1,4 +1,4 @@
-# Conquest 协议
+﻿# Conquest 协议
 
 制约解除决战模块相关协议。
 
@@ -29,7 +29,7 @@
 - 作用：占领战：获取模块信息
 - RequestClass：`ConquestGetInfoRequest`
 - ResponseClass：`ConquestGetInfoResponse`
-- 状态：结构参考，发包前需要用真实网关响应验证。
+- 状态：SDK 已封装为游戏页面状态读取方法；实际可用性仍以真实账号当前开放内容和网关返回为准。
 
 #### Request 字段
 
@@ -254,7 +254,7 @@
 - 作用：占领战：MainStory获取信息
 - RequestClass：`ConquestMainStoryGetInfoRequest`
 - ResponseClass：`ConquestMainStoryGetInfoResponse`
-- 状态：结构参考，发包前需要用真实网关响应验证。
+- 状态：SDK 已封装为游戏页面状态读取方法；实际可用性仍以真实账号当前开放内容和网关返回为准。
 
 #### Request 字段
 

@@ -17,6 +17,7 @@ from core.error import AuthenticationError, ConfigurationError, GatewayError, Pr
 from modules.auth.login import LoginReplay
 from modules.auth.proof_token import proof_token_search_span, solve_proof_token
 from modules.auth.toysdk_models import ToySdkCallbackResult, ToySdkLoginResult
+from modules.runtime.ngsm_token import generate_ngsm_token
 
 SESSION_LOGIN_SYNC_NO_PART_PROTOCOLS = [
     20000,
@@ -145,8 +146,12 @@ def build_android_security_state(credentials: NexonGameCredentials) -> dict[str,
 
 def build_credentials(
     toy_login: ToySdkLoginResult,
+    *,
+    profile: Mapping[str, Any] | None = None,
 ) -> NexonGameCredentials:
     resolved_ngsm = getattr(toy_login, "ngsm_token", "")
+    if not resolved_ngsm and profile is not None:
+        resolved_ngsm = generate_ngsm_token(profile)
     missing = []
     if toy_login.np_sn is None:
         missing.append("npSN")
