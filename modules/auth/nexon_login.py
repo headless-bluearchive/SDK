@@ -18,6 +18,7 @@ from modules.auth.login import LoginReplay
 from modules.auth.proof_token import proof_token_search_span, solve_proof_token
 from modules.auth.toysdk_models import ToySdkCallbackResult, ToySdkLoginResult
 from modules.runtime.ngsm_token import generate_ngsm_token
+from modules.runtime.ngsx_attestation import NgsxAttestationRequest, run_ngsx_attestation
 
 SESSION_LOGIN_SYNC_NO_PART_PROTOCOLS = [
     20000,
@@ -148,9 +149,10 @@ def build_credentials(
     toy_login: ToySdkLoginResult,
     *,
     profile: Mapping[str, Any] | None = None,
+    allow_synthetic_ngsm_token: bool = True,
 ) -> NexonGameCredentials:
     resolved_ngsm = getattr(toy_login, "ngsm_token", "")
-    if not resolved_ngsm and profile is not None:
+    if not resolved_ngsm and profile is not None and allow_synthetic_ngsm_token:
         resolved_ngsm = generate_ngsm_token(profile)
     missing = []
     if toy_login.np_sn is None:
@@ -444,6 +446,13 @@ def run_main_game_login(
     proof_token_stage: str = "after-account-check",
     proof_token_url_mode: str = "wiki",
     proof_token_max_attempts: int | None = None,
+    android_mobile_profile: Mapping[str, Any] | None = None,
+    ngsx_attestation_mode: str = "disabled",
+    ngsx_attestation_url: str = "",
+    ngsx_attestation_command: str = "",
+    ngsx_attestation_file: str = "",
+    ngsx_attestation_timeout: float = 30.0,
+    ngsx_attestation_strict: bool = False,
     debug_logger: Callable[[str], None] | None = None,
 ) -> dict[str, Any]:
     login = LoginReplay(client)
@@ -467,6 +476,7 @@ def run_main_game_login(
         "proof_token_stage": proof_token_stage,
         "proof_token_url_mode": proof_token_url_mode,
         "proof_token_max_attempts": proof_token_max_attempts,
+        "ngsx_attestation_mode": ngsx_attestation_mode,
         "session_sequence_model": [
             "Queuing_GetTicket(gateway)",
             "Account_CheckNexon(wiki)",
@@ -481,6 +491,56 @@ def run_main_game_login(
     android_security_state = build_android_security_state(credentials)
     flow["android_security_state"] = android_security_state
     _log(debug_logger, f"ngsx.state ngsmTokenPresent={android_security_state['ngsmTokenPresent']}")
+
+    attestation = run_ngsx_attestation(
+        NgsxAttestationRequest(
+            service_id=str(DEFAULTS.service_id),
+            package_name=str((android_mobile_profile or {}).get("package_name") or DEFAULTS.package_name),
+            client_version=client_version,
+            guid=credentials.guid,
+            npa_code=credentials.npa_code,
+            np_sn=credentials.np_sn,
+            np_token_present=bool(credentials.np_token),
+            ngsm_token=credentials.ngsm_token,
+            device=dict(android_mobile_profile or {}),
+        ),
+        mode=ngsx_attestation_mode,
+        url=ngsx_attestation_url,
+        command=ngsx_attestation_command,
+        file_path=ngsx_attestation_file,
+        timeout=ngsx_attestation_timeout,
+        strict=ngsx_attestation_strict,
+    )
+    if attestation is not None:
+        flow["ngsx_attestation"] = attestation.to_public_dict()
+        if attestation.ngsm_token and attestation.ngsm_token != credentials.ngsm_token:
+            credentials = NexonGameCredentials(
+                np_sn=credentials.np_sn,
+                np_token=credentials.np_token,
+                npa_code=credentials.npa_code,
+                ngsm_token=attestation.ngsm_token,
+                session_token=credentials.session_token,
+                guid=credentials.guid,
+                member_id=credentials.member_id,
+                member_type=credentials.member_type,
+                um_key=credentials.um_key,
+            )
+            android_security_state = build_android_security_state(credentials)
+            flow["android_security_state"] = android_security_state
+        _log(
+            debug_logger,
+            f"ngsx.attestation source={attestation.source} ok={attestation.ok} code={attestation.code} "
+            f"ngsmTokenPresent={bool(credentials.ngsm_token)}",
+        )
+    else:
+        flow["ngsx_attestation"] = {
+            "ok": False,
+            "status": "not-configured",
+            "code": None,
+            "message": "No external Android NGS-X attestation provider configured.",
+            "source": "",
+            "ngsmTokenPresent": bool(credentials.ngsm_token),
+        }
 
     resolved_access_ip = access_ip or outbound_ipv4_address()
     flow["access_ip"] = resolved_access_ip
@@ -524,7 +584,7 @@ def run_main_game_login(
     resolved_waiting_ticket = _as_str(_find_first(parsed_queue, "WaitingTicket", "waitingTicket"))
     if not resolved_enter_ticket:
         flow["status"] = "missing_enter_ticket"
-        flow["queue_response"] = parsed_queue
+        flow["queue_response"] = _summarize_payload(parsed_queue)
         raise GatewayError("Queuing_GetTicket did not return EnterTicket")
     _log(debug_logger, f"gateway.ok Queuing_GetTicket enterTicket={bool(resolved_enter_ticket)} waitingTicket={bool(resolved_waiting_ticket)}")
 
@@ -581,7 +641,7 @@ def run_main_game_login(
     )
     if _is_error_response(check_response):
         flow["status"] = "account_check_nexon_error"
-        flow["error_response"] = check_response.get("parsed")
+        flow["error_response"] = _summarize_payload(check_response.get("parsed"))
         raise GatewayError("Account_CheckNexon returned Error")
     account_check_state = _apply_account_check_state(client, check_response.get("parsed"))
     flow["account_check_state"] = _account_check_state_summary(account_check_state)
@@ -652,10 +712,11 @@ def run_main_game_login(
     )
     if _is_error_response(auth_response):
         flow["status"] = "account_auth_error"
-        flow["error_response"] = auth_response.get("parsed")
+        flow["error_response"] = _summarize_payload(auth_response.get("parsed"))
         raise GatewayError("Account_Auth returned Error")
     _update_session_key(client, auth_response.get("parsed"))
-    flow["account_data"] = auth_response.get("parsed")
+    flow["_account_data_raw"] = auth_response.get("parsed")
+    flow["account_data"] = _select_account_login_fields(auth_response.get("parsed"))
     _log(debug_logger, "gateway.ok Account_Auth")
 
     sync_request = login.account_login_sync(build_account_login_sync_fields(), include_base_defaults=True)
@@ -670,11 +731,12 @@ def run_main_game_login(
     )
     if _is_error_response(sync_response):
         flow["status"] = "account_login_sync_error"
-        flow["error_response"] = sync_response.get("parsed")
+        flow["error_response"] = _summarize_payload(sync_response.get("parsed"))
         raise GatewayError("Account_LoginSync returned Error")
 
     flow["status"] = "posted_login_sync"
-    flow["player_data"] = sync_response.get("parsed")
+    flow["_player_data_raw"] = sync_response.get("parsed")
+    flow["player_data"] = _select_player_login_fields(sync_response.get("parsed"))
     _log(debug_logger, "gateway.ok Account_LoginSync")
     return flow
 
@@ -790,7 +852,7 @@ def run_session_bootstrap_queue(
         )
         if _is_error_response(response):
             flow["status"] = "session_bootstrap_queue_error"
-            flow["error_response"] = response.get("parsed")
+            flow["error_response"] = _summarize_payload(response.get("parsed"))
             if not continue_on_error:
                 raise GatewayError(f"{task['task_name']} returned Error")
         _update_session_key(client, response.get("parsed"))
@@ -843,7 +905,7 @@ def run_queue_subchain(
         )
         if _is_error_response(crypto_response):
             flow["status"] = "queue_get_crypto_keys_error"
-            flow["error_response"] = crypto_response.get("parsed") or crypto_response.get("payload")
+            flow["error_response"] = _summarize_payload(crypto_response.get("parsed"))
             raise GatewayError("Queuing_GetCryptoKeys returned Error")
         crypto_state = _apply_crypto_material_from_response(
             client,
@@ -876,7 +938,7 @@ def run_queue_subchain(
         )
         if _is_error_response(auth_response):
             flow["status"] = "queue_get_auth_ticket_error"
-            flow["error_response"] = auth_response.get("parsed") or auth_response.get("payload")
+            flow["error_response"] = _summarize_payload(auth_response.get("parsed"))
             raise GatewayError("Queuing_GetAuthTicket returned Error")
         auth_crypto_state = _apply_crypto_material_from_response(
             client,
@@ -891,7 +953,7 @@ def run_queue_subchain(
         auth_ticket = _as_str(_find_first(auth_response.get("parsed"), "AuthTicket", "authTicket"))
         if not auth_ticket:
             flow["status"] = "queue_missing_auth_ticket"
-            flow["queue_auth_ticket_response"] = auth_response.get("parsed") or auth_response.get("payload")
+            flow["queue_auth_ticket_response"] = _summarize_payload(auth_response.get("parsed"))
             raise GatewayError("Queuing_GetAuthTicket did not return AuthTicket")
         queue_state["auth_ticket"] = auth_ticket
 
@@ -916,7 +978,7 @@ def run_queue_subchain(
         )
         if _is_error_response(process_response):
             flow["status"] = "queue_process_waiting_queue_error"
-            flow["error_response"] = process_response.get("parsed") or process_response.get("payload")
+            flow["error_response"] = _summarize_payload(process_response.get("parsed"))
             raise GatewayError("Queuing_ProcessWaitingQueue returned Error")
         _log(debug_logger, "gateway.ok Queuing_ProcessWaitingQueue")
 
@@ -926,7 +988,7 @@ def run_queue_subchain(
         queue_state["enter_ticket"] = _as_str(
             _find_first(process_response.get("parsed"), "EnterTicket", "enterTicket")
         )
-        flow["queue_subchain_result"] = queue_state
+        flow["queue_subchain_result"] = _summarize_queue_state(queue_state)
         return queue_state
     finally:
         if not carry_crypto_forward:
@@ -979,8 +1041,8 @@ def fetch_sqlcipher_material_from_queue(
             "http_status": (response.get("http") or {}).get("status_code")
             if isinstance(response.get("http"), Mapping)
             else None,
-            "raw_len": len(response.get("raw") or ""),
-            "payload_len": len(response.get("payload") or ""),
+            "response_len": response.get("response_len"),
+            "payload_len": response.get("payload_len"),
             "decode_error": response.get("decode_error"),
             "sqlcipher": crypto_state.get("sqlcipher"),
         }
@@ -1044,7 +1106,7 @@ def run_proof_token_stage(
     )
     if _is_error_response(question_response):
         flow["status"] = "proof_token_question_error"
-        flow["error_response"] = question_response.get("parsed")
+        flow["error_response"] = _summarize_payload(question_response.get("parsed"))
         raise ProofTokenError("ProofToken_RequestQuestion returned Error")
     if _is_empty_success_response(question_response):
         flow["steps"][-1]["status"] = "empty_success_no_question"
@@ -1057,7 +1119,7 @@ def run_proof_token_stage(
     hint = _as_int(_find_first(parsed_question, "Hint", "hint"))
     if not question or hint is None:
         flow["status"] = "proof_token_missing_question_or_hint"
-        flow["proof_token_response"] = parsed_question
+        flow["proof_token_response"] = _summarize_payload(parsed_question)
         raise ProofTokenError("ProofToken_RequestQuestion did not return Question/Hint")
 
     answer = solve_proof_token(question, hint, max_attempts=proof_token_max_attempts)
@@ -1093,7 +1155,7 @@ def run_proof_token_stage(
     )
     if _is_error_response(submit_response):
         flow["status"] = "proof_token_submit_error"
-        flow["error_response"] = submit_response.get("parsed")
+        flow["error_response"] = _summarize_payload(submit_response.get("parsed"))
         raise ProofTokenError("ProofToken_Submit returned Error")
     _log(debug_logger, f"gateway.ok ProofToken_Submit stage={stage}")
 
@@ -1171,17 +1233,17 @@ def decode_posted_response(
         parsed = _try_json(decoded.payload)
         return {
             "http": dict(http_meta) if http_meta else None,
-            "raw": raw,
-            "gateway": asdict(decoded),
-            "payload": decoded.payload,
+            "gateway": {"protocol": decoded.protocol},
+            "response_len": len(raw),
+            "payload_len": len(decoded.payload),
             "parsed": parsed,
         }
     except Exception as exc:
         return {
             "http": dict(http_meta) if http_meta else None,
-            "raw": raw,
-            "gateway": {"protocol": None, "packet": raw, "payload": raw, "raw": raw},
-            "payload": raw,
+            "gateway": {"protocol": None},
+            "response_len": len(raw),
+            "payload_len": len(raw),
             "parsed": _try_json(raw),
             "decode_error": {"type": type(exc).__name__, "message": str(exc)},
         }
@@ -1201,8 +1263,8 @@ def _is_empty_success_response(response: Mapping[str, Any]) -> bool:
     return (
         status_code is not None
         and 200 <= int(status_code) < 300
-        and response.get("raw", "") == ""
-        and response.get("payload", "") == ""
+        and int(response.get("response_len", 0) or 0) == 0
+        and int(response.get("payload_len", 0) or 0) == 0
         and response.get("parsed") is None
     )
 
@@ -1221,20 +1283,23 @@ def build_request_record(name: str, built: BuiltRequest) -> dict[str, Any]:
 def toy_callback_to_dict(callback: ToySdkCallbackResult | None) -> dict[str, Any] | None:
     if callback is None:
         return None
-    return asdict(callback)
+    return {
+        "handle": callback.handle,
+        "callback_id": callback.callback_id,
+    }
 
 
 def toy_login_to_dict(result: ToySdkLoginResult) -> dict[str, Any]:
     return {
-        "npSN": result.np_sn,
-        "npToken": result.np_token,
-        "npaCode": result.npa_code,
-        "sessionToken": result.session_token,
-        "guid": result.guid,
-        "memberId": result.member_id,
-        "memberType": result.member_type,
-        "umKey": result.um_key,
-        "ngsmToken": result.ngsm_token,
+        "npSNPresent": result.np_sn is not None,
+        "npTokenPresent": bool(result.np_token),
+        "npaCodePresent": bool(result.npa_code),
+        "sessionTokenPresent": bool(result.session_token),
+        "guidPresent": bool(result.guid),
+        "memberIdPresent": bool(result.member_id),
+        "memberTypePresent": bool(result.member_type),
+        "umKeyPresent": bool(result.um_key),
+        "ngsmTokenPresent": bool(result.ngsm_token),
         "callback": toy_callback_to_dict(result.callback),
     }
 
@@ -1400,6 +1465,66 @@ def _as_int(value: Any) -> int | None:
     if value is None or value == "":
         return None
     return int(value)
+
+
+def _summarize_payload(value: Any) -> dict[str, Any]:
+    if isinstance(value, Mapping):
+        keys = sorted(str(key) for key in value.keys())
+        return {
+            "kind": "mapping",
+            "keys": keys,
+            "count": len(keys),
+        }
+    if isinstance(value, list):
+        return {
+            "kind": "list",
+            "count": len(value),
+        }
+    if value is None:
+        return {
+            "kind": "empty",
+            "count": 0,
+        }
+    return {
+        "kind": type(value).__name__.lower(),
+        "count": 1,
+    }
+
+
+def _select_account_login_fields(value: Any) -> dict[str, Any]:
+    if not isinstance(value, Mapping):
+        return _summarize_payload(value)
+    account_db = _find_first(value, "AccountDB")
+    return {
+        "account_id": _as_int(_find_first(value, "AccountId", "accountId")),
+        "server_time_ticks": _as_int(_find_first(value, "ServerTimeTicks", "serverTimeTicks")),
+        "account_db_present": isinstance(account_db, Mapping),
+        "attendance_present": any(
+            _find_first(value, key) is not None for key in ("AttendanceBookRewards", "AttendanceHistoryDBs")
+        ),
+    }
+
+
+def _select_player_login_fields(value: Any) -> dict[str, Any]:
+    if not isinstance(value, Mapping):
+        return _summarize_payload(value)
+    return {
+        "friend_code_present": _find_first(value, "FriendCode", "friendCode") is not None,
+        "momo_talk_present": _find_first(value, "MomoTalk", "Momotalk") is not None,
+        "mail_present": _find_first(value, "Mail", "MailDBs") is not None,
+        "toast_present": _find_first(value, "Toast", "ToastDBs") is not None,
+    }
+
+
+def _summarize_queue_state(queue_state: Mapping[str, Any]) -> dict[str, Any]:
+    return {
+        "waiting_ticket_present": bool(queue_state.get("waiting_ticket")),
+        "enter_ticket_present": bool(queue_state.get("enter_ticket")),
+        "auth_ticket_present": bool(queue_state.get("auth_ticket")),
+        "client_generated_key_len": len(str(queue_state.get("client_generated_key") or "")),
+        "client_generated_iv_len": len(str(queue_state.get("client_generated_iv") or "")),
+    }
+
 
 
 def _log(logger: Callable[[str], None] | None, message: str) -> None:

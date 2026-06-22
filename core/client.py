@@ -391,57 +391,21 @@ class BAReplayClient:
         self._async_http_client = None
 
     def _build_exchange_meta(self, response: Any, *, body_mode: str) -> dict[str, Any]:
-        import requests
-
-        request = getattr(response, "request", None)
-        session = self._get_http_session()
-        history = []
-        for item in getattr(response, "history", ()) or ():
-            history.append(
-                {
-                    "status_code": getattr(item, "status_code", None),
-                    "url": getattr(item, "url", ""),
-                    "headers": dict(getattr(item, "headers", {}) or {}),
-                }
-            )
         return {
             "url": getattr(response, "url", ""),
             "status_code": getattr(response, "status_code", None),
             "reason": getattr(response, "reason", ""),
             "body_mode": body_mode,
-            "request_method": getattr(request, "method", "POST"),
-            "request_url": getattr(request, "url", ""),
-            "request_headers": dict(getattr(request, "headers", {}) or {}),
-            "response_headers": dict(getattr(response, "headers", {}) or {}),
-            "response_cookies": requests.utils.dict_from_cookiejar(getattr(response, "cookies", {})),
-            "session_cookies": requests.utils.dict_from_cookiejar(getattr(session, "cookies", {})),
-            "redirect_history": history,
+            "response_len": len(getattr(response, "content", b"") or b""),
         }
 
     def _build_async_exchange_meta(self, response: Any, *, body_mode: str) -> dict[str, Any]:
-        request = getattr(response, "request", None)
-        client = self._get_async_http_client()
-        history = []
-        for item in getattr(response, "history", ()) or ():
-            history.append(
-                {
-                    "status_code": getattr(item, "status_code", None),
-                    "url": str(getattr(item, "url", "")),
-                    "headers": dict(getattr(item, "headers", {}) or {}),
-                }
-            )
         return {
             "url": str(getattr(response, "url", "")),
             "status_code": getattr(response, "status_code", None),
             "reason": getattr(response, "reason_phrase", ""),
             "body_mode": body_mode,
-            "request_method": getattr(request, "method", "POST"),
-            "request_url": str(getattr(request, "url", "")),
-            "request_headers": dict(getattr(request, "headers", {}) or {}),
-            "response_headers": dict(getattr(response, "headers", {}) or {}),
-            "response_cookies": _cookie_name_summary(getattr(response, "cookies", None)),
-            "session_cookies": _cookie_name_summary(getattr(client, "cookies", None)),
-            "redirect_history": history,
+            "response_len": len(getattr(response, "content", b"") or b""),
         }
 
     @property
@@ -481,9 +445,7 @@ class BAReplayClient:
 @dataclass(frozen=True)
 class GatewayResponse:
     protocol: str | int | None
-    packet: str
     payload: str
-    raw: str
 
 
 def decode_gateway_response(response_text: str, *, aes_key: bytes | None, aes_iv: bytes | None) -> GatewayResponse:
@@ -498,17 +460,17 @@ def decode_gateway_response(response_text: str, *, aes_key: bytes | None, aes_iv
                 payload = decrypt_response_base64(aes_key, aes_iv, packet)
             except (binascii.Error, UnicodeDecodeError, ValueError):
                 payload = packet
-        return GatewayResponse(protocol=protocol, packet=packet, payload=payload, raw=response_text)
+        return GatewayResponse(protocol=protocol, payload=payload)
 
     decrypted = decrypt_response_base64(aes_key, aes_iv, response_text)
     parsed = _parse_gateway_wrapper(decrypted)
     if parsed is not None:
         protocol, packet = parsed
-        return GatewayResponse(protocol=protocol, packet=packet, payload=packet, raw=response_text)
+        return GatewayResponse(protocol=protocol, payload=packet)
     protocol = None
     packet = response_text
     payload = decrypted
-    return GatewayResponse(protocol=protocol, packet=packet, payload=payload, raw=response_text)
+    return GatewayResponse(protocol=protocol, payload=payload)
 
 
 def _parse_gateway_wrapper(text: str) -> tuple[str | int | None, str] | None:

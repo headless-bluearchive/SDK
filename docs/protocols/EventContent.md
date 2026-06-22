@@ -801,15 +801,45 @@ EventContent 是限时活动的主协议集合。SDK 文档只保留活动状态
 - 作用：活动内容：Clue搜索获取信息
 - RequestClass：`EventContentClueSearchGetInfoRequest`
 - ResponseClass：`EventContentClueSearchGetInfoResponse`
-- 状态：SDK 已封装为游戏页面状态读取方法；实际可用性仍以真实账号当前开放内容和网关返回为准。
+- 状态：SDK 已封装为活动页面状态读取方法；返回的是可直接用于页面展示的整理后数据，不输出原始响应包。
 
 #### Request 字段
 
-无字段或未匹配到结构。
+| 字段 | 类型 | 说明 |
+| --- | --- | --- |
+| `EventContentId` | `long` | 当前 ClueSearch 活动内容 ID。必须是当前账号可见的活动。 |
 
 #### Response 字段
 
-无字段或未匹配到结构。
+| 字段 | 类型 | 说明 |
+| --- | --- | --- |
+| `clue_search` | `EventContentClueSearchDB?` | ClueSearch 页面主状态。 |
+| `round` | `EventContentClueSearchRoundDB?` | 当前轮次/回合状态。 |
+| `progress` | `EventContentClueSearchProgressDB?` | 搜索进度与完成状态。 |
+| `collections` | `List<EventContentCollectionDB>?` | 线索相关集合/条目列表。 |
+| `already_receive_reward_ids` | `List<long>?` | 已领取奖励 ID 列表。 |
+| `event_content_id` | `long?` | 回传的活动内容 ID。 |
+| `collection_count` | `int` | `collections` 数量。 |
+
+#### 返回示例
+
+```python
+{
+    "clue_search": {...},
+    "round": {...},
+    "progress": {...},
+    "collections": [{...}],
+    "already_receive_reward_ids": [1, 2],
+    "event_content_id": 30051,
+    "collection_count": 1,
+    "extra": {},
+}
+```
+
+```python
+clue = await client.event_content.clue_search_get_info(event_content_id)
+print(clue["collection_count"], clue["already_receive_reward_ids"])
+```
 
 ### EventContent_ClueSearchSubmit
 

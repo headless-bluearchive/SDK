@@ -5,7 +5,7 @@ from typing import Any
 
 from config.game import DEFAULTS
 from core.client import BAReplayClient
-from core.error import GameApiError, LoginRequiredError, ProtocolUnavailableError
+from core.error import GameApiError, LoginRequiredError, NexonNgsmValidationError, ProtocolUnavailableError
 from core.protocol import protocol_value, request_protocol
 
 
@@ -37,6 +37,13 @@ class GameService:
         )
         if isinstance(response, dict):
             if int(response.get("Protocol", 0) or 0) == -1:
+                if int(response.get("ErrorCode", 0) or 0) == 1032:
+                    raise NexonNgsmValidationError(
+                        "Nexon NGS-X/NGSM validation failed; configure a real Android NGS-X attestation provider",
+                        error_code=1032,
+                        protocol=_optional_int(response.get("Protocol")),
+                        response_keys=sorted(str(key) for key in response.keys()),
+                    )
                 raise GameApiError.from_gateway_response(response)
             return response
         return {"payload": response}
@@ -50,3 +57,12 @@ class GameService:
                 protocol_value(request_class)
             except Exception:
                 raise ProtocolUnavailableError(f"protocol is unavailable: {request_class}") from exc
+
+
+def _optional_int(value: Any) -> int | None:
+    if value is None:
+        return None
+    try:
+        return int(value)
+    except (TypeError, ValueError):
+        return None

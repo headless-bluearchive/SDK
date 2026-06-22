@@ -1,6 +1,6 @@
 # 登录鉴权
 
-`SDK` 是纯 Python SDK。外部项目先实例化 `Client`，再调用实例方法。别再写一堆 CLI 参数解析来假装自己是框架了，外部项目要怎么暴露入口是外部项目的事。
+`SDK` 是纯 Python SDK。外部项目先实例化 `Client`，再调用实例方法。
 
 ```python
 from HLBA import Client

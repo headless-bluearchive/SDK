@@ -2,7 +2,7 @@
 from __future__ import annotations
 
 import asyncio
-from dataclasses import asdict, dataclass, replace
+from dataclasses import dataclass, replace
 from pathlib import Path
 from typing import Any, Callable, Mapping
 
@@ -67,6 +67,13 @@ class IntegratedLoginOptions:
     android_game_id: str = DEFAULTS.game_id
     proxy: str = ""
     body_mode: str = DEFAULTS.body_mode
+    allow_synthetic_ngsm_token: bool = True
+    ngsx_attestation_mode: str = "disabled"
+    ngsx_attestation_url: str = ""
+    ngsx_attestation_command: str = ""
+    ngsx_attestation_file: str = ""
+    ngsx_attestation_timeout: float = 30.0
+    ngsx_attestation_strict: bool = False
     account_check_key_mode: str = "rsa-oaep-sha1"
     account_check_url_mode: str = "wiki"
     account_check_field_mode: str = "android-minimal"
@@ -112,12 +119,7 @@ class IntegratedLoginResult:
     def to_dict(self) -> dict[str, Any]:
         return {
             "toy_login": toy_login_to_dict(self.toy_login),
-            "credentials": asdict(self.credentials),
             "connection": self.connection.to_dict() if self.connection else None,
-            "android_mobile_profile": self.android_mobile_profile.to_dict() if self.android_mobile_profile else None,
-            "profile": self.android_mobile_profile.to_dict() if self.android_mobile_profile else None,
-            "session": self.session,
-            "flow": self.flow,
         }
 
 
@@ -143,6 +145,7 @@ def run_android_direct_login(options: IntegratedLoginOptions) -> IntegratedLogin
     credentials = build_credentials(
         toy_login,
         profile=android_mobile_profile.to_dict() if android_mobile_profile is not None else None,
+        allow_synthetic_ngsm_token=options.allow_synthetic_ngsm_token,
     )
     host_url, api_url, connection = resolve_host_url(options)
     _log(options, f"gateway.ready gateway={host_url} wiki={api_url}")
@@ -192,6 +195,13 @@ def run_android_direct_login(options: IntegratedLoginOptions) -> IntegratedLogin
         proof_token_stage=options.proof_token_stage,
         proof_token_url_mode=options.proof_token_url_mode,
         proof_token_max_attempts=options.proof_token_max_attempts,
+        android_mobile_profile=android_mobile_profile.to_dict() if android_mobile_profile is not None else None,
+        ngsx_attestation_mode=options.ngsx_attestation_mode,
+        ngsx_attestation_url=options.ngsx_attestation_url,
+        ngsx_attestation_command=options.ngsx_attestation_command,
+        ngsx_attestation_file=options.ngsx_attestation_file,
+        ngsx_attestation_timeout=options.ngsx_attestation_timeout,
+        ngsx_attestation_strict=options.ngsx_attestation_strict,
         debug_logger=options.debug_logger,
     )
     _log(options, f"login.done status={flow.get('status', '')}")

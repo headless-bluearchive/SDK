@@ -63,14 +63,13 @@ class LoginResult:
     attendance: dict[str, _Any] | None = None
     profile: dict[str, _Any] | None = None
     session: dict[str, _Any] | None = None
-    credentials: _Any = field(default=None, repr=False, compare=False)
     logs: tuple[str, ...] = field(default_factory=tuple, repr=False, compare=False)
 
     @classmethod
     def from_integrated(cls, value: _Any, *, logs: list[str] | None = None) -> "LoginResult":
         flow = getattr(value, "flow", {}) or {}
-        account_data = flow.get("account_data")
-        player_data = flow.get("player_data")
+        account_data = flow.get("_account_data_raw") or flow.get("account_data")
+        player_data = flow.get("_player_data_raw") or flow.get("player_data")
         account_db = _find_mapping_with_key(account_data, "AccountDB")
         return cls(
             account_id=_first_value(
@@ -94,7 +93,6 @@ class LoginResult:
             attendance=extract_attendance_cache(account_data),
             profile=_profile_from_integrated(value),
             session=_session_from_integrated(value),
-            credentials=getattr(value, "credentials", None),
             logs=tuple(logs or ()),
         )
 
@@ -106,9 +104,9 @@ class LoginResult:
 
     def to_dict(self) -> dict[str, _Any]:
         values = self.summary()
-        values["Profile"] = self.profile
-        values["Session"] = self.session
-        values["Attendance"] = self.attendance
+        values["ProfilePresent"] = self.profile is not None
+        values["SessionPresent"] = self.session is not None
+        values["AttendancePresent"] = self.attendance is not None
         return values
 
     def summary(self) -> dict[str, _Any]:
@@ -127,7 +125,6 @@ class Client:
         self.debug = bool(debug)
         self.defaults = dict(defaults)
         self.result: LoginResult | None = None
-        self._raw_result: _Any | None = None
         self._gateway_client: BAReplayClient | None = None
         self._services: dict[str, _Any] = {}
         self._data_warning_keys: set[tuple[_Any, ...]] = set()
@@ -176,7 +173,6 @@ class Client:
             options["debug_logger"] = self._debug_log
         raw_result = await _login(**options)
         self.result = LoginResult.from_integrated(raw_result, logs=self.logs if self.debug else None)
-        self._raw_result = raw_result if self.debug else None
         if self.result.session is not None:
             stamp_session_daily_reset(self.result.session)
             if self.result.attendance is not None:
@@ -199,7 +195,6 @@ class Client:
         self._gateway_client = self._restore_gateway_client(restored_session)
         attendance = extract_attendance_cache(restored_session.get("attendance")) or extract_attendance_cache(restored_session)
         self.result = LoginResult(profile=restored_profile, session=restored_session, attendance=attendance)
-        self._raw_result = None
         self.logs = []
         self._warn_if_data_not_ready()
         return self.result
@@ -283,10 +278,8 @@ class Client:
         return data_status(client_version=version, build_number=build)
 
     @property
-    def credentials(self) -> _Any:
-        if self.result is None:
-            raise LoginRequiredError("login has not completed")
-        return self.result.credentials
+    def credentials(self) -> None:
+        raise LoginRequiredError("credentials are not exposed by this SDK")
 
     @property
     def profile(self) -> dict[str, _Any] | None:
@@ -299,10 +292,6 @@ class Client:
         if self.result is None:
             raise LoginRequiredError("login has not completed")
         return self.result.session
-
-    @property
-    def raw_result(self) -> _Any:
-        return self._raw_result
 
     def _require_gateway_client(self) -> BAReplayClient:
         if self._gateway_client is None:

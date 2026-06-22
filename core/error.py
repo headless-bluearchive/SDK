@@ -108,6 +108,10 @@ class UnsafeOperationError(GameApiError):
     pass
 
 
+class NexonNgsmValidationError(GameApiError):
+    pass
+
+
 def _optional_int(value: Any) -> int | None:
     if value is None:
         return None

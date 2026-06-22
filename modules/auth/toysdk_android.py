@@ -6,14 +6,14 @@ import hmac
 import json
 import re
 import uuid
-from dataclasses import asdict, dataclass
+from dataclasses import dataclass
 from typing import Any, Mapping
 from urllib.parse import urljoin
 
 from config.game import DEFAULTS
 from core.error import LoginError
 from utils.proxy import normalize_proxy_url, requests_proxy_map
-from modules.auth.toysdk_models import ToySdkCallbackResult, ToySdkLoginResult
+from modules.auth.toysdk_models import ToySdkLoginResult
 
 
 COMMON_AES_KEY = bytes.fromhex("dd4763541be100910b568ca6d48268e3")
@@ -130,17 +130,8 @@ class AndroidToySession:
     member_id: str = ""
     member_type: str = ""
     ngsm_token: str = ""
-    raw_login: dict[str, Any] | None = None
-    raw_user_info: dict[str, Any] | None = None
 
     def to_toy_login_result(self) -> ToySdkLoginResult:
-        raw_payload = json_compact(
-            {
-                "login": self.raw_login,
-                "userInfo": self.raw_user_info,
-                "ngsmToken": self.ngsm_token,
-            }
-        )
         return ToySdkLoginResult(
             np_sn=self.np_sn,
             np_token=self.np_token,
@@ -151,7 +142,6 @@ class AndroidToySession:
             member_type=self.member_type,
             um_key=self.um_key,
             ngsm_token=self.ngsm_token,
-            callback=ToySdkCallbackResult(payload=raw_payload, parsed=json.loads(raw_payload)),
         )
 
 
@@ -465,8 +455,6 @@ class AndroidToySdkClient:
                 member_id=self.session.member_id,
                 member_type=self.session.member_type,
                 ngsm_token=self.session.ngsm_token,
-                raw_login=self.session.raw_login,
-                raw_user_info=self.session.raw_user_info,
             )
         return result
 
@@ -593,7 +581,6 @@ class AndroidToySdkClient:
         merged_headers = _latin1_headers(merged_headers)
         record = {
             "url": url,
-            "headers": dict(merged_headers),
             "body_len": len(body),
             "decrypt_type": decrypt_type,
         }
@@ -620,12 +607,8 @@ class AndroidToySdkClient:
                     if response.status_code >= 400:
                         response.raise_for_status()
                     raise
-        record["response_text"] = decoded[:2000]
+        record["response_len"] = len(decoded)
         if response.status_code >= 400:
-            try:
-                record["error_json"] = json.loads(decoded)
-            except Exception:
-                record["error_text"] = decoded[:1000]
             response.raise_for_status()
         if not decoded:
             return {"errorCode": 0, "errorText": "Success", "errorDetail": ""}
@@ -758,8 +741,6 @@ class AndroidToySdkClient:
             member_id=member_id,
             member_type=member_type,
             ngsm_token=str(find_first(body, "ngsmToken", "ngsm_token") or existing.ngsm_token or ""),
-            raw_login=dict(result),
-            raw_user_info=existing.raw_user_info,
         )
 
     def _session_from_user_info(self, result: Mapping[str, Any], *, existing: AndroidToySession) -> AndroidToySession:
@@ -777,8 +758,6 @@ class AndroidToySdkClient:
             member_id=existing.member_id,
             member_type=existing.member_type,
             ngsm_token=str(find_first(body, "ngsmToken", "ngsm_token") or existing.ngsm_token or ""),
-            raw_login=existing.raw_login,
-            raw_user_info=dict(result),
         )
 
 
@@ -804,4 +783,14 @@ def current_timezone_offset_hours() -> str:
 
 
 def android_session_to_dict(session: AndroidToySession) -> dict[str, Any]:
-    return asdict(session)
+    return {
+        "npSNPresent": session.np_sn is not None,
+        "guidPresent": bool(session.guid),
+        "npTokenPresent": bool(session.np_token),
+        "npaCodePresent": bool(session.npa_code),
+        "sessionTokenPresent": bool(session.session_token),
+        "umKeyPresent": bool(session.um_key),
+        "memberIdPresent": bool(session.member_id),
+        "memberTypePresent": bool(session.member_type),
+        "ngsmTokenPresent": bool(session.ngsm_token),
+    }

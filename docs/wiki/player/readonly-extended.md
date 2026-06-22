@@ -554,29 +554,47 @@ treasure = await client.event_content.treasure_lobby(event_content_id)
 
 ### `client.event_content.clue_search_get_info(event_content_id)`
 
-对应活动里的 ClueSearch 线索搜索页面。当前协议文档没有稳定 Response 字段，因此 SDK 暂时把顶层响应放到 `payload`，不猜测字段含义。
+对应活动里的 Clue Search 线索搜索页面。它通常会展示当前轮次、线索面板、进度和已领取的集合奖励。只要活动内容 ID 对得上，这个接口就能把页面状态整理出来给 UI 直接用。
 
 | 项 | 内容 |
 | --- | --- |
 | 协议 | `EventContent_ClueSearchGetInfo` |
 | RequestClass | `EventContentClueSearchGetInfoRequest` |
 | 参数 | `event_content_id: int` |
-| live | 已封装；本轮账号缺少匹配 ClueSearch 活动上下文 |
+| live | 已封装；本轮账号缺少匹配 ClueSearch 活动上下文时会返回 `ErrorCode=16 DataEntityNotFound` |
 
 返回结构：
 
 ```python
 {
-    "payload": {...},
+    "clue_search": {...},
+    "round": {...},
+    "progress": {...},
+    "collections": [{...}],
+    "already_receive_reward_ids": [1, 2],
+    "event_content_id": 30051,
+    "collection_count": 1,
     "extra": {},
 }
 ```
+
+字段说明：
+
+- `clue_search`：线索搜索页面主状态。
+- `round`：当前轮次/回合信息。
+- `progress`：当前搜索进度。
+- `collections`：线索相关集合或已解锁条目。
+- `already_receive_reward_ids`：已经领过的奖励 ID。
+- `event_content_id`：当前活动内容 ID。
+- `collection_count`：集合数量，常用于页面角标或列表长度。
+- `extra`：服务端额外带回、但 SDK 还没单独整理的字段。
 
 示例：
 
 ```python
 clue = await client.event_content.clue_search_get_info(event_content_id)
-raw_payload = clue["payload"]
+print(clue["collection_count"])
+print(clue["already_receive_reward_ids"])
 ```
 
 ## 招募页面状态

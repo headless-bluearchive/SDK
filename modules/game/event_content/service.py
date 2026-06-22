@@ -221,7 +221,25 @@ def format_event_content_treasure_lobby(payload: dict[str, Any]) -> dict[str, An
 
 
 def format_event_content_clue_search_get_info(payload: dict[str, Any]) -> dict[str, Any]:
+    known_keys = {
+        "EventContentClueSearchDB",
+        "EventContentClueSearchRoundDB",
+        "EventContentClueSearchProgressDB",
+        "EventContentCollectionDBs",
+        "AlreadyReceiveRewardId",
+        "EventContentId",
+    }
+    round_db = payload.get("EventContentClueSearchRoundDB")
+    clue_db = payload.get("EventContentClueSearchDB")
+    progress_db = payload.get("EventContentClueSearchProgressDB")
+    collections = as_list(payload.get("EventContentCollectionDBs"))
     return {
-        "payload": payload,
-        "extra": {},
+        "clue_search": clue_db,
+        "round": round_db,
+        "progress": progress_db,
+        "collections": collections,
+        "already_receive_reward_ids": as_list(payload.get("AlreadyReceiveRewardId")),
+        "event_content_id": payload.get("EventContentId"),
+        "collection_count": len(collections),
+        "extra": extra_fields(payload, known_keys),
     }

@@ -1,15 +1,12 @@
 
 from __future__ import annotations
 
-import json
 from dataclasses import dataclass
 from typing import Any
 
 
 @dataclass(frozen=True)
 class ToySdkCallbackResult:
-    payload: str
-    parsed: Any
     handle: int | None = None
     callback_id: int | None = None
 
@@ -36,6 +33,10 @@ class ToySdkLoginResult:
         if not self.npa_code:
             missing.append("npaCode")
         if missing:
-            raw = self.callback.payload if self.callback else json.dumps(self.__dict__, ensure_ascii=False)
-            raise ValueError(f"TOYSDK login result missing {', '.join(missing)}; raw={raw[:1000]}")
+            present = {
+                "npSN": self.np_sn is not None,
+                "npToken": bool(self.np_token),
+                "npaCode": bool(self.npa_code),
+            }
+            raise ValueError(f"TOYSDK login result missing {', '.join(missing)}; present={present}")
         return self

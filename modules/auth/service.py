@@ -21,6 +21,13 @@ class LoginOptions:
     nx_id: str = ""
     nx_password: str = ""
     nx_preflight_nexon_sn: bool = True
+    allow_synthetic_ngsm_token: bool = True
+    ngsx_attestation_mode: str = "disabled"
+    ngsx_attestation_url: str = ""
+    ngsx_attestation_command: str = ""
+    ngsx_attestation_file: str = ""
+    ngsx_attestation_timeout: float = 30.0
+    ngsx_attestation_strict: bool = False
     proxy: str = ""
     timeout: float = 60.0
     debug_logger: Callable[[str], None] | None = None
@@ -37,6 +44,13 @@ class LoginOptions:
             "nx_id": self.nx_id,
             "nx_password": self.nx_password,
             "nx_preflight_nexon_sn": self.nx_preflight_nexon_sn,
+            "allow_synthetic_ngsm_token": self.allow_synthetic_ngsm_token,
+            "ngsx_attestation_mode": self.ngsx_attestation_mode,
+            "ngsx_attestation_url": self.ngsx_attestation_url,
+            "ngsx_attestation_command": self.ngsx_attestation_command,
+            "ngsx_attestation_file": self.ngsx_attestation_file,
+            "ngsx_attestation_timeout": self.ngsx_attestation_timeout,
+            "ngsx_attestation_strict": self.ngsx_attestation_strict,
             "proxy": self.proxy,
             "timeout": self.timeout,
             "debug_logger": self.debug_logger,
@@ -57,6 +71,13 @@ def _resolve_options(
     kwargs: dict[str, Any],
 ) -> IntegratedLoginOptions:
     if options is None:
+        login_fields = set(LoginOptions.__dataclass_fields__)
+        integrated_fields = set(IntegratedLoginOptions.__dataclass_fields__)
+        unknown = set(kwargs) - integrated_fields
+        if unknown:
+            raise TypeError(f"unexpected login option(s): {', '.join(sorted(unknown))}")
+        if set(kwargs) - login_fields:
+            return IntegratedLoginOptions(**kwargs)
         return LoginOptions(**kwargs).to_integrated()
     if isinstance(options, LoginOptions):
         if kwargs:
