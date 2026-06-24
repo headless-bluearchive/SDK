@@ -4,6 +4,7 @@
 
 ## 基础
 
+- [功能完成度](features.md) — 已封装功能一览 + 需 `confirm=True` 的状态变更分档
 - [登录鉴权](base/auth.md) — 实例化 `Client`、登录、保存/恢复 `session` 与 `profile`
 - [官方资源数据](base/official-data.md) — 同步 TableBundles 主数据，给只读计算提供依据
 - [参数取值参考](reference.md) — **所有需要自己填的枚举值和复杂对象**（ContentType / StageDifficulty / ShopCategoryType 等数值、以及 ConsumeRequestDB/OptionDB 等结构与来源）
