@@ -12,7 +12,6 @@ NGSM_PROFILE_FIELDS = ("mac", "display_name", "volume_serial", "disk_serial", "f
 
 
 def generate_ngsm_token(profile: Mapping[str, Any]) -> str:
-    """Generate a stable UUID-v3-shaped NgsM token from local profile fields."""
 
     fingerprint = ngsm_fingerprint_bytes(profile)
     digest = bytearray(hashlib.md5(fingerprint).digest())

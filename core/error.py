@@ -65,13 +65,17 @@ class OfficialDataParseError(OfficialDataError):
 class GameApiError(HeadlessBAError):
     def __init__(
         self,
-        message: str = "game gateway returned an error response",
+        message: str | None = None,
         *,
         error_code: int | None = None,
         error_name: str | None = None,
         protocol: int | None = None,
         response_keys: list[str] | None = None,
     ) -> None:
+        if message is None:
+            from core.i18n import t
+
+            message = t("gateway.error_response")
         self.error_code = error_code
         self.error_name = error_name or error_code_name(error_code)
         self.protocol = protocol
@@ -92,12 +96,22 @@ class GameApiError(HeadlessBAError):
         parts = [message]
         if self.error_code is not None:
             detail = f"ErrorCode={self.error_code}"
-            if self.error_name:
-                detail = f"{detail} ({self.error_name})"
+            display_name = self._localized_error_name()
+            if display_name:
+                detail = f"{detail} ({display_name})"
             parts.append(detail)
         if self.protocol is not None:
             parts.append(f"Protocol={self.protocol}")
         return ": ".join(parts)
+
+    def _localized_error_name(self) -> str | None:
+        if self.error_code is not None:
+            from core.i18n import error_code_text
+
+            localized = error_code_text(self.error_code)
+            if localized:
+                return localized
+        return self.error_name
 
 
 class ProtocolUnavailableError(GameApiError):
@@ -105,7 +119,15 @@ class ProtocolUnavailableError(GameApiError):
 
 
 class UnsafeOperationError(GameApiError):
-    pass
+    _CONFIRM_SUFFIX = " requires confirm=True"
+
+    def __init__(self, message: str | None = None, **kwargs: Any) -> None:
+        from core.i18n import t
+
+        if isinstance(message, str) and message.endswith(self._CONFIRM_SUFFIX):
+            action = message[: -len(self._CONFIRM_SUFFIX)]
+            message = t("confirm.requires_confirm", action=action)
+        super().__init__(message, **kwargs)
 
 
 class NexonNgsmValidationError(GameApiError):

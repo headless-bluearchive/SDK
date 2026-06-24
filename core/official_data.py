@@ -14,6 +14,7 @@ from config.game import DEFAULTS
 from config.paths import CORE_DATA_DIR, OFFICIAL_DATA_DIR
 from core.error import OfficialDataDependencyError, OfficialDataError
 from core.official_table_parser import parse_official_academy_tables, resolve_sqlcipher_material
+from utils.proxy import normalize_proxy_url
 
 OFFICIAL_CORE_MANIFEST = CORE_DATA_DIR / "official_data_manifest.json"
 ACADEMY_MESSANGER_DATA = CORE_DATA_DIR / "academy_messanger.json"
@@ -46,6 +47,7 @@ async def fetch_global_catalog(
     market_game_id: str | None = None,
     market_code: str | None = None,
     timeout: float = 30.0,
+    proxy: str | None = None,
 ) -> OfficialCatalog:
     version = _required_text("client_version", client_version)
     build = str(build_number or _build_number_from_version(version))
@@ -56,7 +58,13 @@ async def fetch_global_catalog(
         "curr_build_version": version,
         "curr_build_number": build,
     }
-    async with httpx.AsyncClient(timeout=timeout, follow_redirects=True, headers=headers) as client:
+    async with httpx.AsyncClient(
+        timeout=timeout,
+        follow_redirects=True,
+        headers=headers,
+        trust_env=False,
+        proxy=normalize_proxy_url(proxy) or None,
+    ) as client:
         patch_response = await client.post(DEFAULTS.official_global_patch_url, json=body)
         patch_response.raise_for_status()
         patch_payload = patch_response.json()
@@ -90,11 +98,13 @@ async def download_global_table_bundles(
     workers: int | None = None,
     chunk_size: int | None = None,
     cleanup_after_parse: bool = True,
+    proxy: str | None = None,
 ) -> dict[str, Any]:
     catalog = await fetch_global_catalog(
         client_version=client_version,
         build_number=build_number,
         timeout=timeout,
+        proxy=proxy,
     )
     wanted = tuple(targets or DEFAULTS.official_global_table_targets)
     selected = _select_targets(catalog.resources, wanted)
@@ -103,7 +113,13 @@ async def download_global_table_bundles(
 
     downloaded: list[dict[str, Any]] = []
     headers = {"User-Agent": DEFAULTS.official_resource_user_agent, "Accept": "*/*"}
-    async with httpx.AsyncClient(timeout=timeout, follow_redirects=True, headers=headers) as client:
+    async with httpx.AsyncClient(
+        timeout=timeout,
+        follow_redirects=True,
+        headers=headers,
+        trust_env=False,
+        proxy=normalize_proxy_url(proxy) or None,
+    ) as client:
         for target in selected:
             local_path = base_dir / Path(target.path).name
             if local_path.exists() and target.size is not None and local_path.stat().st_size == target.size:
@@ -198,6 +214,7 @@ async def prepare_global_data(
     workers: int | None = None,
     chunk_size: int | None = None,
     cleanup_after_parse: bool = True,
+    proxy: str | None = None,
 ) -> dict[str, Any]:
     targets = DEFAULTS.official_global_table_targets if download_large else ("Preload/TableBundles/Excel.zip",)
     result = await download_global_table_bundles(
@@ -209,6 +226,7 @@ async def prepare_global_data(
         workers=workers,
         chunk_size=chunk_size,
         cleanup_after_parse=False,
+        proxy=proxy,
     )
     if not download_large:
         result["parsed"] = _empty_parsed_status()

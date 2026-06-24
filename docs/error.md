@@ -1,6 +1,6 @@
 # 错误类型
 
-SDK 的异常都继承自 `HeadlessBAError`。外部项目可以先捕获具体异常；如果只是想统一兜底，捕获 `HeadlessBAError` 即可。别靠字符串猜错误，网关已经给了 ErrorCode，SDK 也会尽量把名字翻出来。
+所有异常继承自 `HeadlessBAError`。可按需捕获具体子类，或统一捕获基类 `HeadlessBAError` 做兜底。错误码以网关返回的 `ErrorCode` 为准，SDK 会尽量映射出对应的错误名称。
 
 ```python
 from core.error import DailyResetSessionExpiredError, GameApiError, HeadlessBAError

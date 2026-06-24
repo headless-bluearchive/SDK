@@ -6,9 +6,10 @@ import subprocess
 from dataclasses import asdict, dataclass, field
 from pathlib import Path
 from typing import Any, Mapping
-from urllib.request import Request, urlopen
+import requests
 
 from core.error import ConfigurationError, GatewayError
+from utils.proxy import requests_proxy_map
 
 
 @dataclass(frozen=True)
@@ -81,6 +82,7 @@ def run_ngsx_attestation(
     file_path: str | Path | None = None,
     timeout: float = 30.0,
     strict: bool = False,
+    proxy: str | None = None,
 ) -> NgsxAttestationResult | None:
     normalized = (mode or "disabled").strip().lower().replace("_", "-")
     if normalized in {"", "disabled", "none", "off"}:
@@ -90,7 +92,7 @@ def run_ngsx_attestation(
     if normalized in {"http", "rpc", "url"}:
         if not url:
             raise ConfigurationError("ngsx_attestation_url is required when ngsx_attestation_mode='http'")
-        result = _post_json(url, payload, timeout=timeout)
+        result = _post_json(url, payload, timeout=timeout, proxy=proxy)
         attestation = NgsxAttestationResult.from_mapping(result, source=url)
     elif normalized in {"command", "cmd", "process"}:
         if not command:
@@ -119,16 +121,22 @@ def run_ngsx_attestation(
     return attestation
 
 
-def _post_json(url: str, payload: Mapping[str, Any], *, timeout: float) -> dict[str, Any]:
+def _post_json(url: str, payload: Mapping[str, Any], *, timeout: float, proxy: str | None = None) -> dict[str, Any]:
     body = json.dumps(payload, ensure_ascii=False, separators=(",", ":")).encode("utf-8")
-    request = Request(
-        url,
-        data=body,
-        headers={"Content-Type": "application/json", "Accept": "application/json"},
-        method="POST",
-    )
-    with urlopen(request, timeout=timeout) as response:
-        text = response.read().decode("utf-8", errors="replace")
+    session = requests.Session()
+    session.trust_env = False
+    try:
+        response = session.post(
+            url,
+            data=body,
+            headers={"Content-Type": "application/json", "Accept": "application/json"},
+            timeout=timeout,
+            proxies=requests_proxy_map(proxy) or None,
+        )
+        response.raise_for_status()
+        text = response.text
+    except requests.RequestException as exc:
+        raise GatewayError(f"NGS-X attestation HTTP call failed: {exc}") from exc
     parsed = json.loads(text or "{}")
     if not isinstance(parsed, Mapping):
         raise GatewayError("NGS-X attestation provider response must be a JSON object")

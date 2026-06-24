@@ -23,6 +23,9 @@ class FriendService(GameService):
         payload = await self.request("FriendGetIdCardRequest")
         return format_friend_id_card(payload)
 
+    async def check(self) -> dict[str, Any]:
+        return await self.request("FriendCheckRequest")
+
     async def search(self, *, friend_code: str | None = None, level_option: int | None = None) -> dict[str, Any]:
         fields = compact_fields(
             FriendCode=str(friend_code) if friend_code is not None else None,
@@ -118,6 +121,59 @@ class FriendService(GameService):
         state = await self.list()
         if target_account_id not in _account_ids(state["sent_requests"]):
             raise UnsafeOperationError("target_account_id is not present in sent friend requests")
+
+    async def set_id_card(
+        self,
+        *,
+        auto_accept_friend_request: bool | None = None,
+        background_id: int | None = None,
+        comment: str | None = None,
+        emblem_id: int | None = None,
+        represent_character_unique_id: int | None = None,
+        search_permission: bool | None = None,
+        show_account_level: bool | None = None,
+        show_arena_ranking: bool | None = None,
+        show_eliminate_raid_ranking: bool | None = None,
+        show_friend_code: bool | None = None,
+        show_multi_floor_raid_cleared_difficulty: bool | None = None,
+        show_raid_ranking: bool | None = None,
+        confirm: bool = False,
+    ) -> dict[str, Any]:
+        if confirm is not True:
+            raise UnsafeOperationError("friend.set_id_card requires confirm=True")
+        fields = compact_fields(
+            AutoAcceptFriendRequest=auto_accept_friend_request,
+            BackgroundId=optional_int("background_id", background_id),
+            Comment=str(comment) if comment is not None else None,
+            EmblemId=optional_int("emblem_id", emblem_id),
+            RepresentCharacterUniqueId=optional_int("represent_character_unique_id", represent_character_unique_id),
+            SearchPermission=search_permission,
+            ShowAccountLevel=show_account_level,
+            ShowArenaRanking=show_arena_ranking,
+            ShowEliminateRaidRanking=show_eliminate_raid_ranking,
+            ShowFriendCode=show_friend_code,
+            ShowMultiFloorRaidClearedDifficulty=show_multi_floor_raid_cleared_difficulty,
+            ShowRaidRanking=show_raid_ranking,
+        )
+        return await self.request("FriendSetIdCardRequest", fields)
+
+    async def remove(self, *, target_account_id: int | None = None, confirm: bool = False) -> dict[str, Any]:
+        if confirm is not True:
+            raise UnsafeOperationError("friend.remove requires confirm=True")
+        fields = compact_fields(TargetAccountId=optional_int("target_account_id", target_account_id))
+        return await self.request("FriendRemoveRequest", fields)
+
+    async def block(self, *, target_account_id: int | None = None, confirm: bool = False) -> dict[str, Any]:
+        if confirm is not True:
+            raise UnsafeOperationError("friend.block requires confirm=True")
+        fields = compact_fields(TargetAccountId=optional_int("target_account_id", target_account_id))
+        return await self.request("FriendBlockRequest", fields)
+
+    async def unblock(self, *, target_account_id: int | None = None, confirm: bool = False) -> dict[str, Any]:
+        if confirm is not True:
+            raise UnsafeOperationError("friend.unblock requires confirm=True")
+        fields = compact_fields(TargetAccountId=optional_int("target_account_id", target_account_id))
+        return await self.request("FriendUnblockRequest", fields)
 
 
 def format_friend_list(payload: dict[str, Any]) -> dict[str, Any]:

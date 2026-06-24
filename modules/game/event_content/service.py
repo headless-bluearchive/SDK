@@ -2,8 +2,9 @@ from __future__ import annotations
 
 from typing import Any
 
+from core.error import UnsafeOperationError
 from modules.game.base import GameService
-from modules.game.common import as_list, compact_fields, extra_fields, int_list, required_int
+from modules.game.common import as_list, compact_fields, extra_fields, int_list, optional_int, required_int
 
 
 class EventContentService(GameService):
@@ -77,6 +78,22 @@ class EventContentService(GameService):
         payload = await self.request("EventContentPermanentListRequest")
         return format_event_content_permanent_list(payload)
 
+    async def receive_stage_total_reward(self, event_content_id: int, *, confirm: bool = False) -> dict[str, Any]:
+        if confirm is not True:
+            raise UnsafeOperationError("event_content.receive_stage_total_reward requires confirm=True")
+        return await self.request(
+            "EventContentReceiveStageTotalRewardRequest",
+            {"EventContentId": required_int("event_content_id", event_content_id)},
+        )
+
+    async def dice_race_lap_reward(self, event_content_id: int, *, confirm: bool = False) -> dict[str, Any]:
+        if confirm is not True:
+            raise UnsafeOperationError("event_content.dice_race_lap_reward requires confirm=True")
+        return await self.request(
+            "EventContentDiceRaceLapRewardRequest",
+            {"EventContentId": required_int("event_content_id", event_content_id)},
+        )
+
     async def treasure_lobby(self, event_content_id: int) -> dict[str, Any]:
         payload = await self.request(
             "EventContentTreasureLobbyRequest",
@@ -90,6 +107,106 @@ class EventContentService(GameService):
             {"EventContentId": required_int("event_content_id", event_content_id)},
         )
         return format_event_content_clue_search_get_info(payload)
+
+    async def purchase_play_count_hard_stage(
+        self,
+        *,
+        event_content_id: int | None = None,
+        stage_unique_id: int | None = None,
+        confirm: bool = False,
+    ) -> dict[str, Any]:
+        if confirm is not True:
+            raise UnsafeOperationError("event_content.purchase_play_count_hard_stage requires confirm=True")
+        fields = compact_fields(
+            EventContentId=optional_int("event_content_id", event_content_id),
+            StageUniqueId=optional_int("stage_unique_id", stage_unique_id),
+        )
+        return await self.request("EventContentPurchasePlayCountHardStageRequest", fields)
+
+    async def shop_refresh(
+        self,
+        *,
+        event_content_id: int | None = None,
+        shop_category_type: int | None = None,
+        confirm: bool = False,
+    ) -> dict[str, Any]:
+        if confirm is not True:
+            raise UnsafeOperationError("event_content.shop_refresh requires confirm=True")
+        fields = compact_fields(
+            EventContentId=optional_int("event_content_id", event_content_id),
+            ShopCategoryType=optional_int("shop_category_type", shop_category_type),
+        )
+        return await self.request("EventContentShopRefreshRequest", fields)
+
+    async def shop_buy_merchandise(
+        self,
+        *,
+        event_content_id: int | None = None,
+        goods_unique_id: int | None = None,
+        is_refresh_merchandise: bool | None = None,
+        purchase_count: int | None = None,
+        shop_unique_id: int | None = None,
+        confirm: bool = False,
+    ) -> dict[str, Any]:
+        if confirm is not True:
+            raise UnsafeOperationError("event_content.shop_buy_merchandise requires confirm=True")
+        fields = compact_fields(
+            EventContentId=optional_int("event_content_id", event_content_id),
+            GoodsUniqueId=optional_int("goods_unique_id", goods_unique_id),
+            IsRefreshMerchandise=is_refresh_merchandise,
+            PurchaseCount=optional_int("purchase_count", purchase_count),
+            ShopUniqueId=optional_int("shop_unique_id", shop_unique_id),
+        )
+        return await self.request("EventContentShopBuyMerchandiseRequest", fields)
+
+    async def shop_buy_refresh_merchandise(
+        self,
+        *,
+        event_content_id: int | None = None,
+        shop_unique_ids: list[int] | None = None,
+        confirm: bool = False,
+    ) -> dict[str, Any]:
+        if confirm is not True:
+            raise UnsafeOperationError("event_content.shop_buy_refresh_merchandise requires confirm=True")
+        fields = compact_fields(
+            EventContentId=optional_int("event_content_id", event_content_id),
+            ShopUniqueIds=int_list("shop_unique_ids", shop_unique_ids) or None,
+        )
+        return await self.request("EventContentShopBuyRefreshMerchandiseRequest", fields)
+
+    async def scenario_group_history_update(
+        self,
+        *,
+        event_content_id: int | None = None,
+        scenario_group_unique_id: int | None = None,
+        scenario_type: int | None = None,
+        confirm: bool = False,
+    ) -> dict[str, Any]:
+        if confirm is not True:
+            raise UnsafeOperationError("event_content.scenario_group_history_update requires confirm=True")
+        fields = compact_fields(
+            EventContentId=optional_int("event_content_id", event_content_id),
+            ScenarioGroupUniqueId=optional_int("scenario_group_unique_id", scenario_group_unique_id),
+            ScenarioType=optional_int("scenario_type", scenario_type),
+        )
+        return await self.request("EventContentScenarioGroupHistoryUpdateRequest", fields)
+
+    async def location_attend_schedule(
+        self,
+        *,
+        count: int | None = None,
+        event_content_id: int | None = None,
+        zone_id: int | None = None,
+        confirm: bool = False,
+    ) -> dict[str, Any]:
+        if confirm is not True:
+            raise UnsafeOperationError("event_content.location_attend_schedule requires confirm=True")
+        fields = compact_fields(
+            Count=optional_int("count", count),
+            EventContentId=optional_int("event_content_id", event_content_id),
+            ZoneId=optional_int("zone_id", zone_id),
+        )
+        return await self.request("EventContentLocationAttendScheduleRequest", fields)
 
 
 def format_event_content_adventure_list(payload: dict[str, Any]) -> dict[str, Any]:

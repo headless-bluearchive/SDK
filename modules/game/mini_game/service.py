@@ -2,8 +2,9 @@ from __future__ import annotations
 
 from typing import Any
 
+from core.error import UnsafeOperationError
 from modules.game.base import GameService
-from modules.game.common import as_list, extra_fields, required_int
+from modules.game.common import as_list, compact_fields, extra_fields, int_list, optional_int, required_int
 
 
 class MiniGameService(GameService):
@@ -38,6 +39,95 @@ class MiniGameService(GameService):
     async def ccg_lobby(self, event_content_id: int) -> dict[str, Any]:
         payload = await self._event_request("MiniGameCCGLobbyRequest", event_content_id)
         return format_mini_game_ccg_lobby(payload)
+
+    async def mission_reward(
+        self, *, event_content_id: int, mission_unique_id: int, progress_server_id: int, confirm: bool = False
+    ) -> dict[str, Any]:
+        if confirm is not True:
+            raise UnsafeOperationError("mini_game.mission_reward requires confirm=True")
+        return await self.request(
+            "MiniGameMissionRewardRequest",
+            {
+                "EventContentId": required_int("event_content_id", event_content_id),
+                "MissionUniqueId": required_int("mission_unique_id", mission_unique_id),
+                "ProgressServerId": required_int("progress_server_id", progress_server_id),
+            },
+        )
+
+    async def mission_multiple_reward(
+        self, *, event_content_id: int, mission_category: int, confirm: bool = False
+    ) -> dict[str, Any]:
+        if confirm is not True:
+            raise UnsafeOperationError("mini_game.mission_multiple_reward requires confirm=True")
+        return await self.request(
+            "MiniGameMissionMultipleRewardRequest",
+            {
+                "EventContentId": required_int("event_content_id", event_content_id),
+                "MissionCategory": required_int("mission_category", mission_category),
+            },
+        )
+
+    async def dream_maker_attend_schedule(
+        self,
+        *,
+        event_content_id: int | None = None,
+        schedule_group_id: int | None = None,
+        confirm: bool = False,
+    ) -> dict[str, Any]:
+        if confirm is not True:
+            raise UnsafeOperationError("mini_game.dream_maker_attend_schedule requires confirm=True")
+        fields = compact_fields(
+            EventContentId=optional_int("event_content_id", event_content_id),
+            ScheduleGroupId=optional_int("schedule_group_id", schedule_group_id),
+        )
+        return await self.request("MiniGameDreamMakerAttendScheduleRequest", fields)
+
+    async def shooting_sweep(
+        self,
+        *,
+        event_content_id: int,
+        unique_id: int,
+        sweep_count: int = 1,
+        confirm: bool = False,
+    ) -> dict[str, Any]:
+        if confirm is not True:
+            raise UnsafeOperationError("mini_game.shooting_sweep requires confirm=True")
+        fields = {
+            "EventContentId": required_int("event_content_id", event_content_id),
+            "UniqueId": required_int("unique_id", unique_id),
+            "SweepCount": required_int("sweep_count", sweep_count),
+        }
+        return await self.request("MiniGameShootingSweepRequest", fields)
+
+    async def table_board_sweep(
+        self,
+        *,
+        event_content_id: int,
+        preserve_item_effect_unique_ids: list[int] | None = None,
+        confirm: bool = False,
+    ) -> dict[str, Any]:
+        if confirm is not True:
+            raise UnsafeOperationError("mini_game.table_board_sweep requires confirm=True")
+        fields = compact_fields(
+            EventContentId=required_int("event_content_id", event_content_id),
+            PreserveItemEffectUniqueIds=int_list("preserve_item_effect_unique_ids", preserve_item_effect_unique_ids) or None,
+        )
+        return await self.request("MiniGameTableBoardSweepRequest", fields)
+
+    async def ccg_sweep(
+        self,
+        *,
+        event_content_id: int,
+        sweep_count: int = 1,
+        confirm: bool = False,
+    ) -> dict[str, Any]:
+        if confirm is not True:
+            raise UnsafeOperationError("mini_game.ccg_sweep requires confirm=True")
+        fields = {
+            "EventContentId": required_int("event_content_id", event_content_id),
+            "SweepCount": required_int("sweep_count", sweep_count),
+        }
+        return await self.request("MiniGameCCGSweepRequest", fields)
 
     async def _event_request(self, request_class: str, event_content_id: int) -> dict[str, Any]:
         return await self.request(

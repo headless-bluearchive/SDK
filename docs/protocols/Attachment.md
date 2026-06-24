@@ -10,8 +10,8 @@
 | --- | ---: | --- | --- | --- |
 | `Attachment_Get` | `46000` | 附件与头像框：获取数据 | `AttachmentGetRequest` | `AttachmentGetResponse` |
 | `Attachment_EmblemList` | `46001` | 附件与头像框：Emblem列表 | `AttachmentEmblemListRequest` | `AttachmentEmblemListResponse` |
-| `Attachment_EmblemAcquire` | `46002` | 附件与头像框：执行 EmblemAcquire 流程 | `AttachmentEmblemAcquireRequest` | `AttachmentEmblemAcquireResponse` |
-| `Attachment_EmblemAttach` | `46003` | 附件与头像框：执行 EmblemAttach 流程 | `AttachmentEmblemAttachRequest` | `AttachmentEmblemAttachResponse` |
+| `Attachment_EmblemAcquire` | `46002` | 附件与头像框：领取已解锁 Emblem | `AttachmentEmblemAcquireRequest` | `AttachmentEmblemAcquireResponse` |
+| `Attachment_EmblemAttach` | `46003` | 附件与头像框：装配 Emblem 到资料页 | `AttachmentEmblemAttachRequest` | `AttachmentEmblemAttachResponse` |
 
 ## 字段结构参考
 
@@ -57,13 +57,13 @@
 - 作用：附件与头像框：执行 EmblemAcquire 流程
 - RequestClass：`AttachmentEmblemAcquireRequest`
 - ResponseClass：`AttachmentEmblemAcquireResponse`
-- 状态：结构参考，发包前需要用真实网关响应验证。
+- 状态：SDK 已封装为头像框/Emblem 页的领取入口；调用前应先从 `Attachment_EmblemList` 确认当前可用 ID。
 
 #### Request 字段
 
 | 字段 | 类型 | 说明 |
 | --- | --- | --- |
-| `UniqueIds` | `List<long>?` | ID 列表。 |
+| `UniqueIds` | `List<long>?` | 要领取的 Emblem 唯一 ID 列表。 |
 
 #### Response 字段
 
@@ -77,13 +77,13 @@
 - 作用：附件与头像框：执行 EmblemAttach 流程
 - RequestClass：`AttachmentEmblemAttachRequest`
 - ResponseClass：`AttachmentEmblemAttachResponse`
-- 状态：结构参考，发包前需要用真实网关响应验证。
+- 状态：SDK 已封装为头像框/Emblem 页的装配入口；调用前应先从 `Attachment_EmblemList` 确认当前可用 ID。
 
 #### Request 字段
 
 | 字段 | 类型 | 说明 |
 | --- | --- | --- |
-| `UniqueId` | `long` | 唯一 ID。 |
+| `UniqueId` | `long` | 要装配的 Emblem 唯一 ID。 |
 
 #### Response 字段
 

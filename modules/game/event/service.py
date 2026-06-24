@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from typing import Any
 
+from core.error import UnsafeOperationError
 from modules.game.base import GameService
 from modules.game.common import as_list, extra_fields, required_int
 
@@ -14,6 +15,16 @@ class EventService(GameService):
     async def image(self, event_id: int) -> dict[str, Any]:
         payload = await self.request("EventImageRequest", {"EventId": required_int("event_id", event_id)})
         return format_event_image(payload)
+
+    async def use_coupon(self, coupon_serial: str, *, confirm: bool = False) -> dict[str, Any]:
+        if confirm is not True:
+            raise UnsafeOperationError("event.use_coupon requires confirm=True")
+        return await self.request("UseCouponRequest", {"CouponSerial": str(coupon_serial)})
+
+    async def reward_increase(self, *, confirm: bool = False) -> dict[str, Any]:
+        if confirm is not True:
+            raise UnsafeOperationError("event.reward_increase requires confirm=True")
+        return await self.request("EventRewardIncreaseRequest")
 
 
 def format_event_list(payload: dict[str, Any]) -> dict[str, Any]:

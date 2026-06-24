@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from typing import Any
 
+from core.error import UnsafeOperationError
 from modules.game.base import GameService
 from modules.game.common import as_list, compact_fields, extra_fields, optional_int, required_int
 
@@ -10,6 +11,9 @@ class EliminateRaidService(GameService):
     async def lobby(self) -> dict[str, Any]:
         payload = await self.request("EliminateRaidLobbyRequest")
         return format_eliminate_raid_lobby(payload)
+
+    async def login(self) -> dict[str, Any]:
+        return await self.request("EliminateRaidLoginRequest")
 
     async def opponent_list(
         self,
@@ -42,6 +46,30 @@ class EliminateRaidService(GameService):
     async def ranking_index(self) -> dict[str, Any]:
         payload = await self.request("EliminateRaidRankingIndexRequest")
         return format_eliminate_raid_ranking_index(payload)
+
+    async def season_reward(self, *, confirm: bool = False) -> dict[str, Any]:
+        if confirm is not True:
+            raise UnsafeOperationError("eliminate_raid.season_reward requires confirm=True")
+        return await self.request("EliminateRaidSeasonRewardRequest")
+
+    async def ranking_reward(self, *, confirm: bool = False) -> dict[str, Any]:
+        if confirm is not True:
+            raise UnsafeOperationError("eliminate_raid.ranking_reward requires confirm=True")
+        return await self.request("EliminateRaidRankingRewardRequest")
+
+    async def limited_reward(self, *, confirm: bool = False) -> dict[str, Any]:
+        if confirm is not True:
+            raise UnsafeOperationError("eliminate_raid.limited_reward requires confirm=True")
+        return await self.request("EliminateRaidLimitedRewardRequest")
+
+    async def sweep(self, *, unique_id: int, sweep_count: int = 1, confirm: bool = False) -> dict[str, Any]:
+        if confirm is not True:
+            raise UnsafeOperationError("eliminate_raid.sweep requires confirm=True")
+        fields = {
+            "UniqueId": required_int("unique_id", unique_id),
+            "SweepCount": required_int("sweep_count", sweep_count),
+        }
+        return await self.request("EliminateRaidSweepRequest", fields)
 
 
 def format_eliminate_raid_lobby(payload: dict[str, Any]) -> dict[str, Any]:

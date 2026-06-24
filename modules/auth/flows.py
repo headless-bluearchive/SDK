@@ -1,4 +1,3 @@
-
 from __future__ import annotations
 
 import asyncio
@@ -8,6 +7,7 @@ from typing import Any, Callable, Mapping
 
 from config.game import DEFAULTS
 from core.error import AuthenticationError, ConfigurationError
+from core.i18n import t
 from modules.runtime.android_mobile_profile import (
     DEFAULT_ANDROID_MOBILE_PROFILE_PATH,
     AndroidMobileProfile,
@@ -30,6 +30,7 @@ from modules.runtime.region_config import profile_for
 from modules.runtime.runtime_config import RuntimeConnectionInfo, discover_connection_info
 from modules.auth.toysdk_android import AndroidDeviceProfile, AndroidToyConfig, AndroidToySdkClient
 from modules.auth.toysdk_models import ToySdkLoginResult
+from modules.game.billing.service import extract_billing_cache
 
 
 @dataclass(frozen=True)
@@ -123,9 +124,16 @@ class IntegratedLoginResult:
         }
 
 
-def run_android_direct_login(options: IntegratedLoginOptions) -> IntegratedLoginResult:
+@dataclass(frozen=True)
+class _PreparedLogin:
+    options: IntegratedLoginOptions
+    android_mobile_profile: Any
+    client_version: str
+    toy_login: Any
+    credentials: Any
 
-    _log(options, "login.start")
+
+def _prepare_login(options: IntegratedLoginOptions) -> _PreparedLogin:
     options = apply_region_defaults(options)
     _log(options, f"region.ready region={options.region or 'default'}")
     android_mobile_profile = resolve_android_mobile_profile(options)
@@ -141,13 +149,22 @@ def run_android_direct_login(options: IntegratedLoginOptions) -> IntegratedLogin
         options = replace(options, android_app_version_code=app_version_code_from_client_version(client_version))
     toy_login = resolve_toy_login(options)
     _log(options, f"toysdk.ready npSN={toy_login.np_sn} guid={_mask_tail(toy_login.guid)} npaCode={bool(toy_login.npa_code)}")
-
     credentials = build_credentials(
         toy_login,
         profile=android_mobile_profile.to_dict() if android_mobile_profile is not None else None,
         allow_synthetic_ngsm_token=options.allow_synthetic_ngsm_token,
     )
-    host_url, api_url, connection = resolve_host_url(options)
+    return _PreparedLogin(options, android_mobile_profile, client_version, toy_login, credentials)
+
+
+def _finish_login(prepared: _PreparedLogin, *, gateway_region: str | None = None) -> IntegratedLoginResult:
+    options = prepared.options
+    android_mobile_profile = prepared.android_mobile_profile
+    client_version = prepared.client_version
+    credentials = prepared.credentials
+    toy_login = prepared.toy_login
+    host_options = options if gateway_region is None else replace(options, region=gateway_region, host_url="", api_url="")
+    host_url, api_url, connection = resolve_host_url(host_options)
     _log(options, f"gateway.ready gateway={host_url} wiki={api_url}")
 
     client = BAReplayClient(
@@ -202,6 +219,7 @@ def run_android_direct_login(options: IntegratedLoginOptions) -> IntegratedLogin
         ngsx_attestation_file=options.ngsx_attestation_file,
         ngsx_attestation_timeout=options.ngsx_attestation_timeout,
         ngsx_attestation_strict=options.ngsx_attestation_strict,
+        proxy=options.proxy,
         debug_logger=options.debug_logger,
     )
     _log(options, f"login.done status={flow.get('status', '')}")
@@ -209,11 +227,50 @@ def run_android_direct_login(options: IntegratedLoginOptions) -> IntegratedLogin
     attendance_cache = _attendance_cache_from_flow(flow)
     if attendance_cache is not None:
         session["attendance"] = attendance_cache
+    billing_cache = _billing_cache_from_flow(flow, session)
+    if billing_cache is not None:
+        session["billing"] = billing_cache
     return IntegratedLoginResult(toy_login, credentials, connection, android_mobile_profile, session, flow)
+
+
+def run_android_direct_login(options: IntegratedLoginOptions) -> IntegratedLoginResult:
+    _log(options, "login.start")
+    return _finish_login(_prepare_login(options))
 
 
 async def run_android_direct_login_async(options: IntegratedLoginOptions) -> IntegratedLoginResult:
     return await asyncio.to_thread(run_android_direct_login, options)
+
+
+async def run_android_direct_login_auto_region_async(
+    options: IntegratedLoginOptions,
+    regions: list[str],
+    *,
+    region_probe_timeout: float = 60.0,
+) -> IntegratedLoginResult:
+    from core.error import ConfigurationError, GatewayError, NetworkError
+    from modules.auth.toysdk_android import ToySdkAndroidError
+
+    if not regions:
+        raise ConfigurationError(t("login.region_no_candidates"))
+    retryable = (asyncio.TimeoutError, NetworkError, GatewayError, ToySdkAndroidError)
+
+    def _login_one(region: str) -> IntegratedLoginResult:
+        _log(options, f"region.probe region={region}")
+        result = _finish_login(_prepare_login(replace(options, region=region)))
+        _log(options, f"region.detected region={region}")
+        return result
+
+    errors: dict[str, str] = {}
+    for region in regions:
+        try:
+            return await asyncio.wait_for(
+                asyncio.to_thread(_login_one, region), timeout=region_probe_timeout
+            )
+        except retryable as exc:
+            errors[region] = type(exc).__name__
+            continue
+    raise ConfigurationError(t("login.region_autodetect_failed", regions=list(regions), errors=errors))
 
 
 def apply_region_defaults(options: IntegratedLoginOptions) -> IntegratedLoginOptions:
@@ -272,11 +329,14 @@ def resolve_client_version(
         return android_mobile_profile.client_version, "android-mobile-profile", updated
 
     try:
-        version, raw = fetch_galaxy_store_client_version(timeout=min(max(options.timeout, 1.0), 10.0))
+        version, raw = fetch_galaxy_store_client_version(
+            timeout=min(max(options.timeout, 1.0), 10.0),
+            proxy=options.proxy,
+        )
         android_mobile_profile = update_android_mobile_profile_version(options, android_mobile_profile, version)
         return version, "galaxy-store", android_mobile_profile
     except Exception as exc:
-        raise ConfigurationError("client_version is required and Galaxy Store lookup failed") from exc
+        raise ConfigurationError(t("login.client_version_failed")) from exc
 
 
 def update_android_mobile_profile_version(
@@ -331,7 +391,7 @@ def resolve_toy_login(options: IntegratedLoginOptions) -> ToySdkLoginResult:
         )
         login = session.to_toy_login_result()
         return login
-    raise AuthenticationError("account and password are required for Android direct login")
+    raise AuthenticationError(t("login.account_password_required"))
 
 
 def build_android_toy_client(options: IntegratedLoginOptions) -> AndroidToySdkClient:
@@ -408,6 +468,22 @@ def _attendance_cache_from_flow(flow: Mapping[str, Any]) -> dict[str, Any] | Non
         "AttendanceBookRewards": _as_list(rewards),
         "AttendanceHistoryDBs": _as_list(history),
     }
+
+
+def _billing_cache_from_flow(flow: Mapping[str, Any], session: Mapping[str, Any]) -> dict[str, Any] | None:
+    cached = extract_billing_cache(session.get("billing"), source="session.billing")
+    if cached is not None:
+        return cached
+    cached = extract_billing_cache(flow.get("billing"), source="flow.billing")
+    if cached is not None:
+        return cached
+    cached = extract_billing_cache(flow.get("_account_data_raw"), source="Account_Auth")
+    if cached is not None:
+        return cached
+    cached = extract_billing_cache(flow.get("_player_data_raw"), source="Account_LoginSync")
+    if cached is not None:
+        return cached
+    return None
 
 
 def _as_list(value: Any) -> list[Any]:

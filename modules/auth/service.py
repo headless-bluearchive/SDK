@@ -5,7 +5,12 @@ from pathlib import Path
 from typing import Any, Callable
 
 from config.game import DEFAULTS
-from modules.auth.flows import IntegratedLoginOptions, IntegratedLoginResult, run_android_direct_login_async
+from modules.auth.flows import (
+    IntegratedLoginOptions,
+    IntegratedLoginResult,
+    run_android_direct_login_async,
+    run_android_direct_login_auto_region_async,
+)
 from modules.runtime.android_mobile_profile import DEFAULT_ANDROID_MOBILE_PROFILE_PATH
 
 
@@ -64,6 +69,19 @@ async def Login(
 ) -> IntegratedLoginResult:
     resolved = _resolve_options(options, kwargs)
     return await run_android_direct_login_async(resolved)
+
+
+async def LoginAutoRegion(
+    regions: list[str],
+    options: LoginOptions | IntegratedLoginOptions | None = None,
+    *,
+    region_probe_timeout: float = 60.0,
+    **kwargs: Any,
+) -> IntegratedLoginResult:
+    resolved = _resolve_options(options, kwargs)
+    return await run_android_direct_login_auto_region_async(
+        resolved, regions, region_probe_timeout=region_probe_timeout
+    )
 
 
 def _resolve_options(

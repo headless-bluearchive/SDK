@@ -10,18 +10,26 @@ import httpx
 
 from config.game import DEFAULTS
 from config.paths import CORE_DATA_DIR
+from utils.proxy import normalize_proxy_url
 
 STUDENT_NAMES_CACHE = CORE_DATA_DIR / "students_cn.json"
 
 _LOCK = asyncio.Lock()
 _MEMORY_NAMES: dict[int, str] | None = None
 _MEMORY_LOADED_AT = 0.0
+_DEFAULT_PROXY: str | None = None
+
+
+def configure_proxy(proxy: str | None) -> None:
+    global _DEFAULT_PROXY
+    _DEFAULT_PROXY = normalize_proxy_url(proxy) or None
 
 
 async def student_names(
     *,
     refresh: bool = False,
     max_age_seconds: int | None = None,
+    proxy: str | None = None,
 ) -> dict[int, str]:
     ttl = DEFAULTS.student_data_cache_ttl_seconds if max_age_seconds is None else max_age_seconds
     async with _LOCK:
@@ -31,7 +39,7 @@ async def student_names(
         if not refresh and _cache_is_fresh(STUDENT_NAMES_CACHE, ttl):
             return _set_memory(_load_names(STUDENT_NAMES_CACHE))
 
-        fetched = await _fetch_names()
+        fetched = await _fetch_names(proxy=proxy)
         if fetched:
             _save_names(STUDENT_NAMES_CACHE, fetched)
             return _set_memory(fetched)
@@ -43,8 +51,8 @@ async def student_names(
         return _set_memory({})
 
 
-async def student_name(character_id: int, *, refresh: bool = False) -> str:
-    names = await student_names(refresh=refresh)
+async def student_name(character_id: int, *, refresh: bool = False, proxy: str | None = None) -> str:
+    names = await student_names(refresh=refresh, proxy=proxy)
     return names.get(int(character_id)) or str(character_id)
 
 
@@ -53,8 +61,8 @@ def cached_student_name(character_id: int) -> str:
     return names.get(int(character_id)) or str(character_id)
 
 
-async def refresh_student_names() -> dict[int, str]:
-    return await student_names(refresh=True)
+async def refresh_student_names(*, proxy: str | None = None) -> dict[int, str]:
+    return await student_names(refresh=True, proxy=proxy)
 
 
 def _memory_is_fresh(ttl: int) -> bool:
@@ -71,14 +79,21 @@ def _cache_is_fresh(path: Path, ttl: int) -> bool:
     return time.time() - path.stat().st_mtime <= ttl
 
 
-async def _fetch_names() -> dict[int, str]:
+async def _fetch_names(*, proxy: str | None = None) -> dict[int, str]:
     headers = {
         "User-Agent": DEFAULTS.student_data_user_agent,
         "Accept": "application/json,text/plain,*/*",
         "Referer": "https://blue-archive.io/",
     }
+    resolved_proxy = normalize_proxy_url(proxy) or _DEFAULT_PROXY
     urls = [DEFAULTS.student_data_url, DEFAULTS.student_data_fallback_url]
-    async with httpx.AsyncClient(timeout=20.0, follow_redirects=True, headers=headers) as client:
+    async with httpx.AsyncClient(
+        timeout=20.0,
+        follow_redirects=True,
+        headers=headers,
+        trust_env=False,
+        proxy=resolved_proxy or None,
+    ) as client:
         for url in urls:
             try:
                 response = await client.get(url)

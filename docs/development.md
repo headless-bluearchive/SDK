@@ -9,10 +9,10 @@
 - 正常调用先实例化 `HLBA.Client`，再调用实例方法。
 - 新能力写入 `core/`、`modules/`、`config/` 或 `docs/`。
 - 不新增分散的 CLI 文件、脚本入口、`argparse`、`__main__` 执行块或命令行参数解析。
-- 未来需要 CLI 时也应该放到外部项目里；SDK 内部先保持库形态。
+- 未来需要 CLI 时应放到外部项目中；SDK 内部保持库形态。
 - 不新增读取原游戏目录、dump、`shared_prefs`、`LocalConfig`、`Hosts`、DLL、调试桥输出的逻辑。
 - 逆向/调试目录只能作为人工对照来源；需要进入 SDK 的稳定表必须整理到 `core/data/`，运行时不能依赖外部调试路径。
-- 细节说明写进 `docs/wiki/`；README 只放当前状态和入口说明，不要把它写成小说。
+- 细节说明写入 `docs/wiki/`；README 只保留当前状态和入口说明，保持简洁。
 
 ## Game 模块
 

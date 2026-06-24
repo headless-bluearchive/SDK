@@ -6,6 +6,7 @@ from typing import Any
 
 from config.game import DEFAULTS
 from core.error import DailyResetSessionExpiredError
+from core.i18n import t
 
 DOTNET_UNIX_EPOCH_TICKS = 621355968000000000
 TICKS_PER_SECOND = 10_000_000
@@ -40,13 +41,15 @@ def validate_session_daily_reset(
         return
     created_day = _session_daily_reset_day(session) or daily_reset_day_key(created_at)
     current_day = daily_reset_day_key(_utc_now(now))
-    if created_day == current_day:
+    if created_day >= current_day:
         return
-    raise DailyResetSessionExpiredError(
-        "session crossed Blue Archive daily reset; login again before using game APIs "
-        f"(session_day={created_day}, current_day={current_day}, "
-        f"daily_reset_utc={_reset_time_label()}, local_reset={_local_reset_time_label()})"
-    )
+    raise DailyResetSessionExpiredError(t(
+        "session.daily_reset_expired",
+        session_day=created_day,
+        current_day=current_day,
+        reset_utc=_reset_time_label(),
+        local_reset=_local_reset_time_label(),
+    ))
 
 
 def daily_reset_day_key(moment: datetime) -> str:

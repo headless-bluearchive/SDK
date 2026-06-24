@@ -504,7 +504,7 @@ SDK 会把 `AttendanceBookRewards` 和 `AttendanceHistoryDBs` 写入登录结果
 | `ScenarioListResponse` | `ScenarioListResponse?` | ScenarioListResponse 子响应。 |
 | `ShopGachaRecruitListResponse` | `ShopGachaRecruitListResponse?` | ShopGachaRecruitListResponse 子响应。 |
 | `TimeAttackDungeonLoginResponse` | `TimeAttackDungeonLoginResponse?` | TimeAttackDungeonLoginResponse 子响应。 |
-| `BillingPurchaseListByYostarResponse` | `BillingPurchaseListByYostarResponse` | Yostar 购买列表同步响应。 |
+| `BillingPurchaseListByYostarResponse` | `BillingPurchaseListByYostarResponse` | 充值与购买状态页里的购买列表同步响应。 |
 | `EventContentPermanentListResponse` | `EventContentPermanentListResponse?` | EventContentPermanentListResponse 子响应。 |
 | `AttachmentGetResponse` | `AttachmentGetResponse?` | AttachmentGetResponse 子响应。 |
 | `AttachmentEmblemListResponse` | `AttachmentEmblemListResponse?` | AttachmentEmblemListResponse 子响应。 |
@@ -513,9 +513,9 @@ SDK 会把 `AttendanceBookRewards` 和 `AttendanceHistoryDBs` 写入登录结果
 | `MultiFloorRaidSyncResponse` | `MultiFloorRaidSyncResponse?` | MultiFloorRaidSyncResponse 子响应。 |
 | `FriendCount` | `long` | 好友数量。 |
 | `FriendCode` | `string?` | 好友码。 |
-| `BillingPurchaseListByNexonResponse` | `BillingPurchaseListByNexonResponse?` | Nexon 购买列表同步响应。 |
+| `BillingPurchaseListByNexonResponse` | `BillingPurchaseListByNexonResponse?` | 充值与购买状态页里的 Nexon 购买列表同步响应。 |
 | `PickupFirstGetHistoryDBs` | `List<PickupFirstGetHistoryDB>?` | Pickup 首次获取历史。 |
-| `AccountLevelRewardIds` | `List<long>?` | 已领取账号等级奖励 ID。 |
+| `AccountLevelRewardIds` | `List<long>?` | 账号等级奖励页里已领取的奖励 ID。 |
 
 ### Account_VerifyCheckAdultAgree
 
@@ -605,7 +605,7 @@ SDK 会把 `AttendanceBookRewards` 和 `AttendanceHistoryDBs` 写入登录结果
 
 | 字段 | 类型 | 说明 |
 | --- | --- | --- |
-| `AccountLevelRewardIds` | `List<long>?` | 已领取账号等级奖励 ID。 |
+| `AccountLevelRewardIds` | `List<long>?` | 账号等级奖励页里已领取的奖励 ID。 |
 
 ### Account_ReceiveAccountLevelReward
 
@@ -613,7 +613,7 @@ SDK 会把 `AttendanceBookRewards` 和 `AttendanceHistoryDBs` 写入登录结果
 - 作用：账号与登录：领取AccountLevel奖励
 - RequestClass：`ReceiveAccountLevelRewardRequest`
 - ResponseClass：`ReceiveAccountLevelRewardResponse`
-- 状态：结构参考，发包前需要用真实网关响应验证。
+- 状态：SDK 已封装为账号等级奖励页的领取入口；调用前应先读取状态并显式确认。
 
 #### Request 字段
 
@@ -623,5 +623,5 @@ SDK 会把 `AttendanceBookRewards` 和 `AttendanceHistoryDBs` 写入登录结果
 
 | 字段 | 类型 | 说明 |
 | --- | --- | --- |
-| `ReceivedAccountLevelRewardIds` | `List<long>?` | ID 列表。 |
+| `ReceivedAccountLevelRewardIds` | `List<long>?` | 本次领取到的账号等级奖励 ID 列表。 |
 | `ParcelResultDB` | `ParcelResultDB?` | 奖励或道具变更结果。 |

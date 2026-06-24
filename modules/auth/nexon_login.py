@@ -1,4 +1,3 @@
-
 from __future__ import annotations
 
 import base64
@@ -8,7 +7,7 @@ import socket
 import uuid
 from dataclasses import asdict, dataclass
 from typing import Any, Callable, Mapping
-from urllib.request import Request, urlopen
+import requests
 
 from config.game import DEFAULTS
 from core.client import BAReplayClient, BuiltRequest, decode_gateway_response
@@ -19,6 +18,7 @@ from modules.auth.proof_token import proof_token_search_span, solve_proof_token
 from modules.auth.toysdk_models import ToySdkCallbackResult, ToySdkLoginResult
 from modules.runtime.ngsm_token import generate_ngsm_token
 from modules.runtime.ngsx_attestation import NgsxAttestationRequest, run_ngsx_attestation
+from utils.proxy import requests_proxy_map
 
 SESSION_LOGIN_SYNC_NO_PART_PROTOCOLS = [
     20000,
@@ -379,15 +379,27 @@ def local_ipv4_address() -> str:
             return ""
 
 
-def outbound_ipv4_address(timeout: float = 5.0) -> str:
-    request = Request(DEFAULTS.ip_lookup_url, headers={"User-Agent": DEFAULTS.replay_user_agent})
+def outbound_ipv4_address(timeout: float = 5.0, *, proxy: str | None = None) -> str:
+    session = requests.Session()
+    session.trust_env = False
     try:
-        with urlopen(request, timeout=timeout) as response:
-            value = response.read(64).decode("ascii", errors="ignore").strip()
+        response = session.get(
+            DEFAULTS.ip_lookup_url,
+            headers={"User-Agent": DEFAULTS.replay_user_agent},
+            timeout=timeout,
+            proxies=requests_proxy_map(proxy) or None,
+        )
+        value = response.text[:64].strip()
     except Exception:
-        return local_ipv4_address()
+        return _ip_lookup_fallback(proxy)
     if value.count(".") == 3 and all(part.isdigit() and 0 <= int(part) <= 255 for part in value.split(".")):
         return value
+    return _ip_lookup_fallback(proxy)
+
+
+def _ip_lookup_fallback(proxy: str | None) -> str:
+    if proxy:
+        return ""
     return local_ipv4_address()
 
 
@@ -453,6 +465,7 @@ def run_main_game_login(
     ngsx_attestation_file: str = "",
     ngsx_attestation_timeout: float = 30.0,
     ngsx_attestation_strict: bool = False,
+    proxy: str | None = None,
     debug_logger: Callable[[str], None] | None = None,
 ) -> dict[str, Any]:
     login = LoginReplay(client)
@@ -510,6 +523,7 @@ def run_main_game_login(
         file_path=ngsx_attestation_file,
         timeout=ngsx_attestation_timeout,
         strict=ngsx_attestation_strict,
+        proxy=proxy,
     )
     if attestation is not None:
         flow["ngsx_attestation"] = attestation.to_public_dict()
@@ -542,7 +556,7 @@ def run_main_game_login(
             "ngsmTokenPresent": bool(credentials.ngsm_token),
         }
 
-    resolved_access_ip = access_ip or outbound_ipv4_address()
+    resolved_access_ip = access_ip or outbound_ipv4_address(proxy=proxy)
     flow["access_ip"] = resolved_access_ip
     _log(debug_logger, f"access_ip.ready value={resolved_access_ip}")
 
@@ -1124,7 +1138,6 @@ def run_proof_token_stage(
 
     answer = solve_proof_token(question, hint, max_attempts=proof_token_max_attempts)
     _log(debug_logger, f"proof_token.solved stage={stage}")
-    solution_name = f"{name_prefix}_proof_token_solution"
     solver_record = {
         "question": question,
         "hint": hint,
@@ -1524,7 +1537,6 @@ def _summarize_queue_state(queue_state: Mapping[str, Any]) -> dict[str, Any]:
         "client_generated_key_len": len(str(queue_state.get("client_generated_key") or "")),
         "client_generated_iv_len": len(str(queue_state.get("client_generated_iv") or "")),
     }
-
 
 
 def _log(logger: Callable[[str], None] | None, message: str) -> None:

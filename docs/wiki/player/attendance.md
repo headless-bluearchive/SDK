@@ -1,32 +1,28 @@
-# 签到
+# 签到页面
 
-这一页对应游戏登录时弹出的普通签到、活动签到奖励页面。SDK 不直接硬发签到列表/检查协议，而是复刻客户端实际流程：登录后从 `Account_Auth` 返回的签到缓存里读取签到簿和签到历史，再推导今天是否有可领取奖励。
+这一页对应游戏登录时弹出的普通签到 / 活动签到奖励页。SDK 不单独请求签到列表协议，而是复刻客户端流程：登录时 `Account_Auth` 已带回签到簿和签到历史缓存，`status()` 据此推导当天是否有可领签到，`claim()` 负责领取。
 
-## 签到弹窗状态
+能看什么：当前会话里有没有签到缓存、有哪些签到簿、已签到历史、SDK 推导出的当前可领项。
+能做什么：领取一项可领签到（会改账号资源和签到历史）。
 
-对应游戏里今天能不能领签到、当前是第几天、有哪些活动签到簿。
+## SDK 入口
+
+| 方法 | 用途 | confirm |
+| --- | --- | --- |
+| `client.attendance.status()` | 读当前会话内存里的签到缓存并推导可领项；不发包、不需 `await`。 | 否 |
+| `client.attendance.claim(...)` | 领取一项可领签到；改账号资源和签到历史。`reward` 是同一方法的别名。 | 否（守卫是缓存+可领项，见下） |
+
+`claim` 与 `reward` 指向同一个函数，签名为 `reward(*, attendance_book_unique_id=None, day=None, day_by_book_unique_id=None)`。
+
+## 查看签到状态
 
 ```python
 status = client.attendance.status()
 ```
 
-不需要 `await`，因为它读取的是当前 `Client` 内存里的登录缓存。
+`status()` 读取当前 `Client` 内存里的登录缓存，不需要 `await`。
 
-返回结构：
-
-```python
-{
-    "available": True,                 # 当前会话里是否有签到缓存
-    "source": "Account_Auth",          # 数据来源
-    "attendance_book_rewards": [...],  # 签到簿，普通签到和活动签到都在这里
-    "attendance_history": [...],       # 已签到历史
-    "claimable_rewards": [...],        # SDK 推导出的当前可领取签到
-}
-```
-
-如果 `available=False`，说明当前 session 没有签到缓存。不要盲发领取请求；重新登录或恢复包含签到缓存的 session。
-
-常见用法：
+返回 SDK 整理后的 dict：业务字段（`available` / `source` / 签到簿 / 签到历史 / SDK 推导出的 `claimable_rewards`）。缓存缺失时 `available=False` 并附带 `reason`，签到相关列表为空。
 
 ```python
 status = client.attendance.status()
@@ -34,15 +30,17 @@ for item in status["claimable_rewards"]:
     print(item["AttendanceBookUniqueId"], item["Day"])
 ```
 
+`available=False` 表示当前 session 没有签到缓存。此时不要发起领取请求，应重新登录或恢复包含签到缓存的 session。
+
 ## 领取签到奖励
 
-对应游戏里在签到弹窗点击领取。它会改变账号资源和签到历史。
+对应在签到弹窗点击领取，会修改账号资源和签到历史。
 
 ```python
 result = await client.attendance.claim()
 ```
 
-如果同时存在普通签到和活动签到，建议按 `claimable_rewards` 逐个指定，避免 SDK 无法判断你想领哪一本签到簿：
+同时存在普通签到和活动签到时，逐项按 `claimable_rewards` 指定，避免 SDK 无法判断要领哪一本签到簿：
 
 ```python
 for item in client.attendance.status()["claimable_rewards"]:
@@ -59,24 +57,12 @@ for item in client.attendance.status()["claimable_rewards"]:
 | --- | --- |
 | `attendance_book_unique_id` | 签到簿 ID，来自 `claimable_rewards`。 |
 | `day` | 要领取的签到天数。 |
-| `day_by_book_unique_id` | 服务端需要的签到簿到天数映射，直接使用 `claimable_rewards` 里的值。 |
+| `day_by_book_unique_id` | 服务端需要的"签到簿到天数"映射，直接用 `claimable_rewards` 里的值。 |
 
-返回结构：
+返回 SDK 整理后的 dict：更新后的签到簿、签到历史、`parcel_result`（奖励领取结果）和 `extra`（其余原始字段）。领取成功后 SDK 会更新当前 `Client` 内存里的 attendance 缓存，但不会替调用方写回 `session.json`；如需持久化，由调用方自行保存更新后的 `client.session`。
 
-```python
-{
-    "attendance_book_rewards": [...],  # 更新后的签到簿
-    "attendance_history": [...],       # 更新后的签到历史
-    "parcel_result": {...},            # 奖励领取结果
-    "extra": {},
-}
-```
+## 注意
 
-领取成功后 SDK 会更新当前 `Client` 内存里的 attendance cache，但不会替调用方写回 `session.json`。如果调用方要持久化，需要保存更新后的 `client.session`。
-
-live 验证：
-
-```text
-普通签到 Day=1 ok
-活动签到 UniqueId=90026 Day=5 ok
-```
+- `claim()` 没有 `confirm` 参数，安全守卫是 `status()` 缓存加可领项匹配：缓存不可用、或没有与请求字段匹配的可领项时直接抛 `UnsafeOperationError` 且不发包。多本签到簿同时可领且未指定具体 `attendance_book_unique_id` + `day` 时，同样拒绝执行。
+- 签到簿 ID、天数等一律来自 `status()["claimable_rewards"]`，不要手填。
+- 逐协议接入状态见仓库根 `docs/protocols.md`。

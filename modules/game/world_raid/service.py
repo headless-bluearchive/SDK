@@ -2,8 +2,9 @@ from __future__ import annotations
 
 from typing import Any
 
+from core.error import UnsafeOperationError
 from modules.game.base import GameService
-from modules.game.common import as_list, extra_fields, required_int
+from modules.game.common import as_list, compact_fields, extra_fields, optional_int, required_int
 
 
 class WorldRaidService(GameService):
@@ -33,6 +34,34 @@ class WorldRaidService(GameService):
             },
         )
         return format_world_raid_boss_list(payload)
+
+    async def receive_reward(self, *, phase_id: int, season_id: int, confirm: bool = False) -> dict[str, Any]:
+        if confirm is not True:
+            raise UnsafeOperationError("world_raid.receive_reward requires confirm=True")
+        return await self.request(
+            "WorldRaidReceiveRewardRequest",
+            {
+                "PhaseId": required_int("phase_id", phase_id),
+                "SeasonId": required_int("season_id", season_id),
+            },
+        )
+
+    async def update_carrier_skill(
+        self,
+        *,
+        carrier_skills: Any = None,
+        recipe_ingredient_id: int | None = None,
+        season_id: int | None = None,
+        confirm: bool = False,
+    ) -> dict[str, Any]:
+        if confirm is not True:
+            raise UnsafeOperationError("world_raid.update_carrier_skill requires confirm=True")
+        fields = compact_fields(
+            CarrierSkills=carrier_skills,
+            RecipeIngredientId=optional_int("recipe_ingredient_id", recipe_ingredient_id),
+            SeasonId=optional_int("season_id", season_id),
+        )
+        return await self.request("WorldRaidUpdateCarrierSkillRequest", fields)
 
 
 def format_world_raid_lobby(payload: dict[str, Any]) -> dict[str, Any]:

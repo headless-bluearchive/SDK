@@ -4,7 +4,7 @@ from typing import Any
 
 from core.error import UnsafeOperationError
 from modules.game.base import GameService
-from modules.game.common import as_list, extra_fields, required_int
+from modules.game.common import as_list, compact_fields, extra_fields, int_list, optional_int, required_int
 
 
 class ShopService(GameService):
@@ -21,7 +21,7 @@ class ShopService(GameService):
         confirm: bool = False,
     ) -> dict[str, Any]:
         if confirm is not True:
-            raise UnsafeOperationError("buy_ap requires confirm=True")
+            raise UnsafeOperationError("shop.buy_ap requires confirm=True")
         fields = {
             "ShopUniqueId": _required_int("shop_unique_id", shop_unique_id),
             "PurchaseCount": _required_int("purchase_count", purchase_count),
@@ -43,6 +43,70 @@ class ShopService(GameService):
             {"ShopRecruitId": required_int("shop_recruit_id", shop_recruit_id)},
         )
         return format_shop_pickup_selection_gacha_get(payload)
+
+    async def buy_eligma(
+        self,
+        *,
+        character_unique_id: int,
+        goods_unique_id: int,
+        shop_unique_id: int,
+        purchase_count: int = 1,
+        confirm: bool = False,
+    ) -> dict[str, Any]:
+        if confirm is not True:
+            raise UnsafeOperationError("shop.buy_eligma requires confirm=True")
+        fields = {
+            "CharacterUniqueId": required_int("character_unique_id", character_unique_id),
+            "GoodsUniqueId": required_int("goods_unique_id", goods_unique_id),
+            "ShopUniqueId": required_int("shop_unique_id", shop_unique_id),
+            "PurchaseCount": required_int("purchase_count", purchase_count),
+        }
+        return await self.request("ShopBuyEligmaRequest", fields)
+
+    async def buy_merchandise(
+        self,
+        *,
+        goods_id: int | None = None,
+        is_refresh_goods: bool | None = None,
+        purchase_count: int | None = None,
+        shop_unique_id: int | None = None,
+        confirm: bool = False,
+    ) -> dict[str, Any]:
+        if confirm is not True:
+            raise UnsafeOperationError("shop.buy_merchandise requires confirm=True")
+        fields = compact_fields(
+            GoodsId=optional_int("goods_id", goods_id),
+            IsRefreshGoods=is_refresh_goods,
+            PurchaseCount=optional_int("purchase_count", purchase_count),
+            ShopUniqueId=optional_int("shop_unique_id", shop_unique_id),
+        )
+        return await self.request("ShopBuyMerchandiseRequest", fields)
+
+    async def refresh(
+        self,
+        *,
+        shop_category_type: int | None = None,
+        confirm: bool = False,
+    ) -> dict[str, Any]:
+        if confirm is not True:
+            raise UnsafeOperationError("shop.refresh requires confirm=True")
+        fields = compact_fields(
+            ShopCategoryType=optional_int("shop_category_type", shop_category_type),
+        )
+        return await self.request("ShopRefreshRequest", fields)
+
+    async def buy_refresh_merchandise(
+        self,
+        *,
+        shop_unique_ids: list[int] | None = None,
+        confirm: bool = False,
+    ) -> dict[str, Any]:
+        if confirm is not True:
+            raise UnsafeOperationError("shop.buy_refresh_merchandise requires confirm=True")
+        fields = compact_fields(
+            ShopUniqueIds=int_list("shop_unique_ids", shop_unique_ids) or None,
+        )
+        return await self.request("ShopBuyRefreshMerchandiseRequest", fields)
 
 
 def format_shop_list(payload: dict[str, Any]) -> dict[str, Any]:

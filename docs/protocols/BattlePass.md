@@ -14,7 +14,7 @@
 | `BattlePass_MissionList` | `51003` | 战斗通行证：任务列表 | `BattlePassMissionListRequest` | `BattlePassMissionListResponse` |
 | `BattlePass_MissionSingleReward` | `51004` | 战斗通行证：任务Single奖励 | `BattlePassMissionSingleRewardRequest` | `BattlePassMissionSingleRewardResponse` |
 | `BattlePass_MissionMultipleReward` | `51005` | 战斗通行证：任务Multiple奖励 | `BattlePassMissionMultipleRewardRequest` | `BattlePassMissionMultipleRewardResponse` |
-| `BattlePass_Check` | `51006` | 战斗通行证：检查状态 | `BattlePassCheckRequest` | `BattlePassCheckResponse` |
+| `BattlePass_Check` | `51006` | 战斗通行证：检查领取状态 | `BattlePassCheckRequest` | `BattlePassCheckResponse` |
 
 ## 字段结构参考
 
@@ -44,7 +44,7 @@
 - 作用：战斗通行证：购买Level
 - RequestClass：`BattlePassBuyLevelRequest`
 - ResponseClass：`BattlePassBuyLevelResponse`
-- 状态：结构参考，发包前需要用真实网关响应验证。
+- 状态：SDK 已封装为战斗通行证页面的领取状态读取方法，不会自动领取奖励。
 
 #### Request 字段
 
@@ -166,5 +166,9 @@
 
 | 字段 | 类型 | 说明 |
 | --- | --- | --- |
-| `HasNotReceiveReward` | `bool` | HasNotReceive奖励奖励信息。 |
-| `HasCompleteMission` | `bool` | 是否已有Complete任务。 |
+| `HasNotReceiveReward` | `bool` | 当前页面是否还有未领取奖励。 |
+| `HasCompleteMission` | `bool` | 当前页面是否已经完成对应任务。 |
+
+SDK 侧对应 `client.battle_pass.get_info(battle_pass_id)` / `mission_list(battle_pass_id)` / `check(battle_pass_id)`，用于读取战斗通行证页面、任务和领取状态，不会自动领取奖励。
+
+当前登录链路里如果能提前知道赛季 ID，也可以在登录时传 `session_bootstrap_battle_pass_id`，让登录阶段顺带同步一次。`battle_pass_id` 不要手填成通用常量。

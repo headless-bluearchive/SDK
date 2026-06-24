@@ -4,6 +4,7 @@ from typing import Any
 
 from core.error import UnsafeOperationError
 from modules.game.base import GameService
+from modules.game.common import as_list, optional_int
 
 
 class AcademyService(GameService):
@@ -12,7 +13,7 @@ class AcademyService(GameService):
         return format_academy_info(payload)
 
     async def attend_schedule(self, *, zone_id: int | None = None, validate: bool = True) -> dict[str, Any]:
-        resolved_zone_id = _optional_int("zone_id", zone_id)
+        resolved_zone_id = optional_int("zone_id", zone_id)
         if validate:
             resolved_zone_id = await self._resolve_zone_id(resolved_zone_id)
         if resolved_zone_id is None:
@@ -48,7 +49,7 @@ def format_academy_info(payload: dict[str, Any]) -> dict[str, Any]:
     }
     return {
         "academy": payload.get("AcademyDB"),
-        "locations": _as_list(payload.get("AcademyLocationDBs")),
+        "locations": as_list(payload.get("AcademyLocationDBs")),
         "available_zone_ids": _zone_ids(payload.get("AcademyDB"), "ZoneVisitCharacterDBs"),
         "attended_zone_ids": _zone_ids(payload.get("AcademyDB"), "ZoneScheduleGroupRecords"),
         "extra": {key: value for key, value in payload.items() if key not in known_keys},
@@ -64,7 +65,7 @@ def format_academy_attend_schedule(payload: dict[str, Any]) -> dict[str, Any]:
     return {
         "academy": payload.get("AcademyDB"),
         "parcel_result": payload.get("ParcelResultDB"),
-        "extra_rewards": _as_list(payload.get("ExtraRewards")),
+        "extra_rewards": as_list(payload.get("ExtraRewards")),
         "extra": {key: value for key, value in payload.items() if key not in known_keys},
     }
 
@@ -77,29 +78,7 @@ def _zone_ids(academy: Any, key: str) -> list[int]:
         return []
     result: list[int] = []
     for raw in value.keys():
-        zone_id = _optional_int("zone_id", raw)
+        zone_id = optional_int("zone_id", raw)
         if zone_id is not None:
             result.append(zone_id)
-    return result
-
-
-def _as_list(value: Any) -> list[Any]:
-    if value is None:
-        return []
-    if isinstance(value, list):
-        return value
-    if isinstance(value, tuple):
-        return list(value)
-    return [value]
-
-
-def _optional_int(name: str, value: Any) -> int | None:
-    if value is None:
-        return None
-    try:
-        result = int(value)
-    except (TypeError, ValueError) as exc:
-        raise UnsafeOperationError(f"{name} must be an integer") from exc
-    if result < 0:
-        raise UnsafeOperationError(f"{name} must not be negative")
     return result

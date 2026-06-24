@@ -4,6 +4,7 @@ from typing import Any
 
 from core.error import UnsafeOperationError
 from modules.game.base import GameService
+from modules.game.common import as_list, optional_int, required_int
 
 
 MISSION_CATEGORIES = {
@@ -24,6 +25,9 @@ MISSION_CATEGORIES = {
 
 
 class MissionService(GameService):
+    async def sync(self) -> dict[str, Any]:
+        return await self.request("MissionSyncRequest")
+
     async def list(self, *, event_content_id: int | None = None) -> dict[str, Any]:
         fields: dict[str, Any] = {}
         if event_content_id is not None:
@@ -43,9 +47,9 @@ class MissionService(GameService):
         event_content_id: int | None = None,
         validate: bool = True,
     ) -> dict[str, Any]:
-        mission_id = _required_int("mission_unique_id", mission_unique_id)
-        progress_id = _optional_int("progress_server_id", progress_server_id)
-        event_id = _optional_int("event_content_id", event_content_id)
+        mission_id = required_int("mission_unique_id", mission_unique_id)
+        progress_id = optional_int("progress_server_id", progress_server_id)
+        event_id = optional_int("event_content_id", event_content_id)
 
         if validate:
             await self._ensure_rewardable(
@@ -72,8 +76,8 @@ class MissionService(GameService):
         validate: bool = True,
     ) -> dict[str, Any]:
         category = _mission_category(mission_category)
-        event_id = _optional_int("event_content_id", event_content_id)
-        season_id = _optional_int("guide_mission_season_id", guide_mission_season_id)
+        event_id = optional_int("event_content_id", event_content_id)
+        season_id = optional_int("guide_mission_season_id", guide_mission_season_id)
 
         if validate:
             await self._ensure_any_completed(event_content_id=event_id)
@@ -119,10 +123,10 @@ def format_mission_list(payload: dict[str, Any]) -> dict[str, Any]:
         "ClearedOriginalMissionIds",
     }
     return {
-        "mission_history_unique_ids": _as_list(payload.get("MissionHistoryUniqueIds")),
-        "progress": _as_list(payload.get("ProgressDBs")),
+        "mission_history_unique_ids": as_list(payload.get("MissionHistoryUniqueIds")),
+        "progress": as_list(payload.get("ProgressDBs")),
         "daily_sudden_mission_info": payload.get("DailySuddenMissionInfo"),
-        "cleared_original_mission_ids": _as_list(
+        "cleared_original_mission_ids": as_list(
             payload.get("ClearedOrignalMissionIds", payload.get("ClearedOriginalMissionIds"))
         ),
         "extra": {key: value for key, value in payload.items() if key not in known_keys},
@@ -138,7 +142,7 @@ def format_mission_reward(payload: dict[str, Any]) -> dict[str, Any]:
     }
     return {
         "added_history": payload.get("AddedHistoryDB"),
-        "mission_progress": _as_list(payload.get("MissionProgressDBs")),
+        "mission_progress": as_list(payload.get("MissionProgressDBs")),
         "parcel_result": payload.get("ParcelResultDB", payload.get("ParcelResult")),
         "extra": {key: value for key, value in payload.items() if key not in known_keys},
     }
@@ -151,8 +155,8 @@ def format_mission_multiple_reward(payload: dict[str, Any]) -> dict[str, Any]:
         "ParcelResultDB",
     }
     return {
-        "added_histories": _as_list(payload.get("AddedHistoryDBs")),
-        "mission_progress": _as_list(payload.get("MissionProgressDBs")),
+        "added_histories": as_list(payload.get("AddedHistoryDBs")),
+        "mission_progress": as_list(payload.get("MissionProgressDBs")),
         "parcel_result": payload.get("ParcelResultDB"),
         "extra": {key: value for key, value in payload.items() if key not in known_keys},
     }
@@ -162,7 +166,7 @@ def format_guide_mission_season_list(payload: dict[str, Any]) -> dict[str, Any]:
     known_keys = {
         "GuideMissionSeasonDBs",
     }
-    seasons = _as_list(payload.get("GuideMissionSeasonDBs"))
+    seasons = as_list(payload.get("GuideMissionSeasonDBs"))
     return {
         "guide_mission_seasons": seasons,
         "count": len(seasons),
@@ -170,19 +174,9 @@ def format_guide_mission_season_list(payload: dict[str, Any]) -> dict[str, Any]:
     }
 
 
-def _as_list(value: Any) -> list[Any]:
-    if value is None:
-        return []
-    if isinstance(value, list):
-        return value
-    if isinstance(value, tuple):
-        return list(value)
-    return [value]
-
-
 def _find_progress(progress: list[Any], mission_unique_id: int) -> dict[str, Any] | None:
     for item in progress:
-        if isinstance(item, dict) and _optional_int("MissionUniqueId", item.get("MissionUniqueId")) == mission_unique_id:
+        if isinstance(item, dict) and optional_int("MissionUniqueId", item.get("MissionUniqueId")) == mission_unique_id:
             return item
     return None
 
@@ -191,15 +185,8 @@ def _progress_server_id(progress: dict[str, Any]) -> int | None:
     for key in ("ProgressServerId", "ServerId", "Id", "UniqueId"):
         value = progress.get(key)
         if value is not None:
-            return _optional_int(key, value)
+            return optional_int(key, value)
     return None
-
-
-def _required_int(name: str, value: Any) -> int:
-    result = _optional_int(name, value)
-    if result is None:
-        raise UnsafeOperationError(f"{name} is required")
-    return result
 
 
 def _mission_category(value: int | str) -> int:
@@ -207,16 +194,4 @@ def _mission_category(value: int | str) -> int:
         key = value.strip().lower().replace("-", "_").replace(" ", "_")
         if key in MISSION_CATEGORIES:
             return MISSION_CATEGORIES[key]
-    return _required_int("mission_category", value)
-
-
-def _optional_int(name: str, value: Any) -> int | None:
-    if value is None:
-        return None
-    try:
-        result = int(value)
-    except (TypeError, ValueError) as exc:
-        raise UnsafeOperationError(f"{name} must be an integer") from exc
-    if result < 0:
-        raise UnsafeOperationError(f"{name} must not be negative")
-    return result
+    return required_int("mission_category", value)

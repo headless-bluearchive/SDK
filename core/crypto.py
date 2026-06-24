@@ -1,4 +1,3 @@
-
 from __future__ import annotations
 
 import base64
@@ -8,7 +7,6 @@ import os
 import struct
 import zlib
 from functools import lru_cache
-from typing import Iterable
 
 
 CRC_POLY = 0x04C11DB7

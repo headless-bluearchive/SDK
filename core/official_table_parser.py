@@ -229,7 +229,7 @@ def _read_schema_bytes_dbapi(
     try:
         _configure_sqlcipher_dbapi(connection, sqlcipher_key=sqlcipher_key, sqlcipher_license=sqlcipher_license)
         return [bytes(row[0]) for row in connection.execute(f"SELECT Bytes FROM {schema_name}")]
-    except Exception as exc:  # noqa: BLE001 - normalize optional backend errors
+    except Exception as exc:
         raise OfficialDataParseError(f"failed to read {schema_name}: {exc}") from exc
     finally:
         connection.close()

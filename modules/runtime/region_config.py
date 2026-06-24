@@ -1,11 +1,12 @@
-
 from __future__ import annotations
 
+import re
 from dataclasses import asdict, dataclass, replace
 from urllib.parse import urljoin
 
 from config.game import DEFAULTS
 from core.error import ConfigurationError
+from core.i18n import t
 
 DEFAULT_GID = DEFAULTS.service_id
 
@@ -146,6 +147,30 @@ def normalize_region(region: str) -> str:
     return REGION_ALIASES.get(key) or REGION_ALIASES.get(compact) or key
 
 
+ALL_REGIONS = list(SERVER_PROFILES.keys())
+
+_HOST_CODE_TO_REGION = {"kr": "kr", "tw": "tw", "th": "asia", "or": "na", "eu": "global"}
+
+
+def region_from_url(url: str | None) -> str | None:
+    if not url:
+        return None
+    match = re.search(r"nxm-([a-z]{2})-bagl", str(url).lower())
+    if not match:
+        return None
+    return _HOST_CODE_TO_REGION.get(match.group(1))
+
+
+def region_from_session(session: object) -> str | None:
+    if not isinstance(session, dict):
+        return None
+    for key in ("host_url", "api_url", "gateway_url", "session_api_url"):
+        region = region_from_url(session.get(key))
+        if region:
+            return region
+    return None
+
+
 def profile_for(region: str = "", *, country: str = "", locale: str = "", gid: str = DEFAULT_GID) -> ServerProfile:
     resolved_region = normalize_region(region)
     country_code = (country or "").strip().upper()
@@ -157,7 +182,9 @@ def profile_for(region: str = "", *, country: str = "", locale: str = "", gid: s
     try:
         profile = SERVER_PROFILES[resolved_region]
     except KeyError as exc:
-        raise ConfigurationError(f"unknown server region {region!r}; expected one of {', '.join(SERVER_PROFILES)}") from exc
+        raise ConfigurationError(t(
+            "region.unknown", region=repr(region), options=", ".join(SERVER_PROFILES),
+        )) from exc
 
     return replace(
         profile,

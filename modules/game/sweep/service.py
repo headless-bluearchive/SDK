@@ -4,10 +4,14 @@ from typing import Any
 
 from core.error import UnsafeOperationError
 from modules.game.base import GameService
-from modules.game.common import as_list, extra_fields, optional_int, required_int
+from modules.game.common import as_list, compact_fields, extra_fields, int_list, optional_int, required_int
 
 
 class SweepService(GameService):
+    async def skip_history_list(self) -> dict[str, Any]:
+        payload = await super().request("SkipHistoryListRequest")
+        return format_skip_history_list(payload)
+
     async def preset_list(self) -> dict[str, Any]:
         payload = await super().request("ContentSweepMultiSweepPresetListRequest")
         return format_sweep_preset_list(payload)
@@ -46,6 +50,53 @@ class SweepService(GameService):
         payload = await super().request("ContentSweepMultiSweepRequest", fields)
         return format_multi_sweep_result(payload)
 
+    async def set_multi_sweep_preset(
+        self,
+        *,
+        parcel_ids: Any = None,
+        preset_id: int | None = None,
+        preset_name: str | None = None,
+        stage_ids: list[int] | None = None,
+        confirm: bool = False,
+    ) -> dict[str, Any]:
+        if confirm is not True:
+            raise UnsafeOperationError("sweep.set_multi_sweep_preset requires confirm=True")
+        fields = compact_fields(
+            ParcelIds=parcel_ids,
+            PresetId=optional_int("preset_id", preset_id),
+            PresetName=str(preset_name) if preset_name is not None else None,
+            StageIds=int_list("stage_ids", stage_ids) or None,
+        )
+        return await super().request("ContentSweepSetMultiSweepPresetRequest", fields)
+
+    async def set_multi_sweep_preset_name(
+        self,
+        *,
+        preset_id: int | None = None,
+        preset_name: str | None = None,
+        confirm: bool = False,
+    ) -> dict[str, Any]:
+        if confirm is not True:
+            raise UnsafeOperationError("sweep.set_multi_sweep_preset_name requires confirm=True")
+        fields = compact_fields(
+            PresetId=optional_int("preset_id", preset_id),
+            PresetName=str(preset_name) if preset_name is not None else None,
+        )
+        return await super().request("ContentSweepSetMultiSweepPresetNameRequest", fields)
+
+    async def save_skip_history(
+        self,
+        *,
+        skip_history_db: Any = None,
+        confirm: bool = False,
+    ) -> dict[str, Any]:
+        if confirm is not True:
+            raise UnsafeOperationError("sweep.save_skip_history requires confirm=True")
+        fields = compact_fields(
+            SkipHistoryDB=skip_history_db,
+        )
+        return await super().request("SkipHistorySaveRequest", fields)
+
 
 def format_sweep_preset_list(payload: dict[str, Any]) -> dict[str, Any]:
     known_keys = {
@@ -53,6 +104,19 @@ def format_sweep_preset_list(payload: dict[str, Any]) -> dict[str, Any]:
     }
     return {
         "presets": as_list(payload.get("MultiSweepPresetDBs")),
+        "extra": extra_fields(payload, known_keys),
+    }
+
+
+def format_skip_history_list(payload: dict[str, Any]) -> dict[str, Any]:
+    known_keys = {
+        "SkipHistoryDB",
+        "SkipHistoryDBs",
+    }
+    skip_history = payload.get("SkipHistoryDB", payload.get("SkipHistoryDBs"))
+    return {
+        "skip_history": skip_history,
+        "count": len(as_list(skip_history)),
         "extra": extra_fields(payload, known_keys),
     }
 

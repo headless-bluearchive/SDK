@@ -7,14 +7,16 @@ import warnings
 
 from core.client import BAReplayClient
 from core.error import LoginRequiredError, SessionRestoreError
+from core.i18n import set_language as _set_language, t as _t
 from core.official_data import data_status, prepare_global_data
 from core.session_lifecycle import stamp_session_daily_reset, validate_session_daily_reset
-from core.student_data import refresh_student_names
+from core.student_data import configure_proxy as _configure_student_data_proxy, refresh_student_names
 from modules.auth.service import Login as _login
 from modules.game.account.service import AccountService
 from modules.game.attachment.service import AttachmentService
 from modules.game.attendance.service import AttendanceService, extract_attendance_cache
 from modules.game.battle_pass.service import BattlePassService
+from modules.game.billing.service import BillingService, extract_billing_cache
 from modules.game.campaign.service import CampaignService
 from modules.game.character.service import CharacterService
 from modules.game.character_gear.service import CharacterGearService
@@ -46,6 +48,20 @@ from modules.game.system.service import SystemService
 from modules.game.toast.service import ToastService
 from modules.game.week_dungeon.service import WeekDungeonService
 from modules.game.world_raid.service import WorldRaidService
+from modules.game.clear_deck.service import ClearDeckService
+from modules.game.content_save.service import ContentSaveService
+from modules.game.field.service import FieldService
+from modules.game.multi_floor_raid.service import MultiFloorRaidService
+from modules.game.network_time.service import NetworkTimeService
+from modules.game.notification.service import NotificationService
+from modules.game.open_condition.service import OpenConditionService
+from modules.game.resetable_content.service import ResetableContentService
+from modules.game.sticker.service import StickerService
+from modules.game.time_attack_dungeon.service import TimeAttackDungeonService
+from modules.game.tts.service import TTSService
+from modules.game.daily_record.service import DailyRecordService
+from modules.game.recipe.service import RecipeService
+from modules.game.option.service import OptionService, extract_option_cache
 from modules.runtime.android_mobile_profile import (
     app_version_code_from_client_version,
     fetch_galaxy_store_client_version,
@@ -61,6 +77,8 @@ class LoginResult:
     friend_code: str | None = None
     publisher_account_id: int | None = None
     attendance: dict[str, _Any] | None = None
+    billing: dict[str, _Any] | None = None
+    options: dict[str, _Any] | None = None
     profile: dict[str, _Any] | None = None
     session: dict[str, _Any] | None = None
     logs: tuple[str, ...] = field(default_factory=tuple, repr=False, compare=False)
@@ -91,6 +109,8 @@ class LoginResult:
                 _find_value(account_data, {"PublisherAccountId", "publisherAccountId"}),
             ),
             attendance=extract_attendance_cache(account_data),
+            billing=_billing_from_integrated(value),
+            options=_options_from_integrated(value),
             profile=_profile_from_integrated(value),
             session=_session_from_integrated(value),
             logs=tuple(logs or ()),
@@ -107,6 +127,8 @@ class LoginResult:
         values["ProfilePresent"] = self.profile is not None
         values["SessionPresent"] = self.session is not None
         values["AttendancePresent"] = self.attendance is not None
+        values["BillingPresent"] = self.billing is not None
+        values["OptionsPresent"] = self.options is not None
         return values
 
     def summary(self) -> dict[str, _Any]:
@@ -121,15 +143,19 @@ class LoginResult:
 
 
 class Client:
-    def __init__(self, *, debug: bool = False, **defaults: _Any) -> None:
+    def __init__(self, *, debug: bool = False, language: str | None = None, **defaults: _Any) -> None:
         self.debug = bool(debug)
+        if language is not None:
+            _set_language(language)
         self.defaults = dict(defaults)
+        _configure_student_data_proxy(self.defaults.get("proxy"))
         self.result: LoginResult | None = None
         self._gateway_client: BAReplayClient | None = None
         self._services: dict[str, _Any] = {}
         self._data_warning_keys: set[tuple[_Any, ...]] = set()
         self.logs: list[str] = []
         self.account = self._mount_service("account", AccountService)
+        self.billing = self._mount_service("billing", BillingService)
         self.attachment = self._mount_service("attachment", AttachmentService)
         self.battle_pass = self._mount_service("battle_pass", BattlePassService)
         self.mission = self._mount_service("mission", MissionService)
@@ -164,16 +190,59 @@ class Client:
         self.system = self._mount_service("system", SystemService)
         self.toast = self._mount_service("toast", ToastService)
         self.world_raid = self._mount_service("world_raid", WorldRaidService)
+        self.clear_deck = self._mount_service("clear_deck", ClearDeckService)
+        self.content_save = self._mount_service("content_save", ContentSaveService)
+        self.field = self._mount_service("field", FieldService)
+        self.open_condition = self._mount_service("open_condition", OpenConditionService)
+        self.resetable_content = self._mount_service("resetable_content", ResetableContentService)
+        self.time_attack_dungeon = self._mount_service("time_attack_dungeon", TimeAttackDungeonService)
+        self.multi_floor_raid = self._mount_service("multi_floor_raid", MultiFloorRaidService)
+        self.sticker = self._mount_service("sticker", StickerService)
+        self.notification = self._mount_service("notification", NotificationService)
+        self.tts = self._mount_service("tts", TTSService)
+        self.network_time = self._mount_service("network_time", NetworkTimeService)
+        self.daily_record = self._mount_service("daily_record", DailyRecordService)
+        self.recipe = self._mount_service("recipe", RecipeService)
+        self.option = self._mount_service("option", OptionService)
         self._warn_if_data_not_ready()
 
     async def login(self, account: str, password: str) -> LoginResult:
-        options = {**self.defaults, "nx_id": account, "nx_password": password}
+        region = str(self.defaults.get("region") or "").strip().lower()
+        if region in ("", "auto", "detect"):
+            return await self._login_auto_region(account, password)
+        raw_result = await self._run_login(self.defaults, account, password)
+        return self._finalize_login(raw_result)
+
+    async def _run_login(self, base_options: _Mapping[str, _Any], account: str, password: str) -> _Any:
+        options = {k: v for k, v in base_options.items() if k != "region_probe_timeout"}
+        options.update(nx_id=account, nx_password=password)
         self.logs = []
         if self.debug:
             options["debug_logger"] = self._debug_log
-        raw_result = await _login(**options)
+        return await _login(**options)
+
+    async def _login_auto_region(self, account: str, password: str) -> LoginResult:
+        from modules.auth.service import LoginAutoRegion
+
+        options = {key: value for key, value in self.defaults.items() if key != "region_probe_timeout"}
+        options.pop("region", None)
+        options.update(nx_id=account, nx_password=password)
+        if self.debug:
+            options["debug_logger"] = self._debug_log
+        probe_timeout = float(self.defaults.get("region_probe_timeout") or 60.0)
+        self.logs = []
+        raw_result = await LoginAutoRegion(
+            _auto_region_order(), region_probe_timeout=probe_timeout, **options
+        )
+        return self._finalize_login(raw_result)
+
+    def _finalize_login(self, raw_result: _Any) -> LoginResult:
         self.result = LoginResult.from_integrated(raw_result, logs=self.logs if self.debug else None)
         if self.result.session is not None:
+            if self.result.billing is not None:
+                self.result.session.setdefault("billing", self.result.billing)
+            if self.result.options is not None:
+                self.result.session.setdefault("options", self.result.options)
             stamp_session_daily_reset(self.result.session)
             if self.result.attendance is not None:
                 self.result.session.setdefault("attendance", self.result.attendance)
@@ -187,14 +256,26 @@ class Client:
         profile: _Mapping[str, _Any] | None = None,
     ) -> LoginResult:
         if not isinstance(session, _Mapping):
-            raise SessionRestoreError("session payload must be a mapping")
+            raise SessionRestoreError(_t("login.session_must_be_mapping"))
         restored_session = dict(session)
         restored_profile = dict(profile) if isinstance(profile, _Mapping) else None
         validate_session_daily_reset(restored_session)
         stamp_session_daily_reset(restored_session)
         self._gateway_client = self._restore_gateway_client(restored_session)
         attendance = extract_attendance_cache(restored_session.get("attendance")) or extract_attendance_cache(restored_session)
-        self.result = LoginResult(profile=restored_profile, session=restored_session, attendance=attendance)
+        billing = extract_billing_cache(restored_session.get("billing"), source="session.billing")
+        if billing is not None:
+            restored_session.setdefault("billing", billing)
+        options = extract_option_cache(restored_session.get("options")) or extract_option_cache(restored_session)
+        if options is not None:
+            restored_session.setdefault("options", options)
+        self.result = LoginResult(
+            profile=restored_profile,
+            session=restored_session,
+            attendance=attendance,
+            billing=billing,
+            options=options,
+        )
         self.logs = []
         self._warn_if_data_not_ready()
         return self.result
@@ -204,7 +285,7 @@ class Client:
             await self._gateway_client.aclose()
 
     async def refresh_student_data(self) -> dict[int, str]:
-        return await refresh_student_names()
+        return await refresh_student_names(proxy=self.defaults.get("proxy"))
 
     async def refresh_official_data(
         self,
@@ -250,6 +331,7 @@ class Client:
             profile,
             client_version=client_version,
             build_number=build_number,
+            proxy=self.defaults.get("proxy"),
         )
         self.logs.append(f"official_data.version source={source} version={version}")
         return await prepare_global_data(
@@ -264,6 +346,7 @@ class Client:
             workers=workers,
             chunk_size=chunk_size,
             cleanup_after_parse=cleanup_after_parse,
+            proxy=self.defaults.get("proxy"),
         )
 
     def data_status(
@@ -279,23 +362,23 @@ class Client:
 
     @property
     def credentials(self) -> None:
-        raise LoginRequiredError("credentials are not exposed by this SDK")
+        raise LoginRequiredError(_t("login.credentials_hidden"))
 
     @property
     def profile(self) -> dict[str, _Any] | None:
         if self.result is None:
-            raise LoginRequiredError("login has not completed")
+            raise LoginRequiredError(_t("login.not_completed"))
         return self.result.profile
 
     @property
     def session(self) -> dict[str, _Any] | None:
         if self.result is None:
-            raise LoginRequiredError("login has not completed")
+            raise LoginRequiredError(_t("login.not_completed"))
         return self.result.session
 
     def _require_gateway_client(self) -> BAReplayClient:
         if self._gateway_client is None:
-            raise LoginRequiredError("session has not been restored")
+            raise LoginRequiredError(_t("login.session_not_restored"))
         if self.result is not None and self.result.session is not None:
             validate_session_daily_reset(self.result.session)
         return self._gateway_client
@@ -384,6 +467,7 @@ def _resolve_prepare_data_version(
     *,
     client_version: str | None,
     build_number: int | str | None,
+    proxy: str | None = None,
 ) -> tuple[str, str | int | None, str]:
     if client_version:
         return client_version, build_number or app_version_code_from_client_version(client_version), "argument"
@@ -396,7 +480,7 @@ def _resolve_prepare_data_version(
             "profile",
         )
 
-    version, _raw = fetch_galaxy_store_client_version()
+    version, _raw = fetch_galaxy_store_client_version(proxy=proxy)
     return version, build_number or app_version_code_from_client_version(version), "galaxy-store"
 
 
@@ -425,6 +509,77 @@ def _session_from_integrated(value: _Any) -> dict[str, _Any] | None:
     if isinstance(session, _Mapping):
         return dict(session)
     return None
+
+
+def _billing_from_integrated(value: _Any) -> dict[str, _Any] | None:
+    session = getattr(value, "session", None)
+    if isinstance(session, _Mapping):
+        cache = extract_billing_cache(session.get("billing"), source="session.billing")
+        if cache is not None:
+            return cache
+
+    flow = getattr(value, "flow", {}) or {}
+    cache = extract_billing_cache(flow.get("billing"), source="flow.billing")
+    if cache is not None:
+        return cache
+
+    account_data = flow.get("_account_data_raw")
+    cache = extract_billing_cache(account_data, source="Account_Auth")
+    if cache is not None:
+        return cache
+
+    player_data = flow.get("_player_data_raw")
+    cache = extract_billing_cache(player_data, source="Account_LoginSync")
+    if cache is not None:
+        return cache
+    return None
+
+
+def _options_from_integrated(value: _Any) -> dict[str, _Any] | None:
+    session = getattr(value, "session", None)
+    if isinstance(session, _Mapping):
+        cache = extract_option_cache(session.get("options"))
+        if cache is not None:
+            return cache
+
+    flow = getattr(value, "flow", {}) or {}
+    cache = extract_option_cache(flow.get("options"))
+    if cache is not None:
+        return cache
+
+    account_data = flow.get("_account_data_raw") or flow.get("account_data")
+    cache = extract_option_cache(account_data)
+    if cache is not None:
+        return cache
+    return None
+
+
+def _auto_region_order() -> list[str]:
+    import os
+    import re as _re
+
+    from modules.runtime.region_config import ALL_REGIONS, COUNTRY_DEFAULTS
+
+    order = list(ALL_REGIONS)
+    candidates: list[str] = []
+    try:
+        import locale as _locale
+
+        candidates.append((_locale.getlocale() or (None,))[0] or "")
+    except Exception:
+        pass
+    candidates += [os.environ.get("LANG", ""), os.environ.get("LC_ALL", ""), os.environ.get("LANGUAGE", "")]
+    country = ""
+    for value in candidates:
+        match = _re.search(r"[a-z]{2}[_-]([A-Z]{2})", value or "")
+        if match:
+            country = match.group(1)
+            break
+    guess = COUNTRY_DEFAULTS.get(country, (None,))[0] if country else None
+    if guess and guess in order:
+        order.remove(guess)
+        order.insert(0, guess)
+    return order
 
 
 __all__ = ["Client", "LoginResult"]

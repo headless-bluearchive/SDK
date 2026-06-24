@@ -1,4 +1,3 @@
-
 from __future__ import annotations
 
 import hashlib
@@ -575,6 +574,7 @@ class AndroidToySdkClient:
 
         if self.http is None:
             self.http = requests.Session()
+            self.http.trust_env = False
         merged_headers = dict(headers)
         merged_headers.update(self._decorator_headers())
         merged_headers.update(self.extra_headers)

@@ -6,6 +6,7 @@ from typing import Any
 from config.game import DEFAULTS
 from core.client import BAReplayClient
 from core.error import GameApiError, LoginRequiredError, NexonNgsmValidationError, ProtocolUnavailableError
+from core.i18n import t
 from core.protocol import protocol_value, request_protocol
 
 
@@ -18,7 +19,7 @@ class GameService:
         try:
             return self._owner._require_gateway_client()
         except AttributeError as exc:
-            raise LoginRequiredError("game service requires a restored session") from exc
+            raise LoginRequiredError(t("login.game_service_needs_session")) from exc
 
     async def request(
         self,
@@ -39,7 +40,7 @@ class GameService:
             if int(response.get("Protocol", 0) or 0) == -1:
                 if int(response.get("ErrorCode", 0) or 0) == 1032:
                     raise NexonNgsmValidationError(
-                        "Nexon NGS-X/NGSM validation failed; configure a real Android NGS-X attestation provider",
+                        t("ngsm.validation_failed"),
                         error_code=1032,
                         protocol=_optional_int(response.get("Protocol")),
                         response_keys=sorted(str(key) for key in response.keys()),
@@ -56,7 +57,7 @@ class GameService:
             try:
                 protocol_value(request_class)
             except Exception:
-                raise ProtocolUnavailableError(f"protocol is unavailable: {request_class}") from exc
+                raise ProtocolUnavailableError(t("protocol.unavailable", request_class=request_class)) from exc
 
 
 def _optional_int(value: Any) -> int | None:

@@ -1,4 +1,3 @@
-
 from __future__ import annotations
 
 import binascii
@@ -317,8 +316,6 @@ class BAReplayClient:
         url: str | None = None,
         body_mode: str = DEFAULTS.body_mode,
     ) -> str:
-        import httpx
-
         target_url = url or self.gateway_url
         headers = self.default_headers()
         client = self._get_async_http_client()
@@ -361,6 +358,7 @@ class BAReplayClient:
 
         if self._http_session is None:
             self._http_session = requests.Session()
+            self._http_session.trust_env = False
             if self._restored_cookies:
                 self._http_session.cookies.update(self._restored_cookies)
         return self._http_session
@@ -379,6 +377,7 @@ class BAReplayClient:
             self._async_http_client = httpx.AsyncClient(
                 timeout=self.timeout,
                 proxy=self.proxy or None,
+                trust_env=False,
                 cookies=self._restored_cookies or None,
                 follow_redirects=True,
             )
@@ -577,18 +576,6 @@ def _session_cookies(session: Mapping[str, Any]) -> dict[str, str]:
     if not isinstance(cookies, Mapping):
         return {}
     return {str(key): str(value) for key, value in cookies.items() if value not in (None, "")}
-
-
-def _cookie_name_summary(cookies: Any) -> dict[str, str]:
-    if cookies is None:
-        return {}
-    jar = getattr(cookies, "jar", None)
-    if jar is not None:
-        return {str(cookie.name): "<present>" for cookie in jar}
-    try:
-        return {str(key): "<present>" for key in cookies.keys()}
-    except Exception:
-        return {}
 
 
 def build_besthttp_multipart(

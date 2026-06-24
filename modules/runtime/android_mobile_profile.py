@@ -1,4 +1,3 @@
-
 from __future__ import annotations
 
 import json
@@ -7,13 +6,13 @@ import uuid
 from dataclasses import asdict, dataclass, replace
 from pathlib import Path
 from typing import Any
-from urllib.error import URLError
-from urllib.request import Request, urlopen
+import requests
 
 from config.game import DEFAULTS
 from config.paths import DEFAULT_REPORT_DIR
 from core.error import NetworkError, RuntimeProfileError
 from modules.runtime.ngsm_token import NGSM_FINGERPRINT_VERSION, with_ngsm_fingerprint_defaults
+from utils.proxy import requests_proxy_map
 
 DEFAULT_ANDROID_MOBILE_PROFILE_PATH = (
     DEFAULT_REPORT_DIR.parent / "runtime_profiles" / "android_mobile_profile.json"
@@ -153,13 +152,17 @@ def fetch_galaxy_store_client_version(
     *,
     app_id: str = DEFAULT_GALAXY_STORE_APP_ID,
     timeout: float = 10.0,
+    proxy: str | None = None,
 ) -> tuple[str, dict[str, Any]]:
     url = GALAXY_STORE_DETAIL_URL.format(app_id=app_id)
-    request = Request(url, headers={"User-Agent": "Mozilla/5.0", "Accept": "application/json,text/plain,*/*"})
+    headers = {"User-Agent": "Mozilla/5.0", "Accept": "application/json,text/plain,*/*"}
+    session = requests.Session()
+    session.trust_env = False
     try:
-        with urlopen(request, timeout=timeout) as response:
-            raw = response.read()
-    except URLError as exc:
+        response = session.get(url, headers=headers, timeout=timeout, proxies=requests_proxy_map(proxy) or None)
+        response.raise_for_status()
+        raw = response.content
+    except requests.RequestException as exc:
         raise NetworkError(f"GalaxyStore client version fetch failed: {exc}") from exc
     data = json.loads(raw.decode("utf-8"))
     detail = data.get("DetailMain") if isinstance(data, dict) else None

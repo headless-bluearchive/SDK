@@ -6,6 +6,7 @@ from typing import Any
 
 from core.error import UnsafeOperationError
 from modules.game.base import GameService
+from modules.game.common import as_list, optional_int, required_int
 
 
 class AttendanceService(GameService):
@@ -20,8 +21,8 @@ class AttendanceService(GameService):
                 "attendance_history": [],
                 "claimable_rewards": [],
             }
-        rewards = _as_list(cache.get("AttendanceBookRewards"))
-        history = _as_list(cache.get("AttendanceHistoryDBs"))
+        rewards = as_list(cache.get("AttendanceBookRewards"))
+        history = as_list(cache.get("AttendanceHistoryDBs"))
         return {
             "available": True,
             "source": cache.get("source", "Account_Auth"),
@@ -89,8 +90,8 @@ def extract_attendance_cache(value: Any) -> dict[str, Any] | None:
         history = nested.get("AttendanceHistoryDBs")
     return {
         "source": str(value.get("source") or "Account_Auth"),
-        "AttendanceBookRewards": _as_list(rewards),
-        "AttendanceHistoryDBs": _as_list(history),
+        "AttendanceBookRewards": as_list(rewards),
+        "AttendanceHistoryDBs": as_list(history),
     }
 
 
@@ -101,8 +102,8 @@ def format_attendance_reward(payload: dict[str, Any]) -> dict[str, Any]:
         "ParcelResultDB",
     }
     return {
-        "attendance_book_rewards": _as_list(payload.get("AttendanceBookRewards")),
-        "attendance_history": _as_list(payload.get("AttendanceHistoryDBs")),
+        "attendance_book_rewards": as_list(payload.get("AttendanceBookRewards")),
+        "attendance_history": as_list(payload.get("AttendanceHistoryDBs")),
         "parcel_result": payload.get("ParcelResultDB"),
         "extra": {key: value for key, value in payload.items() if key not in known_keys},
     }
@@ -115,15 +116,15 @@ def _resolve_claim(
     day: int | None,
     day_by_book_unique_id: Mapping[int, int] | Mapping[str, int] | None,
 ) -> dict[str, Any]:
-    explicit_book_id = _optional_int("attendance_book_unique_id", attendance_book_unique_id)
-    explicit_day = _optional_int("day", day)
+    explicit_book_id = optional_int("attendance_book_unique_id", attendance_book_unique_id)
+    explicit_day = optional_int("day", day)
     explicit_day_map = _day_map(day_by_book_unique_id)
 
     matching = [
         reward
         for reward in claimable_rewards
-        if (explicit_book_id is None or _optional_int("AttendanceBookUniqueId", reward.get("AttendanceBookUniqueId")) == explicit_book_id)
-        and (explicit_day is None or _optional_int("Day", reward.get("Day")) == explicit_day)
+        if (explicit_book_id is None or optional_int("AttendanceBookUniqueId", reward.get("AttendanceBookUniqueId")) == explicit_book_id)
+        and (explicit_day is None or optional_int("Day", reward.get("Day")) == explicit_day)
     ]
     if not matching:
         raise UnsafeOperationError("attendance status does not contain a claimable reward matching the requested fields")
@@ -131,8 +132,8 @@ def _resolve_claim(
         raise UnsafeOperationError("multiple claimable attendance rewards exist; provide attendance_book_unique_id and day")
 
     selected = matching[0]
-    book_id = explicit_book_id if explicit_book_id is not None else _optional_int("AttendanceBookUniqueId", selected.get("AttendanceBookUniqueId"))
-    selected_day = explicit_day if explicit_day is not None else _optional_int("Day", selected.get("Day"))
+    book_id = explicit_book_id if explicit_book_id is not None else optional_int("AttendanceBookUniqueId", selected.get("AttendanceBookUniqueId"))
+    selected_day = explicit_day if explicit_day is not None else optional_int("Day", selected.get("Day"))
     selected_day_map = explicit_day_map if explicit_day_map is not None else _extract_day_by_book_unique_id(selected)
     if book_id is None or selected_day is None or selected_day_map is None:
         raise UnsafeOperationError("attendance reward requires AttendanceBookUniqueId, Day, and DayByBookUniqueId")
@@ -166,10 +167,10 @@ def _infer_claimable_reward(
     book: Mapping[str, Any],
     history_by_book: Mapping[int, Mapping[str, Any]],
 ) -> dict[str, Any] | None:
-    book_id = _optional_int("UniqueId", book.get("UniqueId"))
+    book_id = optional_int("UniqueId", book.get("UniqueId"))
     if book_id is None:
         return None
-    book_size = _optional_int("BookSize", book.get("BookSize"))
+    book_size = optional_int("BookSize", book.get("BookSize"))
     if book_size is None:
         return None
     if not _book_is_active(book):
@@ -208,13 +209,13 @@ def _has_explicit_claimable_flag(item: Mapping[str, Any]) -> bool:
         if item.get(name) is True:
             return True
     if item.get("Received") is False or item.get("IsReceived") is False or item.get("Rewarded") is False:
-        return _optional_int("AttendanceBookUniqueId", item.get("AttendanceBookUniqueId")) is not None and _optional_int("Day", item.get("Day")) is not None
+        return optional_int("AttendanceBookUniqueId", item.get("AttendanceBookUniqueId")) is not None and optional_int("Day", item.get("Day")) is not None
     return False
 
 
 def _is_claimed(item: Mapping[str, Any], claimed_keys: set[tuple[int, int]]) -> bool:
-    book_id = _optional_int("AttendanceBookUniqueId", item.get("AttendanceBookUniqueId"))
-    day = _optional_int("Day", item.get("Day"))
+    book_id = optional_int("AttendanceBookUniqueId", item.get("AttendanceBookUniqueId"))
+    day = optional_int("Day", item.get("Day"))
     if book_id is not None and day is not None and (book_id, day) in claimed_keys:
         return True
     return item.get("Received") is True or item.get("IsReceived") is True or item.get("Rewarded") is True
@@ -225,8 +226,8 @@ def _claimed_keys(history: list[Any]) -> set[tuple[int, int]]:
     for item in history:
         if not isinstance(item, Mapping):
             continue
-        book_id = _optional_int("AttendanceBookUniqueId", item.get("AttendanceBookUniqueId"))
-        day = _optional_int("Day", item.get("Day"))
+        book_id = optional_int("AttendanceBookUniqueId", item.get("AttendanceBookUniqueId"))
+        day = optional_int("Day", item.get("Day"))
         if book_id is not None and day is not None:
             keys.add((book_id, day))
         attended = _attended_day_map(item)
@@ -240,7 +241,7 @@ def _history_by_book(history: list[Any]) -> dict[int, Mapping[str, Any]]:
     for item in history:
         if not isinstance(item, Mapping):
             continue
-        book_id = _optional_int("AttendanceBookUniqueId", item.get("AttendanceBookUniqueId"))
+        book_id = optional_int("AttendanceBookUniqueId", item.get("AttendanceBookUniqueId"))
         if book_id is not None:
             result[book_id] = item
     return result
@@ -254,7 +255,7 @@ def _attended_day_map(history: Mapping[str, Any] | None) -> dict[int, Any]:
         return {}
     result: dict[int, Any] = {}
     for key, item in value.items():
-        day = _optional_int("AttendedDay key", key)
+        day = optional_int("AttendedDay key", key)
         if day is not None:
             result[day] = item
     return result
@@ -264,7 +265,7 @@ def _next_attend_day(book: Mapping[str, Any], attended: Mapping[int, Any]) -> in
     if attended:
         return max(attended) + 1
     start = _parse_datetime(book.get("StartDate"))
-    if start is None or _optional_int("UniqueId", book.get("UniqueId")) == 1:
+    if start is None or optional_int("UniqueId", book.get("UniqueId")) == 1:
         return 1
     now = datetime.now()
     if _attendance_day_key(now) < _attendance_day_key(start):
@@ -313,9 +314,9 @@ def _extract_day_by_book_unique_id(item: Mapping[str, Any]) -> dict[int, int] | 
     value = item.get("DayByBookUniqueId")
     if isinstance(value, Mapping):
         return _day_map(value)
-    book_id = _optional_int("AttendanceBookUniqueId", item.get("AttendanceBookUniqueId"))
-    day = _optional_int("Day", item.get("Day"))
-    day_unique_id = _optional_int(
+    book_id = optional_int("AttendanceBookUniqueId", item.get("AttendanceBookUniqueId"))
+    day = optional_int("Day", item.get("Day"))
+    day_unique_id = optional_int(
         "DayByBookUniqueId",
         item.get("DayByBookUniqueId") or item.get("AttendanceDayUniqueId") or item.get("RewardUniqueId"),
     )
@@ -333,7 +334,7 @@ def _day_map(value: Mapping[int, int] | Mapping[str, int] | None) -> dict[int, i
         raise UnsafeOperationError("day_by_book_unique_id must be a mapping")
     result: dict[int, int] = {}
     for key, item in value.items():
-        result[_required_int("day_by_book_unique_id key", key)] = _required_int("day_by_book_unique_id value", item)
+        result[required_int("day_by_book_unique_id key", key)] = required_int("day_by_book_unique_id value", item)
     if not result:
         raise UnsafeOperationError("day_by_book_unique_id must not be empty")
     return result
@@ -353,32 +354,3 @@ def _find_mapping_with_any_key(value: Any, keys: set[str]) -> Mapping[str, Any] 
             if found is not None:
                 return found
     return None
-
-
-def _as_list(value: Any) -> list[Any]:
-    if value is None:
-        return []
-    if isinstance(value, list):
-        return value
-    if isinstance(value, tuple):
-        return list(value)
-    return [value]
-
-
-def _required_int(name: str, value: Any) -> int:
-    result = _optional_int(name, value)
-    if result is None:
-        raise UnsafeOperationError(f"{name} is required")
-    return result
-
-
-def _optional_int(name: str, value: Any) -> int | None:
-    if value is None:
-        return None
-    try:
-        result = int(value)
-    except (TypeError, ValueError) as exc:
-        raise UnsafeOperationError(f"{name} must be an integer") from exc
-    if result < 0:
-        raise UnsafeOperationError(f"{name} must not be negative")
-    return result

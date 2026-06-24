@@ -1,61 +1,61 @@
-# 任务
+# 任务页面
 
-这一页对应游戏里的任务页面：每日任务、每周任务、成就任务、活动任务和指南任务。SDK 可以读取任务进度，也可以领取已经完成的任务奖励；它不会帮用户完成战斗、竞技场、小游戏结算等任务条件。
+这一页对应游戏里的任务页：每日、每周、成就、活动和指南任务。SDK 可读取任务进度、领取已完成任务的奖励，但不会代替用户完成战斗、竞技场、小游戏结算等任务条件。
+
+能看什么：所有任务的进度和红点状态、指南任务赛季。
+能做什么：领取单个已完成任务、按分类批量领取（都会改账号资源）。
+
+## SDK 入口
+
+只读（不改账号）：
+
+| 方法 | 用途 | 返回 |
+| --- | --- | --- |
+| `client.mission.list(*, event_content_id=None)` | 任务列表与进度；传活动 ID 看活动任务。 | 整理后的 dict |
+| `client.mission.guide_season_list()` | 指南任务/新手任务赛季列表。 | 整理后的 dict |
+| `client.mission.sync()` | 同步任务状态。 | 服务端原始负载 |
+
+领奖（改账号资源，无 `confirm`，由 `validate=True` 守卫）：
+
+| 方法 | 用途 |
+| --- | --- |
+| `client.mission.reward(mission_unique_id, *, progress_server_id=None, event_content_id=None, validate=True)` | 领取单个已完成任务。 |
+| `client.mission.multiple_reward(mission_category, *, event_content_id=None, guide_mission_season_id=None, validate=True)` | 按分类批量领取。 |
 
 ## 任务列表
-
-对应打开任务页面后看到的所有任务进度和红点状态。
 
 ```python
 missions = await client.mission.list()
 ```
 
-查看某个活动的任务时传活动内容 ID：
+看某个活动的任务时传活动内容 ID：
 
 ```python
 missions = await client.mission.list(event_content_id=event_content_id)
 ```
 
-参数说明：
-
 | 参数 | 游戏含义 |
 | --- | --- |
-| `event_content_id` | 活动任务所属活动 ID；普通每日/每周/成就任务不需要传。 |
+| `event_content_id` | 活动任务所属活动 ID；普通每日/每周/成就任务不传。 |
 
-返回结构：
-
-```python
-{
-    "mission_history_unique_ids": [...],  # 已领取/已完成历史
-    "progress": [...],                    # 当前任务进度，对应 ProgressDBs
-    "daily_sudden_mission_info": {...},   # 每日突发任务信息
-    "cleared_original_mission_ids": [...],
-    "extra": {},
-}
-```
-
-常见用法：
+返回 SDK 整理后的 dict：业务字段（`progress` 当前任务进度、`mission_history_unique_ids` 历史、`daily_sudden_mission_info`、`cleared_original_mission_ids`）加 `extra`。
 
 ```python
 missions = await client.mission.list()
-completed = [
-    item
-    for item in missions["progress"]
-    if item.get("Complete") is True
-]
+completed = [item for item in missions["progress"] if item.get("Complete") is True]
 ```
 
-每日签到、课程表、咖啡厅摸头等操作完成后，任务列表里可能会出现新的 `Complete=True` 项。
+每日签到、课程表、咖啡厅摸头等完成后，`progress` 里可能出现新的 `Complete=True` 项。
 
 ## 领取单个任务
 
-对应游戏里点击某一条已完成任务的领取按钮。
+对应点击某一条已完成任务的领取按钮。
 
 ```python
 result = await client.mission.reward(mission_unique_id)
 ```
 
-如果是活动任务或服务端需要明确进度记录，可以传：
+活动任务或服务端需要明确进度记录时：
 
 ```python
 result = await client.mission.reward(
@@ -65,35 +65,24 @@ result = await client.mission.reward(
 )
 ```
 
-参数说明：
-
 | 参数 | 游戏含义 |
 | --- | --- |
 | `mission_unique_id` | 任务 ID，来自 `progress`。 |
 | `progress_server_id` | 进度记录 ID，通常来自同一条 `progress`。 |
 | `event_content_id` | 活动任务所属活动 ID。 |
-| `validate` | 默认 `True`，会先读取任务列表，确认任务存在且 `Complete=True`。 |
+| `validate` | 默认 `True`，会先读任务列表确认任务存在且 `Complete=True`。 |
 
-返回结构：
-
-```python
-{
-    "added_history": {...},
-    "mission_progress": [...],
-    "parcel_result": {...},
-    "extra": {},
-}
-```
+返回 SDK 整理后的 dict：`added_history`、`mission_progress`、`parcel_result` 加 `extra`。
 
 ## 按分类批量领取
 
-对应任务页里按分类一键领取，例如每日任务一键领取。
+对应任务页里按分类一键领取。
 
 ```python
 result = await client.mission.multiple_reward("daily")
 ```
 
-常用分类：
+`mission_category` 接受分类名字符串或对应整数，常用值：
 
 | 参数值 | 游戏里对应 |
 | --- | --- |
@@ -104,44 +93,21 @@ result = await client.mission.multiple_reward("daily")
 | `"event_achievement"` | 活动成就任务 |
 | `"event_fixed"` | 活动固定任务 |
 
-返回结构：
+代码里还登记了 `challenge`、`all`、`mini_game_score`、`mini_game_event`、`daily_sudden`、`daily_fixed` 等分类，完整映射以 `service.py` 里的 `MISSION_CATEGORIES` 为准。
 
-```python
-{
-    "added_histories": [...],
-    "mission_progress": [...],
-    "parcel_result": {...},
-    "extra": {},
-}
-```
-
-SDK 默认会先读取任务列表，确认当前至少有已完成任务再发送领奖请求。
+返回 SDK 整理后的 dict：`added_histories`、`mission_progress`、`parcel_result` 加 `extra`。默认 `validate=True` 会先读任务列表，确认至少有一项已完成任务再发领奖请求。
 
 ## 指南任务赛季
-
-对应游戏里的指南任务/新手任务赛季列表。
 
 ```python
 seasons = await client.mission.guide_season_list()
 ```
 
-返回结构：
+返回 SDK 整理后的 dict：`guide_mission_seasons` 加 `count` 加 `extra`。
 
-```python
-{
-    "guide_mission_seasons": [...],
-    "count": 0,
-    "extra": {},
-}
-```
+## 注意
 
-## live 结果和限制
-
-读取任务列表已验证可用。任务领奖会遇到 NGS 校验差异：
-
-```text
-小号：Mission_Reward / Mission_MultipleReward 返回 1032 NexonNgsmValidateFail
-大号：Mission_MultipleReward("daily") live 成功
-```
-
-调用方应把 `1032 NexonNgsmValidateFail` 当成可预期的账号/环境校验失败，而不是简单参数错误。读取任务进度和领取任务奖励是两件事。
+- `reward` / `multiple_reward` 没有 `confirm` 参数，由 `validate=True` 守卫：任务不存在、未完成、或没有任何已完成任务时抛 `UnsafeOperationError` 且不发包。
+- 任务领奖可能遇到 NGS 校验差异，服务端返回 `1032 NexonNgsmValidateFail` 时应视为可预期的账号 / 环境校验失败，而非单纯的参数错误。
+- `mission_unique_id`、`progress_server_id`、`event_content_id`、赛季 ID 等一律来自当前账号可见数据（`mission.list()` / `guide_season_list()`），不要手填。
+- 逐协议接入状态见仓库根 `docs/protocols.md`。

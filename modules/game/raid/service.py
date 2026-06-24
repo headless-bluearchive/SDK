@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from typing import Any
 
+from core.error import UnsafeOperationError
 from modules.game.base import GameService
 from modules.game.common import as_list, compact_fields, extra_fields, optional_int, required_int
 
@@ -43,6 +44,18 @@ class RaidService(GameService):
         payload = await self.request("RaidLobbyRequest")
         return format_raid_lobby(payload)
 
+    async def detail(self, *, raid_server_id: int, raid_unique_id: int) -> dict[str, Any]:
+        return await self.request(
+            "RaidDetailRequest",
+            {
+                "RaidServerId": required_int("raid_server_id", raid_server_id),
+                "RaidUniqueId": required_int("raid_unique_id", raid_unique_id),
+            },
+        )
+
+    async def login(self) -> dict[str, Any]:
+        return await self.request("RaidLoginRequest")
+
     async def opponent_list(
         self,
         *,
@@ -72,6 +85,48 @@ class RaidService(GameService):
     async def ranking_index(self) -> dict[str, Any]:
         payload = await self.request("RaidRankingIndexRequest")
         return format_raid_ranking_index(payload)
+
+    async def reward(
+        self, raid_server_id: int, *, is_practice: bool = False, confirm: bool = False, validate: bool = True
+    ) -> dict[str, Any]:
+        server_id = required_int("raid_server_id", raid_server_id)
+        if confirm is not True:
+            raise UnsafeOperationError("raid.reward requires confirm=True")
+        if validate and not (await self.complete_list())["receive_reward_ids"]:
+            raise UnsafeOperationError("no raid reward is currently claimable")
+        return await self.request("RaidRewardRequest", {"IsPractice": bool(is_practice), "RaidServerId": server_id})
+
+    async def reward_all(self, *, confirm: bool = False, validate: bool = True) -> dict[str, Any]:
+        if confirm is not True:
+            raise UnsafeOperationError("raid.reward_all requires confirm=True")
+        if validate and not (await self.complete_list())["receive_reward_ids"]:
+            raise UnsafeOperationError("no raid reward is currently claimable")
+        return await self.request("RaidRewardAllRequest")
+
+    async def season_reward(self, *, confirm: bool = False) -> dict[str, Any]:
+        if confirm is not True:
+            raise UnsafeOperationError("raid.season_reward requires confirm=True")
+        return await self.request("RaidSeasonRewardRequest")
+
+    async def ranking_reward(self, *, confirm: bool = False) -> dict[str, Any]:
+        if confirm is not True:
+            raise UnsafeOperationError("raid.ranking_reward requires confirm=True")
+        return await self.request("RaidRankingRewardRequest")
+
+    async def sweep(
+        self,
+        *,
+        unique_id: int,
+        sweep_count: int = 1,
+        confirm: bool = False,
+    ) -> dict[str, Any]:
+        if confirm is not True:
+            raise UnsafeOperationError("raid.sweep requires confirm=True")
+        fields = {
+            "UniqueId": required_int("unique_id", unique_id),
+            "SweepCount": required_int("sweep_count", sweep_count),
+        }
+        return await self.request("RaidSweepRequest", fields)
 
 
 def format_raid_list(payload: dict[str, Any]) -> dict[str, Any]:
