@@ -39,7 +39,7 @@ class GameDefaults:
         "(KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
     )
     student_data_cache_ttl_seconds: int = 86400
-    official_resource_user_agent: str = "Mozilla/5.0 headless-bluearchive SDK"
+    official_resource_user_agent: str = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.50.87 Safari/537.36"
     official_global_patch_url: str = "https://api-pub.nexon.com/patch/v1.1/version-check"
     official_global_market_game_id: str = "com.nexon.bluearchive"
     official_global_market_code: str = "playstore"
