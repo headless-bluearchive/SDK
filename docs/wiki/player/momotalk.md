@@ -24,6 +24,8 @@
 
 `status()` 走轻量路径：读取大纲、拥有学生和好感剧情记录，再结合本地 Academy 主数据计算红点，不会对每个学生逐个打开消息详情。`actionable` 里把可处理项整理成 `messages`，并区分能直接推进的（带 `advance_args`）、卡在选择的（`choice_required=True` + `choices`）、可领羁绊剧情的（带 `complete_args`）。
 
+已拥有但还没有 MomoTalk outline 的学生也会参与计算。满足首组条件时，SDK 从该角色最小的 `MessageGroupId` 开始计算，并在首个动作上返回 `bootstrap_required=True`；对应的 `advance_args` 可以直接用于创建 outline。`unread_count` 按客户端规则计算：普通组按消息条数计数，含 Feedback 延迟的组计 1 并暂停展开后续组，新到达链末尾的待回复组不重复计数。
+
 ```python
 status = await client.momotalk.status()
 
@@ -40,7 +42,7 @@ for item in status["actionable"]["messages"]:
 
 ## 返回说明
 
-- 只读方法返回整理后的 dict：`status` / `unread_candidates` 给学生摘要 / 可处理项列表 + `count` + `actionable`（`messages` / `unread_total_count` / `favor_stories` / `favor_story_candidates` 等），并带 `exact_unread_count_available` 标记主数据是否就绪；`outline` / `messages` 经 `format_*` 整理（大纲列表与好感记录 / `choices`、`can_read_next` 等），均含 `extra`。
+- 只读方法返回整理后的 dict：`status` / `unread_candidates` 给学生摘要 / 可处理项列表 + `count` + `actionable`（`messages` / `unread_total_count` / `favor_stories` / `favor_story_candidates` 等），并带 `exact_unread_count_available` 标记主数据是否就绪；主表中不存在的羁绊引用会进入 `actionable.invalid_master_references`，不会计入未读或生成写操作；`outline` / `messages` 经 `format_*` 整理（大纲列表与好感记录 / `choices`、`can_read_next` 等），均含 `extra`。
 - 写方法（`read` / `advance_dialog`、`favor_schedule` / `complete_favor_schedule`、`claim_available_favor_stories`）也返回整理后的 dict，并附 `needs_refresh` / `next_step` 提示，指明下一步该重新 `status()` / `outline()`。
 
 具体键名以服务端返回和主数据为准，这里只描述形状。

@@ -376,8 +376,12 @@ def _format_status_row(
         "completed_favor_schedule_ids": schedule_ids,
         "completed_favor_schedule_count": len(schedule_ids),
         "favor_story_candidates": [],
+        "invalid_master_references": [],
         "unread_count": 0,
         "unread_items": [],
+        "unread_count_exact": bool(master and master.get("ready")),
+        "bootstrap_required": False,
+        "initial_message_group_id": None,
         "readable_message": None,
     }
     if master and master.get("ready"):
@@ -400,6 +404,12 @@ def _format_actionable(rows: list[dict[str, Any]], *, include_message_details: b
         for candidate in row.get("favor_story_candidates", [])
     ]
     favor_stories = [candidate for candidate in favor_story_candidates if candidate.get("verified")]
+    invalid_master_references = [
+        reference
+        for row in rows
+        for reference in row.get("invalid_master_references", [])
+        if isinstance(reference, dict)
+    ]
     return {
         "messages": messages,
         "message_count": len(messages),
@@ -415,6 +425,8 @@ def _format_actionable(rows: list[dict[str, Any]], *, include_message_details: b
         "favor_story_detection": "computed from AcademyFavorSchedule and current MomoTalk outline",
         "exact_favor_story_detection": any(candidate.get("confidence") == "exact" for candidate in favor_story_candidates),
         "unread_total_count": sum(int(row.get("unread_count") or 0) for row in rows),
+        "invalid_master_references": invalid_master_references,
+        "invalid_master_reference_count": len(invalid_master_references),
     }
 
 
@@ -433,8 +445,10 @@ def _message_action(row: dict[str, Any]) -> dict[str, Any] | None:
         if first.get("type") == "message":
             action["advance_args"] = {
                 "character_db_id": row["character_db_id"],
-                "last_read_message_group_id": row.get("latest_message_group_id"),
+                "last_read_message_group_id": first.get("message_group_id"),
             }
+            if first.get("bootstrap_required"):
+                action["bootstrap_required"] = True
         elif first.get("type") == "choice":
             action["choice_required"] = True
             action["choices"] = first.get("choices", [])
@@ -442,6 +456,8 @@ def _message_action(row: dict[str, Any]) -> dict[str, Any] | None:
             action["complete_args"] = {"schedule_id": first.get("schedule_id")}
         return action
 
+    if row.get("unread_count_exact"):
+        return None
     if not row.get("has_outline") or row.get("latest_message_group_id") is None:
         return None
     latest = row.get("latest_message_group_id")
@@ -475,29 +491,58 @@ def _message_action(row: dict[str, Any]) -> dict[str, Any] | None:
 def _apply_master_momotalk_state(row: dict[str, Any], master: dict[str, Any]) -> None:
     character_id = row.get("character_id")
     latest_group_id = row.get("latest_message_group_id")
+    chosen_message_id = row.get("chosen_message_id")
     completed = set(row.get("completed_favor_schedule_ids") or [])
     favor_rank = row.get("favor_rank")
     row["favor_story_candidates"] = _exact_favor_story_candidates(row, master)
-    if character_id is None or latest_group_id is None:
+    if character_id is None:
         return
 
     unread_items: list[dict[str, Any]] = []
-    current_group = _message_group(master, latest_group_id)
-    current_last = _last_message(current_group)
-    if current_last:
-        schedule_id = _optional_positive_int(current_last.get("favor_schedule_id"))
-        if schedule_id is not None and schedule_id not in completed:
-            unread_items.append(
-                {
-                    "type": "favor_story",
-                    "message_group_id": latest_group_id,
-                    "schedule_id": schedule_id,
-                    "reason": "latest message group points to an uncompleted favor story",
-                }
-            )
+    if latest_group_id is None:
+        initial_group_id = master.get("first_message_group_by_character", {}).get(character_id)
+        if initial_group_id is None:
+            return
+        initial_group = _message_group(master, initial_group_id)
+        initial_message = _first_message(initial_group)
+        if initial_message is None or not _message_allowed_for_new_arrival(
+            initial_message,
+            favor_rank=favor_rank,
+            completed_schedule_ids=completed,
+        ):
+            return
+        row["bootstrap_required"] = True
+        row["initial_message_group_id"] = initial_group_id
+        frontier = [initial_group_id]
+    else:
+        current_group = _message_group(master, latest_group_id)
+        current_last = _last_message(current_group)
+        if current_last:
+            schedule_id = _optional_positive_int(current_last.get("favor_schedule_id"))
+            if schedule_id is not None and schedule_id not in completed:
+                if _favor_schedule_exists(master, character_id, schedule_id):
+                    unread_items.append(
+                        {
+                            "type": "favor_story",
+                            "message_group_id": latest_group_id,
+                            "schedule_id": schedule_id,
+                            "unread_count": 1,
+                            "reason": "latest message group points to an uncompleted favor story",
+                        }
+                    )
+                else:
+                    row["invalid_master_references"].append(
+                        {
+                            "type": "favor_story",
+                            "character_id": character_id,
+                            "message_group_id": latest_group_id,
+                            "schedule_id": schedule_id,
+                            "reason": "message references a schedule absent from AcademyFavorSchedule master data",
+                        }
+                    )
+        frontier = _next_group_ids_for_outline(current_group, chosen_message_id)
 
     visited: set[int] = set()
-    frontier = _next_group_ids(current_group)
     while frontier:
         group_id = frontier.pop(0)
         if group_id in visited:
@@ -508,17 +553,29 @@ def _apply_master_momotalk_state(row: dict[str, Any], master: dict[str, Any]) ->
         if first is None:
             continue
         if _message_allowed_for_new_arrival(first, favor_rank=favor_rank, completed_schedule_ids=completed):
+            bootstrap_required = bool(
+                row.get("bootstrap_required") and group_id == row.get("initial_message_group_id")
+            )
             unread_items.append(
                 {
                     "type": "message",
                     "message_group_id": group_id,
                     "message_count": len(group),
-                    "reason": "next message group is available from current outline",
+                    "unread_count": _group_unread_count(group),
+                    "bootstrap_required": bootstrap_required,
+                    "reason": (
+                        "initial message group is available for a character without a MomoTalk outline"
+                        if bootstrap_required
+                        else "next message group is available from current outline"
+                    ),
                 }
             )
+            if _group_has_feedback(group):
+                break
             frontier.extend(next_id for next_id in _next_group_ids(group) if next_id not in visited)
             continue
         if _message_condition(first) == MESSAGE_CONDITION_ANSWER:
+            has_counted_unread = any(int(item.get("unread_count") or 0) > 0 for item in unread_items)
             unread_items.append(
                 {
                     "type": "choice",
@@ -531,13 +588,13 @@ def _apply_master_momotalk_state(row: dict[str, Any], master: dict[str, Any]) ->
                         for message in group
                         if _message_id(message) is not None
                     ],
+                    "unread_count": 0 if has_counted_unread else 1,
                     "reason": "next message group requires a reply choice",
                 }
             )
         break
 
-    row["unread_items"] = unread_items
-    row["unread_count"] = len(unread_items)
+    _set_master_unread_state(row, unread_items)
 
 
 def _exact_favor_story_candidates(row: dict[str, Any], master: dict[str, Any]) -> list[dict[str, Any]]:
@@ -576,17 +633,24 @@ def _load_momotalk_master_data() -> dict[str, Any]:
             "ready": False,
             "source": "Academy master data is missing; call await client.prepare_data()",
             "message_by_group": {},
+            "first_message_group_by_character": {},
             "favor_by_character": {},
         }
     messages = json.loads(ACADEMY_MESSANGER_DATA.read_text(encoding="utf-8"))
     schedules = json.loads(ACADEMY_FAVOR_SCHEDULE_DATA.read_text(encoding="utf-8"))
     message_by_group: dict[int, list[dict[str, Any]]] = {}
+    first_message_group_by_character: dict[int, int] = {}
     for item in messages:
         if not isinstance(item, dict):
             continue
         group_id = _optional_positive_int(item.get("message_group_id"))
         if group_id is None:
             continue
+        character_id = _optional_positive_int(item.get("character_id"))
+        if character_id is not None:
+            current_first = first_message_group_by_character.get(character_id)
+            if current_first is None or group_id < current_first:
+                first_message_group_by_character[character_id] = group_id
         message_by_group.setdefault(group_id, []).append(item)
     for group in message_by_group.values():
         group.sort(key=lambda item: _message_id(item) or 0)
@@ -603,8 +667,9 @@ def _load_momotalk_master_data() -> dict[str, Any]:
         rows.sort(key=lambda item: ((_optional_positive_int(item.get("favor_rank")) or 0), _optional_positive_int(item.get("id")) or 0))
     return {
         "ready": True,
-        "source": "computed from MomoTalk outline plus core/data/academy_messanger.json and academy_favor_schedule.json",
+        "source": "computed from owned characters, MomoTalk outline, and Academy master data",
         "message_by_group": message_by_group,
+        "first_message_group_by_character": first_message_group_by_character,
         "favor_by_character": favor_by_character,
     }
 
@@ -630,6 +695,50 @@ def _next_group_ids(group: list[dict[str, Any]]) -> list[int]:
     return result
 
 
+def _next_group_ids_for_outline(
+    group: list[dict[str, Any]],
+    chosen_message_id: int | None,
+) -> list[int]:
+    first = _first_message(group)
+    if first is None or _message_condition(first) != MESSAGE_CONDITION_ANSWER:
+        return _next_group_ids(group)
+    if chosen_message_id is None:
+        return []
+    for message in group:
+        if _message_id(message) != chosen_message_id:
+            continue
+        next_group_id = _optional_positive_int(message.get("next_group_id"))
+        return [next_group_id] if next_group_id is not None else []
+    return []
+
+
+def _group_unread_count(group: list[dict[str, Any]]) -> int:
+    if not group:
+        return 0
+    if _message_condition(group[0]) == MESSAGE_CONDITION_ANSWER:
+        return 1
+    if _group_has_feedback(group):
+        return 1
+    return len(group)
+
+
+def _group_has_feedback(group: list[dict[str, Any]]) -> bool:
+    return any(_optional_positive_int(message.get("feedback_time_millisec")) is not None for message in group)
+
+
+def _set_master_unread_state(row: dict[str, Any], unread_items: list[dict[str, Any]]) -> None:
+    row["unread_items"] = unread_items
+    row["unread_count"] = sum(int(item.get("unread_count") or 0) for item in unread_items)
+
+
+def _favor_schedule_exists(master: dict[str, Any], character_id: int, schedule_id: int) -> bool:
+    return any(
+        _optional_positive_int(item.get("id")) == schedule_id
+        for item in master.get("favor_by_character", {}).get(character_id, [])
+        if isinstance(item, dict)
+    )
+
+
 def _message_allowed_for_new_arrival(
     message: dict[str, Any],
     *,
@@ -640,7 +749,7 @@ def _message_allowed_for_new_arrival(
     pre_schedule_id = _optional_positive_int(message.get("pre_condition_favor_schedule_id"))
     if pre_schedule_id is not None and pre_schedule_id not in completed_schedule_ids:
         return False
-    if condition in (MESSAGE_CONDITION_NONE, MESSAGE_CONDITION_FEEDBACK, MESSAGE_CONDITION_ACADEMY_SCHEDULE):
+    if condition in (MESSAGE_CONDITION_NONE, MESSAGE_CONDITION_FEEDBACK):
         return True
     if condition == MESSAGE_CONDITION_FAVOR_RANK_UP:
         required = _optional_positive_int(message.get("condition_value")) or 0
