@@ -13,7 +13,7 @@ import httpx
 from config.game import DEFAULTS
 from config.paths import CORE_DATA_DIR, OFFICIAL_DATA_DIR
 from core.error import OfficialDataDependencyError, OfficialDataError
-from core.official_table_parser import parse_official_academy_tables, resolve_sqlcipher_material
+from core.official_table_parser import parse_official_academy_tables, resolve_sqlcipher_key
 from utils.proxy import normalize_proxy_url
 
 OFFICIAL_CORE_MANIFEST = CORE_DATA_DIR / "official_data_manifest.json"
@@ -110,6 +110,8 @@ async def download_global_table_bundles(
     selected = _select_targets(catalog.resources, wanted)
     base_dir = Path(output_dir or OFFICIAL_DATA_DIR / "global" / catalog.client_version).resolve()
     base_dir.mkdir(parents=True, exist_ok=True)
+    cached_manifest = _load_manifest_file(base_dir / "manifest.json")
+    catalog_changed = not _catalog_matches_manifest(catalog, cached_manifest)
 
     downloaded: list[dict[str, Any]] = []
     headers = {"User-Agent": DEFAULTS.official_resource_user_agent, "Accept": "*/*"}
@@ -122,7 +124,7 @@ async def download_global_table_bundles(
     ) as client:
         for target in selected:
             local_path = base_dir / Path(target.path).name
-            if local_path.exists() and target.size is not None and local_path.stat().st_size == target.size:
+            if _cached_resource_matches(cached_manifest, catalog, target, local_path):
                 downloaded.append(_file_result(target, local_path, skipped=True, download_method="cache"))
                 continue
             download_method = await _download_resource(
@@ -142,10 +144,11 @@ async def download_global_table_bundles(
         "resource_count": catalog.resource_count,
         "table_count": catalog.table_count,
         "resource_data_url": catalog.resource_data_url,
+        "catalog_changed": catalog_changed,
         "output_dir": str(base_dir),
         "files": downloaded,
         "missing_targets": [target for target in wanted if target not in {item.path for item in selected}],
-        "parsed": _parsed_status(),
+        "parsed": _empty_parsed_status(),
         "next_step": "parse ExcelDB.db into core/data/academy_*.json",
     }
     _save_manifest(base_dir, result)
@@ -168,26 +171,30 @@ def data_status(
             "ready": bool(parsed.get("ready")),
             "needs_download": not bool(parsed.get("ready")),
             "needs_update": False,
+            "needs_parse": False,
             "reason": "official data is ready" if parsed.get("ready") else "official dependency files are missing",
             "expected_client_version": client_version,
             "cached_client_version": None,
             "parsed": parsed,
+            "parser_error": None,
             "next_step": None if parsed.get("ready") else "call await client.prepare_data()",
         }
 
     cached_version = manifest.get("client_version")
     requested_version = str(client_version) if client_version else cached_version
     version_mismatch = bool(client_version and cached_version != str(client_version))
-    parsed = _parsed_status()
-    if not parsed.get("ready") and isinstance(manifest.get("parsed"), dict):
-        parsed = manifest["parsed"]
+    manifest_parsed = manifest.get("parsed")
+    parsed = manifest_parsed if isinstance(manifest_parsed, dict) else _parsed_status()
     files_ready = _manifest_files_ready(manifest)
-    parsed_ready = bool(parsed.get("ready"))
+    parser_error = manifest.get("parser_error")
+    parsed_stale = bool(parsed.get("ready")) and not _parsed_files_are_fresh(manifest, parsed)
+    parsed_ready = bool(parsed.get("ready")) and not isinstance(parser_error, dict) and not parsed_stale
     ready = not version_mismatch and parsed_ready
     return {
         "ready": ready,
-        "needs_download": version_mismatch or (not files_ready and not parsed_ready),
+        "needs_download": version_mismatch or not files_ready,
         "needs_update": version_mismatch,
+        "needs_parse": files_ready and not parsed_ready,
         "reason": _status_reason(version_mismatch, manifest, parsed),
         "expected_client_version": requested_version,
         "cached_client_version": cached_version,
@@ -196,6 +203,8 @@ def data_status(
         "output_dir": manifest.get("output_dir"),
         "files": manifest.get("files", []),
         "parsed": parsed,
+        "parsed_stale": parsed_stale,
+        "parser_error": parser_error if isinstance(parser_error, dict) else None,
         "next_step": "call await client.prepare_data()" if version_mismatch or not ready else None,
     }
 
@@ -205,7 +214,6 @@ async def prepare_global_data(
     client_version: str,
     build_number: int | str | None = None,
     sqlcipher_key: bytes | str | None = None,
-    sqlcipher_license: str | None = None,
     session: Mapping[str, Any] | None = None,
     profile: Mapping[str, Any] | None = None,
     download_large: bool = True,
@@ -234,26 +242,27 @@ async def prepare_global_data(
         _save_manifest(Path(result["output_dir"]), result)
         return result
     try:
-        resolved_sqlcipher_key, resolved_sqlcipher_license = resolve_sqlcipher_material(
+        resolved_sqlcipher_key = resolve_sqlcipher_key(
             sqlcipher_key=sqlcipher_key,
-            sqlcipher_license=sqlcipher_license,
             session=session,
             profile=profile,
         )
         result["parsed"] = parse_official_academy_tables(
             excel_db_path=Path(result["output_dir"]) / "ExcelDB.db",
             sqlcipher_key=resolved_sqlcipher_key,
-            sqlcipher_license=resolved_sqlcipher_license,
         )
         result["next_step"] = None
         result.pop("parser_error", None)
         if cleanup_after_parse:
             result["cleanup"] = cleanup_download_cache(Path(result["output_dir"]))
     except OfficialDataError as exc:
-        result["parsed"] = _parsed_status()
+        stale_parsed = _parsed_status()
+        if stale_parsed.get("ready"):
+            result["stale_parsed"] = stale_parsed
+        result["parsed"] = _empty_parsed_status()
         result["parser_error"] = {"type": exc.__class__.__name__, "message": str(exc)}
-        if isinstance(exc, OfficialDataDependencyError) and "material is missing" in str(exc):
-            result["next_step"] = "configure SQLCipher material, then call await client.prepare_data() again"
+        if isinstance(exc, OfficialDataDependencyError) and "key is missing" in str(exc):
+            result["next_step"] = "configure the SQLCipher key, then call await client.prepare_data() again"
         else:
             result["next_step"] = "install/configure SQLCipher backend, then call await client.prepare_data() again"
     _save_manifest(Path(result["output_dir"]), result)
@@ -446,13 +455,59 @@ def _load_latest_manifest(root: Path, *, include_core_manifest: bool = True) -> 
     if root.exists():
         candidates.extend(sorted(root.glob("*/manifest.json"), key=lambda path: path.stat().st_mtime, reverse=True))
     for path in candidates:
-        try:
-            raw = json.loads(path.read_text(encoding="utf-8"))
-        except (OSError, json.JSONDecodeError):
-            continue
-        if isinstance(raw, dict):
-            return raw
+        manifest = _load_manifest_file(path)
+        if manifest is not None:
+            return manifest
     return None
+
+
+def _load_manifest_file(path: Path) -> dict[str, Any] | None:
+    try:
+        raw = json.loads(path.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError):
+        return None
+    return raw if isinstance(raw, dict) else None
+
+
+def _catalog_matches_manifest(catalog: OfficialCatalog, manifest: dict[str, Any] | None) -> bool:
+    if not isinstance(manifest, dict):
+        return False
+    return (
+        manifest.get("client_version") == catalog.client_version
+        and str(manifest.get("build_number") or "") == catalog.build_number
+        and manifest.get("resource_data_url") == catalog.resource_data_url
+        and _safe_int(manifest.get("resource_count")) == catalog.resource_count
+    )
+
+
+def _cached_resource_matches(
+    manifest: dict[str, Any] | None,
+    catalog: OfficialCatalog,
+    resource: OfficialResource,
+    local_path: Path,
+) -> bool:
+    if not local_path.is_file() or not _catalog_matches_manifest(catalog, manifest):
+        return False
+    if resource.size is not None and local_path.stat().st_size != resource.size:
+        return False
+    files = manifest.get("files") if isinstance(manifest, dict) else None
+    if not isinstance(files, list):
+        return False
+    cached = next(
+        (
+            item
+            for item in files
+            if isinstance(item, dict) and item.get("resource_path") == resource.path
+        ),
+        None,
+    )
+    if cached is None:
+        return False
+    if _safe_int(cached.get("expected_size")) != resource.size:
+        return False
+    if resource.md5 and cached.get("md5") != resource.md5:
+        return False
+    return True
 
 
 def _manifest_files_ready(manifest: dict[str, Any]) -> bool:
@@ -471,9 +526,43 @@ def _manifest_files_ready(manifest: dict[str, Any]) -> bool:
     return True
 
 
+def _parsed_files_are_fresh(manifest: dict[str, Any], parsed: dict[str, Any]) -> bool:
+    parsed_files = parsed.get("files")
+    if not isinstance(parsed_files, dict) or not parsed_files:
+        return False
+    output_paths = [Path(path) for path in parsed_files.values() if isinstance(path, str)]
+    if len(output_paths) != len(parsed_files) or any(not path.is_file() for path in output_paths):
+        return False
+
+    database_paths: list[Path] = []
+    source = parsed.get("source")
+    if isinstance(source, str) and source:
+        database_paths.append(Path(source))
+    files = manifest.get("files")
+    if isinstance(files, list):
+        database_paths.extend(
+            Path(item["local_path"])
+            for item in files
+            if isinstance(item, dict)
+            and str(item.get("resource_path") or "").endswith("/ExcelDB.db")
+            and isinstance(item.get("local_path"), str)
+        )
+    existing_databases = [path for path in database_paths if path.is_file()]
+    if not existing_databases:
+        return True
+    newest_database_mtime = max(path.stat().st_mtime_ns for path in existing_databases)
+    return all(path.stat().st_mtime_ns >= newest_database_mtime for path in output_paths)
+
+
 def _status_reason(version_mismatch: bool, manifest: dict[str, Any], parsed: dict[str, Any]) -> str:
     if version_mismatch:
         return "cached official data version does not match current game version"
+    parser_error = manifest.get("parser_error")
+    if isinstance(parser_error, dict):
+        message = str(parser_error.get("message") or parser_error.get("type") or "unknown error")
+        return f"official data parsing failed: {message}"
+    if parsed.get("ready") and not _parsed_files_are_fresh(manifest, parsed):
+        return "parsed official JSON is older than ExcelDB.db"
     if parsed.get("ready"):
         return "official data is ready"
     if not _manifest_files_ready(manifest):

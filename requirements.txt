@@ -5,3 +5,4 @@ pycryptodome>=3.20
 randomandroidphone==0.10
 tqdm>=4.66
 flatbuffers>=25.2.10
+sqlcipher3>=0.6.2

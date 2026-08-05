@@ -80,7 +80,7 @@
 | `EncryptedSqlCipherKey` | `string` | 历史/逆向字段观察，当前 `ExcelDB.db` 解析不依赖此字段。 |
 | `EncryptedSqlCipherLicense` | `string` | 历史/逆向字段观察，当前 `ExcelDB.db` 解析不依赖此字段。 |
 
-当前 `ExcelDB.db` SQLCipher key/license 使用 `config/official_data.py` 中的固定配置；日志、文档和测试输出不得回显 key/license 明文。
+当前 `ExcelDB.db` 使用 `config/official_data.py` 中的固定 key，并由 Community SQLCipher 后端直接读取，不依赖 license 或游戏客户端。日志、文档和测试输出不得回显 key/license 明文。
 
 ### Queuing_GetAuthTicket
 

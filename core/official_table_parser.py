@@ -2,8 +2,6 @@ from __future__ import annotations
 
 from collections.abc import Iterable
 from dataclasses import asdict, dataclass
-import ctypes
-from ctypes import POINTER, byref, c_char_p, c_int, c_void_p
 import json
 import os
 from pathlib import Path
@@ -11,6 +9,7 @@ from typing import Any, Mapping
 
 from flatbuffers import encode, number_types as N, packer
 from flatbuffers.table import Table
+from sqlcipher3 import dbapi2 as sqlcipher_dbapi
 
 from config.official_data import OFFICIAL_DATA_DEFAULTS
 from config.paths import CORE_DATA_DIR, OFFICIAL_DATA_DIR
@@ -63,16 +62,14 @@ def parse_official_academy_tables(
     excel_db_path: Path | None = None,
     output_dir: Path | None = None,
     sqlcipher_key: bytes | str | None = None,
-    sqlcipher_license: str | None = None,
     session: Mapping[str, Any] | None = None,
     profile: Mapping[str, Any] | None = None,
 ) -> dict[str, Any]:
     database_path = Path(excel_db_path or find_latest_excel_db()).resolve()
     target_dir = Path(output_dir or CORE_DATA_DIR).resolve()
     target_dir.mkdir(parents=True, exist_ok=True)
-    resolved_key, resolved_license = resolve_sqlcipher_material(
+    resolved_key = resolve_sqlcipher_key(
         sqlcipher_key=sqlcipher_key,
-        sqlcipher_license=sqlcipher_license,
         session=session,
         profile=profile,
     )
@@ -83,7 +80,6 @@ def parse_official_academy_tables(
             database_path,
             ACADEMY_MESSANGER_SCHEMA,
             sqlcipher_key=resolved_key,
-            sqlcipher_license=resolved_license,
         )
     ]
     favor_schedule = [
@@ -92,7 +88,6 @@ def parse_official_academy_tables(
             database_path,
             ACADEMY_FAVOR_SCHEDULE_SCHEMA,
             sqlcipher_key=resolved_key,
-            sqlcipher_license=resolved_license,
         )
     ]
 
@@ -126,53 +121,38 @@ def read_schema_bytes(
     schema_name: str,
     *,
     sqlcipher_key: bytes | str | None = None,
-    sqlcipher_license: str | None = None,
     session: Mapping[str, Any] | None = None,
     profile: Mapping[str, Any] | None = None,
 ) -> list[bytes]:
-    resolved_key, resolved_license = resolve_sqlcipher_material(
+    resolved_key = resolve_sqlcipher_key(
         sqlcipher_key=sqlcipher_key,
-        sqlcipher_license=sqlcipher_license,
         session=session,
         profile=profile,
     )
-    for reader in (_read_schema_bytes_dbapi, _read_schema_bytes_ctypes):
-        try:
-            return reader(database_path, schema_name, resolved_key, resolved_license)
-        except OfficialDataDependencyError:
-            continue
-    raise OfficialDataDependencyError(
-        "SQLCipher backend is not available. Install a Python SQLCipher binding or set "
-        "HEADLESS_BLUEARCHIVE_SQLCIPHER_DLL to a compatible sqlcipher.dll."
-    )
+    return _read_schema_bytes_dbapi(database_path, schema_name, resolved_key)
 
 
-def resolve_sqlcipher_material(
+def resolve_sqlcipher_key(
     *,
     sqlcipher_key: bytes | str | None = None,
-    sqlcipher_license: str | None = None,
     session: Mapping[str, Any] | None = None,
     profile: Mapping[str, Any] | None = None,
-) -> tuple[bytes, str]:
+) -> bytes:
     key_value = sqlcipher_key
-    license_value = sqlcipher_license
     for source in (session, profile):
-        if key_value and license_value:
+        if key_value:
             break
-        source_key, source_license = _extract_sqlcipher_material(source)
-        key_value = key_value or source_key
-        license_value = license_value or source_license
+        key_value = _extract_sqlcipher_key(source)
+    key_value = key_value or os.environ.get("HEADLESS_BLUEARCHIVE_SQLCIPHER_KEY")
     key_value = key_value or OFFICIAL_DATA_DEFAULTS.excel_db_sqlcipher_key
-    license_value = license_value or OFFICIAL_DATA_DEFAULTS.excel_db_sqlcipher_license
 
     key_bytes = _decode_sqlcipher_key(key_value)
-    license_text = str(license_value or "")
-    if not key_bytes or not license_text:
+    if not key_bytes:
         raise OfficialDataDependencyError(
-            "SQLCipher material is missing. Configure official data SQLCipher material "
-            "or pass sqlcipher_key and sqlcipher_license explicitly."
+            "SQLCipher key is missing. Configure the official data SQLCipher key "
+            "or pass sqlcipher_key explicitly."
         )
-    return key_bytes, license_text
+    return key_bytes
 
 
 def parse_academy_messanger_row(payload: bytes) -> AcademyMessangerRow:
@@ -220,14 +200,10 @@ def _read_schema_bytes_dbapi(
     database_path: Path,
     schema_name: str,
     sqlcipher_key: bytes,
-    sqlcipher_license: str,
 ) -> list[bytes]:
-    module = _optional_sqlcipher_module()
-    if module is None:
-        raise OfficialDataDependencyError("Python SQLCipher binding is not installed")
-    connection = module.connect(str(database_path))
+    connection = sqlcipher_dbapi.connect(str(database_path))
     try:
-        _configure_sqlcipher_dbapi(connection, sqlcipher_key=sqlcipher_key, sqlcipher_license=sqlcipher_license)
+        _configure_sqlcipher_dbapi(connection, sqlcipher_key=sqlcipher_key)
         return [bytes(row[0]) for row in connection.execute(f"SELECT Bytes FROM {schema_name}")]
     except Exception as exc:
         raise OfficialDataParseError(f"failed to read {schema_name}: {exc}") from exc
@@ -235,121 +211,10 @@ def _read_schema_bytes_dbapi(
         connection.close()
 
 
-def _read_schema_bytes_ctypes(
-    database_path: Path,
-    schema_name: str,
-    sqlcipher_key: bytes,
-    sqlcipher_license: str,
-) -> list[bytes]:
-    dll_path = os.environ.get("HEADLESS_BLUEARCHIVE_SQLCIPHER_DLL")
-    if not dll_path:
-        raise OfficialDataDependencyError("HEADLESS_BLUEARCHIVE_SQLCIPHER_DLL is not set")
-    return _SqlCipherDll(Path(dll_path)).read_blobs(
-        database_path,
-        schema_name,
-        sqlcipher_key=sqlcipher_key,
-        sqlcipher_license=sqlcipher_license,
-    )
-
-
-def _optional_sqlcipher_module():
-    for name in ("sqlcipher3.dbapi2", "pysqlcipher3.dbapi2"):
-        try:
-            module = __import__(name, fromlist=["connect"])
-        except ImportError:
-            continue
-        return module
-    return None
-
-
-def _configure_sqlcipher_dbapi(connection: Any, *, sqlcipher_key: bytes, sqlcipher_license: str) -> None:
-    connection.execute(f"PRAGMA cipher_license = '{_escape_pragma_text(sqlcipher_license)}'")
+def _configure_sqlcipher_dbapi(connection: Any, *, sqlcipher_key: bytes) -> None:
     connection.execute(f"PRAGMA key = \"x'{sqlcipher_key.hex()}'\"")
     connection.execute("PRAGMA cache_size = -100")
     connection.execute("SELECT count(*) FROM sqlite_master").fetchone()
-
-
-class _SqlCipherDll:
-    def __init__(self, dll_path: Path) -> None:
-        if not dll_path.exists():
-            raise OfficialDataDependencyError(f"sqlcipher.dll not found: {dll_path}")
-        self._lib = ctypes.CDLL(str(dll_path))
-        self._lib.sqlite3_open.argtypes = [c_char_p, POINTER(c_void_p)]
-        self._lib.sqlite3_open.restype = c_int
-        self._lib.sqlite3_close.argtypes = [c_void_p]
-        self._lib.sqlite3_close.restype = c_int
-        self._lib.sqlite3_exec.argtypes = [c_void_p, c_char_p, c_void_p, c_void_p, POINTER(c_char_p)]
-        self._lib.sqlite3_exec.restype = c_int
-        self._lib.sqlite3_prepare_v2.argtypes = [c_void_p, c_char_p, c_int, POINTER(c_void_p), POINTER(c_char_p)]
-        self._lib.sqlite3_prepare_v2.restype = c_int
-        self._lib.sqlite3_step.argtypes = [c_void_p]
-        self._lib.sqlite3_step.restype = c_int
-        self._lib.sqlite3_finalize.argtypes = [c_void_p]
-        self._lib.sqlite3_finalize.restype = c_int
-        self._lib.sqlite3_column_blob.argtypes = [c_void_p, c_int]
-        self._lib.sqlite3_column_blob.restype = c_void_p
-        self._lib.sqlite3_column_bytes.argtypes = [c_void_p, c_int]
-        self._lib.sqlite3_column_bytes.restype = c_int
-        self._lib.sqlite3_errmsg.argtypes = [c_void_p]
-        self._lib.sqlite3_errmsg.restype = c_char_p
-
-    def read_blobs(
-        self,
-        database_path: Path,
-        schema_name: str,
-        *,
-        sqlcipher_key: bytes,
-        sqlcipher_license: str,
-    ) -> list[bytes]:
-        database = c_void_p()
-        rc = self._lib.sqlite3_open(str(database_path).encode("utf-8"), byref(database))
-        if rc != 0:
-            raise OfficialDataParseError(f"failed to open ExcelDB.db with SQLCipher: rc={rc}")
-        try:
-            self._configure(database, sqlcipher_key=sqlcipher_key, sqlcipher_license=sqlcipher_license)
-            return self._select_blobs(database, schema_name)
-        finally:
-            self._lib.sqlite3_close(database)
-
-    def _configure(self, database: c_void_p, *, sqlcipher_key: bytes, sqlcipher_license: str) -> None:
-        self._exec(database, f"PRAGMA cipher_license = '{_escape_pragma_text(sqlcipher_license)}'")
-        self._exec(database, f"PRAGMA key = \"x'{sqlcipher_key.hex()}'\"")
-        self._exec(database, "PRAGMA cache_size = -100")
-        self._exec(database, "SELECT count(*) FROM sqlite_master")
-
-    def _select_blobs(self, database: c_void_p, schema_name: str) -> list[bytes]:
-        if not schema_name.isidentifier():
-            raise OfficialDataParseError(f"invalid schema name: {schema_name}")
-        statement = c_void_p()
-        tail = c_char_p()
-        sql = f"SELECT Bytes FROM {schema_name}".encode("utf-8")
-        rc = self._lib.sqlite3_prepare_v2(database, sql, -1, byref(statement), byref(tail))
-        if rc != 0:
-            raise OfficialDataParseError(self._errmsg(database))
-        rows: list[bytes] = []
-        try:
-            while True:
-                rc = self._lib.sqlite3_step(statement)
-                if rc == 100:
-                    size = self._lib.sqlite3_column_bytes(statement, 0)
-                    pointer = self._lib.sqlite3_column_blob(statement, 0)
-                    rows.append(ctypes.string_at(pointer, size))
-                    continue
-                if rc == 101:
-                    return rows
-                raise OfficialDataParseError(self._errmsg(database))
-        finally:
-            self._lib.sqlite3_finalize(statement)
-
-    def _exec(self, database: c_void_p, sql: str) -> None:
-        error = c_char_p()
-        rc = self._lib.sqlite3_exec(database, sql.encode("utf-8"), None, None, byref(error))
-        if rc != 0:
-            message = error.value.decode("utf-8", "ignore") if error.value else self._errmsg(database)
-            raise OfficialDataParseError(message)
-
-    def _errmsg(self, database: c_void_p) -> str:
-        return self._lib.sqlite3_errmsg(database).decode("utf-8", "ignore")
 
 
 def _root_table(payload: bytes) -> Table:
@@ -400,19 +265,15 @@ def _write_json(path: Path, data: Any) -> None:
     tmp_path.replace(path)
 
 
-def _extract_sqlcipher_material(source: Mapping[str, Any] | None) -> tuple[Any, Any]:
+def _extract_sqlcipher_key(source: Mapping[str, Any] | None) -> Any:
     if not isinstance(source, Mapping):
-        return None, None
+        return None
     nested = source.get("sqlcipher")
     if isinstance(nested, Mapping):
         key_value = _first_present(nested, "key", "sqlcipher_key", "SqlCipherKey")
-        license_value = _first_present(nested, "license", "sqlcipher_license", "SqlCipherLicense")
-        if key_value or license_value:
-            return key_value, license_value
-    return (
-        _first_present(source, "sqlcipher_key", "SqlCipherKey"),
-        _first_present(source, "sqlcipher_license", "SqlCipherLicense"),
-    )
+        if key_value:
+            return key_value
+    return _first_present(source, "sqlcipher_key", "SqlCipherKey")
 
 
 def _first_present(source: Mapping[str, Any], *keys: str) -> Any:
@@ -446,10 +307,6 @@ def _decode_sqlcipher_key(value: bytes | str | None) -> bytes:
             raise OfficialDataDependencyError("SQLCipher key material is invalid") from exc
 
 
-def _escape_pragma_text(value: str) -> str:
-    return value.replace("'", "''")
-
-
 __all__ = [
     "AcademyFavorScheduleRow",
     "AcademyMessangerRow",
@@ -458,5 +315,5 @@ __all__ = [
     "parse_academy_messanger_row",
     "parse_official_academy_tables",
     "read_schema_bytes",
-    "resolve_sqlcipher_material",
+    "resolve_sqlcipher_key",
 ]

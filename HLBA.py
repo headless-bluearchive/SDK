@@ -293,7 +293,6 @@ class Client:
         client_version: str | None = None,
         build_number: int | str | None = None,
         sqlcipher_key: bytes | str | None = None,
-        sqlcipher_license: str | None = None,
         download_large: bool = True,
         show_progress: bool = True,
         workers: int | None = None,
@@ -304,7 +303,6 @@ class Client:
             client_version=client_version,
             build_number=build_number,
             sqlcipher_key=sqlcipher_key,
-            sqlcipher_license=sqlcipher_license,
             download_large=download_large,
             show_progress=show_progress,
             workers=workers,
@@ -318,7 +316,6 @@ class Client:
         client_version: str | None = None,
         build_number: int | str | None = None,
         sqlcipher_key: bytes | str | None = None,
-        sqlcipher_license: str | None = None,
         download_large: bool = True,
         show_progress: bool = True,
         workers: int | None = None,
@@ -338,7 +335,6 @@ class Client:
             client_version=version,
             build_number=build,
             sqlcipher_key=sqlcipher_key,
-            sqlcipher_license=sqlcipher_license,
             session=session,
             profile=profile,
             download_large=download_large,
@@ -402,7 +398,9 @@ class Client:
 
     def _warn_if_data_not_ready(self) -> None:
         status = self.data_status()
-        if status.get("ready") or not (status.get("needs_download") or status.get("needs_update")):
+        if status.get("ready") or not (
+            status.get("needs_download") or status.get("needs_update") or status.get("needs_parse")
+        ):
             return
         key = (
             status.get("reason"),

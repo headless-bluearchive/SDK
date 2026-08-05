@@ -22,7 +22,7 @@ if not status["ready"]:
     result = await client.prepare_data()
 ```
 
-`ExcelDB.db` 的 SQLCipher key/license 来自客户端 SQLCipher DLL 的固定 material，SDK 默认从 `config.official_data` 读取。调用方通常不需要先登录再准备官方数据。
+`ExcelDB.db` 的 SQLCipher key 由 SDK 从 `config.official_data` 读取。默认的 Community SQLCipher 后端不需要 license，调用方也不需要先登录或安装游戏客户端。
 
 ## 版本解析与下载
 
@@ -82,37 +82,32 @@ core/data/official_data_manifest.json
 
 ## SQLCipher 解密
 
-`ExcelDB.db` 是 SQLCipher 加密 SQLite，不是裸 SQLite 文件。SDK 不再使用 `CreatePassword("ExcelDB.db")` 作为数据库 key，当前使用客户端 SQLCipher DLL 中固定的 key/license，配置入口在：
+`ExcelDB.db` 是 SQLCipher 加密 SQLite，不是裸 SQLite 文件。SDK 不再使用 `CreatePassword("ExcelDB.db")` 作为数据库 key，当前使用配置中的固定 key，配置入口在：
 
 ```text
 config/official_data.py
 ```
 
-调用者一般不需要手动传 key/license：
+调用者一般不需要手动传 key：
 
 ```python
 client = Client()
 await client.prepare_data()
 ```
 
-如果需要临时覆盖，可显式传入 `sqlcipher_key` / `sqlcipher_license`。
+如果需要临时覆盖，可显式传入 `sqlcipher_key`。
 
 ## SQLCipher 后端
 
-SDK 解析器会优先使用 Python SQLCipher 绑定：
+SDK 解析器使用 Python SQLCipher 绑定：
 
 ```text
 sqlcipher3.dbapi2
-pysqlcipher3.dbapi2
 ```
 
-如果本机没有 Python 绑定，也可以通过环境变量指定兼容的 `sqlcipher.dll`：
+项目默认依赖 `sqlcipher3>=0.6.2`。Community 版本只需要数据库 key，不执行 `PRAGMA cipher_license`。
 
-```text
-HEADLESS_BLUEARCHIVE_SQLCIPHER_DLL
-```
-
-SQLCipher key/license 来自配置。SDK 不内置 DLL。如果没有可用后端，`prepare_data()` 不会伪造成功状态，返回值里会带上 `parser_error` 和下一步提示。
+SQLCipher key 来自配置。SDK 不加载游戏 DLL，也不需要安装或运行游戏客户端。如果后端不可用，`prepare_data()` 不会伪造成功状态，返回值里会带上 `parser_error` 和下一步提示。
 
 ## 当前边界
 
