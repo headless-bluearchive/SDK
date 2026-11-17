@@ -226,7 +226,13 @@ class MomoTalkService(GameService):
             )
             rows.append(row)
         if include_message_details:
-            await self._attach_message_details(rows)
+            await self._attach_message_details(rows, master=master)
+        else:
+            # Older outlines can omit ChosenMessageId even though the reply is
+            # recorded in MomoTalkChoiceDBs. Resolve only these ambiguous rows.
+            await self._attach_message_details(
+                [row for row in rows if _requires_choice_history(row, master)], master=master,
+            )
         actionable = _format_actionable(rows, include_message_details=include_message_details)
         return {
             "characters": rows,
@@ -234,11 +240,15 @@ class MomoTalkService(GameService):
             "actionable": actionable,
             "outline_count": outline["outline_count"],
             "owned_character_count": character_result["count"],
-            "exact_unread_count_available": master["ready"],
+            "exact_unread_count_available": bool(master["ready"]) and all(
+                row.get("unread_count_exact", False) for row in rows
+            ),
             "unread_count_source": master["source"],
         }
 
-    async def _attach_message_details(self, rows: list[dict[str, Any]]) -> None:
+    async def _attach_message_details(
+        self, rows: list[dict[str, Any]], *, master: dict[str, Any] | None = None,
+    ) -> None:
         semaphore = asyncio.Semaphore(MESSAGE_DETAIL_CONCURRENCY)
 
         async def load(row: dict[str, Any]) -> None:
@@ -252,7 +262,22 @@ class MomoTalkService(GameService):
                         "error_code": getattr(exc, "error_code", None),
                         "error_name": getattr(exc, "error_name", None),
                     }
+                    if master and _requires_choice_history(row, master):
+                        row["unread_count_exact"] = False
+                        row["choice_history_unresolved"] = True
                     return
+            if message_result.get("latest_message_group_id") is not None:
+                row["latest_message_group_id"] = message_result["latest_message_group_id"]
+                row["chosen_message_id"] = message_result["chosen_message_id"]
+                row["chosen_message_source"] = message_result.get("chosen_message_source")
+            if master and master.get("ready"):
+                row["invalid_master_references"] = []
+                row["bootstrap_required"] = False
+                row["initial_message_group_id"] = None
+                _apply_master_momotalk_state(row, master)
+                unresolved = _requires_choice_history(row, master)
+                row["choice_history_unresolved"] = unresolved
+                row["unread_count_exact"] = not unresolved
             row["message"] = {
                 "choice_count": message_result["choice_count"],
                 "choice_message_group_ids": [
@@ -302,6 +327,23 @@ def format_momotalk_messages(payload: dict[str, Any]) -> dict[str, Any]:
     outline = payload.get("MomoTalkOutLineDB")
     choices = [item for item in as_list(payload.get("MomoTalkChoiceDBs")) if isinstance(item, dict)]
     character_id = _outline_int(outline, "CharacterId")
+    chosen_id = _optional_positive_int(_outline_int(outline, "ChosenMessageId"))
+    chosen_source = "outline" if chosen_id is not None else None
+    if chosen_id is None:
+        latest_group = _outline_int(outline, "LatestMessageGroupId")
+        character_db_id = _outline_int(outline, "CharacterDBId")
+        matches = {
+            choice_id
+            for choice in choices
+            if latest_group is not None and character_db_id is not None
+            and _choice_int(choice, "MessageGroupId") == latest_group
+            and _choice_int(choice, "CharacterDBId") == character_db_id
+            for choice_id in [_optional_positive_int(_choice_int(choice, "ChosenMessageId"))]
+            if choice_id is not None
+        }
+        if len(matches) == 1:
+            chosen_id = next(iter(matches))
+            chosen_source = "choice_history"
     return {
         "outline": _with_character_name(outline) if isinstance(outline, dict) else None,
         "choices": choices,
@@ -310,7 +352,8 @@ def format_momotalk_messages(payload: dict[str, Any]) -> dict[str, Any]:
         "character_id": character_id,
         "character_name": cached_student_name(character_id) if character_id is not None else None,
         "latest_message_group_id": _outline_int(outline, "LatestMessageGroupId"),
-        "chosen_message_id": _outline_int(outline, "ChosenMessageId"),
+        "chosen_message_id": chosen_id,
+        "chosen_message_source": chosen_source,
         "can_read_next": _outline_int(outline, "LatestMessageGroupId") is not None,
         "extra": extra_fields(payload, known_keys),
     }
@@ -386,6 +429,9 @@ def _format_status_row(
     }
     if master and master.get("ready"):
         _apply_master_momotalk_state(row, master)
+        if _requires_choice_history(row, master):
+            row["unread_count_exact"] = False
+            row["choice_history_unresolved"] = True
     else:
         row["favor_story_candidates"] = _favor_story_candidates(row)
     row["readable_message"] = _message_action(row)
@@ -427,7 +473,21 @@ def _format_actionable(rows: list[dict[str, Any]], *, include_message_details: b
         "unread_total_count": sum(int(row.get("unread_count") or 0) for row in rows),
         "invalid_master_references": invalid_master_references,
         "invalid_master_reference_count": len(invalid_master_references),
+        "unresolved_choice_character_ids": [
+            row["character_id"] for row in rows if row.get("choice_history_unresolved")
+        ],
     }
+
+
+def _requires_choice_history(row: dict[str, Any], master: dict[str, Any]) -> bool:
+    if not master.get("ready") or row.get("latest_message_group_id") is None:
+        return False
+    group = _message_group(master, row["latest_message_group_id"])
+    first = _first_message(group)
+    if first is None or _message_condition(first) != MESSAGE_CONDITION_ANSWER:
+        return False
+    chosen_id = _optional_positive_int(row.get("chosen_message_id"))
+    return chosen_id is None or chosen_id not in {_message_id(message) for message in group}
 
 
 def _message_action(row: dict[str, Any]) -> dict[str, Any] | None:

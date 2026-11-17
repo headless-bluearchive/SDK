@@ -656,7 +656,10 @@ def run_main_game_login(
     if _is_error_response(check_response):
         flow["status"] = "account_check_nexon_error"
         flow["error_response"] = _summarize_payload(check_response.get("parsed"))
-        raise GatewayError("Account_CheckNexon returned Error")
+        raise GatewayError.from_response(
+            "Account_CheckNexon returned Error", check_response,
+            stage="Account_CheckNexon", client_version=client_version,
+        )
     account_check_state = _apply_account_check_state(client, check_response.get("parsed"))
     flow["account_check_state"] = _account_check_state_summary(account_check_state)
     _log(debug_logger, f"gateway.ok Account_CheckNexon accountId={client.account_id} sessionKey={bool(client.session_key)}")
@@ -727,7 +730,10 @@ def run_main_game_login(
     if _is_error_response(auth_response):
         flow["status"] = "account_auth_error"
         flow["error_response"] = _summarize_payload(auth_response.get("parsed"))
-        raise GatewayError("Account_Auth returned Error")
+        raise GatewayError.from_response(
+            "Account_Auth returned Error", auth_response,
+            stage="Account_Auth", client_version=client_version,
+        )
     _update_session_key(client, auth_response.get("parsed"))
     flow["_account_data_raw"] = auth_response.get("parsed")
     flow["account_data"] = _select_account_login_fields(auth_response.get("parsed"))
@@ -746,7 +752,10 @@ def run_main_game_login(
     if _is_error_response(sync_response):
         flow["status"] = "account_login_sync_error"
         flow["error_response"] = _summarize_payload(sync_response.get("parsed"))
-        raise GatewayError("Account_LoginSync returned Error")
+        raise GatewayError.from_response(
+            "Account_LoginSync returned Error", sync_response,
+            stage="Account_LoginSync", client_version=client_version,
+        )
 
     flow["status"] = "posted_login_sync"
     flow["_player_data_raw"] = sync_response.get("parsed")

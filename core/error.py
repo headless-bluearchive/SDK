@@ -31,7 +31,49 @@ class AuthenticationError(LoginError):
 
 
 class GatewayError(LoginError):
-    pass
+    """Login gateway failure containing only allowlisted, non-secret metadata."""
+
+    def __init__(
+        self,
+        message: str,
+        *,
+        stage: str | None = None,
+        error_code: int | None = None,
+        protocol: int | None = None,
+        http_status: int | None = None,
+        client_version: str | None = None,
+    ) -> None:
+        self.stage = stage
+        self.error_code = error_code
+        self.error_name = error_code_name(error_code)
+        self.protocol = protocol
+        self.http_status = http_status
+        self.client_version = client_version
+        details = []
+        if error_code is not None:
+            details.append(f"ErrorCode={error_code} ({self.error_name or 'Unknown'})")
+        if protocol is not None:
+            details.append(f"Protocol={protocol}")
+        if http_status is not None:
+            details.append(f"HTTP={http_status}")
+        super().__init__(": ".join([message, *details]))
+
+    @classmethod
+    def from_response(
+        cls, message: str, response: Mapping[str, Any], *, stage: str, client_version: str | None = None
+    ) -> "GatewayError":
+        parsed = response.get("parsed")
+        parsed = parsed if isinstance(parsed, Mapping) else {}
+        http = response.get("http")
+        http = http if isinstance(http, Mapping) else {}
+        return cls(
+            message,
+            stage=stage,
+            error_code=_optional_int(parsed.get("ErrorCode")),
+            protocol=_optional_int(parsed.get("Protocol")),
+            http_status=_optional_int(http.get("status_code")),
+            client_version=client_version,
+        )
 
 
 class ProofTokenError(LoginError):
