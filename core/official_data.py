@@ -12,8 +12,8 @@ import httpx
 
 from config.game import DEFAULTS
 from config.paths import CORE_DATA_DIR, OFFICIAL_DATA_DIR
-from core.error import OfficialDataDependencyError, OfficialDataError
-from core.official_table_parser import parse_official_academy_tables, resolve_sqlcipher_key
+from core.error import OfficialDataDecryptionError, OfficialDataDependencyError, OfficialDataError
+from core.official_table_parser import parse_official_academy_tables
 from utils.proxy import normalize_proxy_url
 
 OFFICIAL_CORE_MANIFEST = CORE_DATA_DIR / "official_data_manifest.json"
@@ -242,14 +242,11 @@ async def prepare_global_data(
         _save_manifest(Path(result["output_dir"]), result)
         return result
     try:
-        resolved_sqlcipher_key = resolve_sqlcipher_key(
+        result["parsed"] = parse_official_academy_tables(
+            excel_db_path=Path(result["output_dir"]) / "ExcelDB.db",
             sqlcipher_key=sqlcipher_key,
             session=session,
             profile=profile,
-        )
-        result["parsed"] = parse_official_academy_tables(
-            excel_db_path=Path(result["output_dir"]) / "ExcelDB.db",
-            sqlcipher_key=resolved_sqlcipher_key,
         )
         result["next_step"] = None
         result.pop("parser_error", None)
@@ -261,7 +258,9 @@ async def prepare_global_data(
             result["stale_parsed"] = stale_parsed
         result["parsed"] = _empty_parsed_status()
         result["parser_error"] = {"type": exc.__class__.__name__, "message": str(exc)}
-        if isinstance(exc, OfficialDataDependencyError) and "key is missing" in str(exc):
+        if isinstance(exc, OfficialDataDecryptionError):
+            result["next_step"] = "verify database integrity/version and SQLCipher key overrides, then call await client.prepare_data() again"
+        elif isinstance(exc, OfficialDataDependencyError) and "key is missing" in str(exc):
             result["next_step"] = "configure the SQLCipher key, then call await client.prepare_data() again"
         else:
             result["next_step"] = "install/configure SQLCipher backend, then call await client.prepare_data() again"

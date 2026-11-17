@@ -62,6 +62,10 @@ class OfficialDataParseError(OfficialDataError):
     pass
 
 
+class OfficialDataDecryptionError(OfficialDataParseError):
+    pass
+
+
 class GameApiError(HeadlessBAError):
     def __init__(
         self,

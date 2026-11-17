@@ -14,7 +14,7 @@ from sqlcipher3 import dbapi2 as sqlcipher_dbapi
 from config.official_data import OFFICIAL_DATA_DEFAULTS
 from config.paths import CORE_DATA_DIR, OFFICIAL_DATA_DIR
 from core.crypto import decode_bytes
-from core.error import OfficialDataDependencyError, OfficialDataParseError
+from core.error import OfficialDataDecryptionError, OfficialDataDependencyError, OfficialDataParseError
 
 ACADEMY_MESSANGER_SCHEMA = "AcademyMessangerDBSchema"
 ACADEMY_FAVOR_SCHEDULE_SCHEMA = "AcademyFavorScheduleDBSchema"
@@ -68,18 +68,14 @@ def parse_official_academy_tables(
     database_path = Path(excel_db_path or find_latest_excel_db()).resolve()
     target_dir = Path(output_dir or CORE_DATA_DIR).resolve()
     target_dir.mkdir(parents=True, exist_ok=True)
-    resolved_key = resolve_sqlcipher_key(
-        sqlcipher_key=sqlcipher_key,
-        session=session,
-        profile=profile,
-    )
-
     messanger = [
         asdict(parse_academy_messanger_row(row))
         for row in read_schema_bytes(
             database_path,
             ACADEMY_MESSANGER_SCHEMA,
-            sqlcipher_key=resolved_key,
+            sqlcipher_key=sqlcipher_key,
+            session=session,
+            profile=profile,
         )
     ]
     favor_schedule = [
@@ -87,7 +83,9 @@ def parse_official_academy_tables(
         for row in read_schema_bytes(
             database_path,
             ACADEMY_FAVOR_SCHEDULE_SCHEMA,
-            sqlcipher_key=resolved_key,
+            sqlcipher_key=sqlcipher_key,
+            session=session,
+            profile=profile,
         )
     ]
 
@@ -124,12 +122,12 @@ def read_schema_bytes(
     session: Mapping[str, Any] | None = None,
     profile: Mapping[str, Any] | None = None,
 ) -> list[bytes]:
-    resolved_key = resolve_sqlcipher_key(
+    candidates = _sqlcipher_key_candidates(
         sqlcipher_key=sqlcipher_key,
         session=session,
         profile=profile,
     )
-    return _read_schema_bytes_dbapi(database_path, schema_name, resolved_key)
+    return _read_schema_bytes_dbapi(database_path, schema_name, candidates[0], fallback_keys=candidates[1:])
 
 
 def resolve_sqlcipher_key(
@@ -138,13 +136,27 @@ def resolve_sqlcipher_key(
     session: Mapping[str, Any] | None = None,
     profile: Mapping[str, Any] | None = None,
 ) -> bytes:
+    return _sqlcipher_key_candidates(sqlcipher_key=sqlcipher_key, session=session, profile=profile)[0]
+
+
+def _sqlcipher_key_candidates(
+    *,
+    sqlcipher_key: bytes | str | None = None,
+    session: Mapping[str, Any] | None = None,
+    profile: Mapping[str, Any] | None = None,
+) -> tuple[bytes, ...]:
+    """Explicit material is authoritative; only built-in defaults may fall back."""
     key_value = sqlcipher_key
     for source in (session, profile):
         if key_value:
             break
         key_value = _extract_sqlcipher_key(source)
     key_value = key_value or os.environ.get("HEADLESS_BLUEARCHIVE_SQLCIPHER_KEY")
-    key_value = key_value or OFFICIAL_DATA_DEFAULTS.excel_db_sqlcipher_key
+    if not key_value:
+        return (
+            OFFICIAL_DATA_DEFAULTS.excel_db_sqlcipher_key,
+            *OFFICIAL_DATA_DEFAULTS.legacy_excel_db_sqlcipher_keys,
+        )
 
     key_bytes = _decode_sqlcipher_key(key_value)
     if not key_bytes:
@@ -152,7 +164,7 @@ def resolve_sqlcipher_key(
             "SQLCipher key is missing. Configure the official data SQLCipher key "
             "or pass sqlcipher_key explicitly."
         )
-    return key_bytes
+    return (key_bytes,)
 
 
 def parse_academy_messanger_row(payload: bytes) -> AcademyMessangerRow:
@@ -200,15 +212,33 @@ def _read_schema_bytes_dbapi(
     database_path: Path,
     schema_name: str,
     sqlcipher_key: bytes,
+    *,
+    fallback_keys: tuple[bytes, ...] = (),
 ) -> list[bytes]:
-    connection = sqlcipher_dbapi.connect(str(database_path))
-    try:
-        _configure_sqlcipher_dbapi(connection, sqlcipher_key=sqlcipher_key)
-        return [bytes(row[0]) for row in connection.execute(f"SELECT Bytes FROM {schema_name}")]
-    except Exception as exc:
-        raise OfficialDataParseError(f"failed to read {schema_name}: {exc}") from exc
-    finally:
-        connection.close()
+    # Each failed key needs a fresh connection; never modify or create the input DB.
+    uri = Path(database_path).resolve().as_uri() + "?mode=ro"
+    keys = (sqlcipher_key, *fallback_keys)
+    for index, key in enumerate(keys):
+        connection = sqlcipher_dbapi.connect(uri, uri=True)
+        try:
+            try:
+                _configure_sqlcipher_dbapi(connection, sqlcipher_key=key)
+            except sqlcipher_dbapi.DatabaseError as exc:
+                if index + 1 < len(keys):
+                    continue
+                raise OfficialDataDecryptionError(
+                    "Unable to decrypt ExcelDB.db with the configured SQLCipher key(s). "
+                    "Verify the database version/integrity and update the key; "
+                    "explicit, session, profile and environment keys override built-in defaults."
+                ) from exc
+            try:
+                quoted_schema = '"' + schema_name.replace('"', '""') + '"'
+                return [bytes(row[0]) for row in connection.execute(f"SELECT Bytes FROM {quoted_schema}")]
+            except Exception as exc:
+                raise OfficialDataParseError(f"failed to read {schema_name}: {exc}") from exc
+        finally:
+            connection.close()
+    raise AssertionError("SQLCipher key candidates must not be empty")
 
 
 def _configure_sqlcipher_dbapi(connection: Any, *, sqlcipher_key: bytes) -> None:
